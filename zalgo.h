@@ -6,7 +6,7 @@
 // define all algorithm wrapper functions in std namespace
 namespace std {
 
-// an useful macro, don't undefine this macro
+// a useful macro, don't undefine this macro
 #define BEG_END(ctn) begin(ctn), end(ctn)
 
 // macros for generating code
