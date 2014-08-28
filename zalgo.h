@@ -15,7 +15,7 @@ namespace std {
 #define GEN(name, args...) _##name(VREF, args) _##name(CREF, args)
 
 // for ALGO(Iter, Iter, ...)
-#define _GEN_II(REF, ALGO)                              \
+#define GEN_II_IMPL(REF, ALGO)                              \
     template <typename ContainerT, typename... Args>    \
     inline auto ALGO(REF(ContainerT) ctn, Args... args) \
         -> decltype(std::ALGO(BEG_END(ctn), args...)) { \
@@ -24,7 +24,7 @@ namespace std {
 #define GEN_II(ALGO) GEN(GEN_II, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2...)
-#define _GEN_IIT(REF, ALGO)                                                     \
+#define GEN_IIT_IMPL(REF, ALGO)                                                     \
     template <typename ContainerT_1, typename ContainerT_2, typename... Args>   \
     inline auto ALGO(REF(ContainerT_1) ctn, ContainerT_2& tgt, Args... args)    \
         -> decltype(std::ALGO(BEG_END(ctn), begin(tgt), args...)) {             \
@@ -33,7 +33,7 @@ namespace std {
 #define GEN_IIT(ALGO) GEN(GEN_IIT, ALGO)
 
 // for ALGO(Iter, Iter, Iter...)
-#define _GEN_III(REF, ALGO)                                             \
+#define GEN_III_IMPL(REF, ALGO)                                             \
     template <typename ContainerT, typename Iter, typename... Args>     \
     inline auto ALGO(REF(ContainerT) ctn, Iter mid, Args... args)       \
         -> decltype(std::ALGO(begin(ctn), mid, end(ctn), args...)) {    \
@@ -42,7 +42,7 @@ namespace std {
 #define GEN_III(ALGO) GEN(GEN_III, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter1, Iter2...)
-#define _GEN_IIIT(REF, ALGO)                                                                    \
+#define GEN_IIIT_IMPL(REF, ALGO)                                                                    \
     template <typename ContainerT_1, typename Iter, typename ContainerT_2, typename... Args>    \
     inline auto ALGO(REF(ContainerT_1) ctn, Iter mid, ContainerT_2& tgt, Args... args)          \
         -> decltype(std::ALGO(begin(ctn), mid, end(ctn), begin(tgt), args...)) {                \
@@ -51,7 +51,7 @@ namespace std {
 #define GEN_IIIT(ALGO) GEN(GEN_IIIT, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2, Iter2...)
-#define _GEN_IITT(REF, ALGO)                                                        \
+#define GEN_IITT_IMPL(REF, ALGO)                                                        \
     template <typename ContainerT_1, typename ContainerT_2, typename... Args>       \
     inline auto ALGO(REF(ContainerT_1) ctn1, REF(ContainerT_2) ctn2, Args... args)  \
         -> decltype(std::ALGO(BEG_END(ctn1), BEG_END(ctn2), args...)) {             \
@@ -60,7 +60,7 @@ namespace std {
 #define GEN_IITT(ALGO) GEN(GEN_IITT, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2, Iter2, Iter3...)
-#define _GEN_IITTE(REF, ALGO)                                                                           \
+#define GEN_IITTE_IMPL(REF, ALGO)                                                                           \
     template <typename ContainerT_1, typename ContainerT_2, typename ContainerT_3, typename... Args>    \
     inline auto ALGO(REF(ContainerT_1) ctn1, REF(ContainerT_2) ctn2, ContainerT_3& tgt, Args... args)   \
         -> decltype(std::ALGO(BEG_END(ctn1), BEG_END(ctn2), begin(tgt), args...)) {                     \
@@ -174,17 +174,17 @@ inline auto operator << (ContainerT& ctn, size_t n) {
 #undef CREF
 #undef GEN
 
-#undef _GEN_II
+#undef GEN_II_IMPL
 #undef GEN_II
-#undef _GEN_IIT
+#undef GEN_IIT_IMPL
 #undef GEN_IIT
-#undef _GEN_III
+#undef GEN_III_IMPL
 #undef GEN_III
-#undef _GEN_IIIT
+#undef GEN_IIIT_IMPL
 #undef GEN_IIIT
-#undef _GEN_IITT
+#undef GEN_IITT_IMPL
 #undef GEN_IITT
-#undef _GEN_IITT
+#undef GEN_IITT_IMPL
 #undef GEN_IITT
 
 #undef GEN_II_
