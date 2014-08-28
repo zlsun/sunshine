@@ -12,7 +12,7 @@ namespace std {
 // macros for generating code
 #define VREF(T) T&
 #define CREF(T) const T&
-#define RULE(name, args...) _##name(VREF, args) _##name(CREF, args)
+#define GEN(name, args...) _##name(VREF, args) _##name(CREF, args)
 
 // for ALGO(Iter, Iter, ...)
 #define _GEN_II(REF, ALGO)                              \
@@ -21,7 +21,7 @@ namespace std {
         -> decltype(std::ALGO(BEG_END(ctn), args...)) { \
              return std::ALGO(BEG_END(ctn), args...);   \
     }
-#define GEN_II(ALGO) RULE(GEN_II, ALGO)
+#define GEN_II(ALGO) GEN(GEN_II, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2...)
 #define _GEN_IIT(REF, ALGO)                                                     \
@@ -30,7 +30,7 @@ namespace std {
         -> decltype(std::ALGO(BEG_END(ctn), begin(tgt), args...)) {             \
              return std::ALGO(BEG_END(ctn), begin(tgt), args...);               \
     }
-#define GEN_IIT(ALGO) RULE(GEN_IIT, ALGO)
+#define GEN_IIT(ALGO) GEN(GEN_IIT, ALGO)
 
 // for ALGO(Iter, Iter, Iter...)
 #define _GEN_III(REF, ALGO)                                             \
@@ -39,7 +39,7 @@ namespace std {
         -> decltype(std::ALGO(begin(ctn), mid, end(ctn), args...)) {    \
              return std::ALGO(begin(ctn), mid, end(ctn), args...);      \
     }
-#define GEN_III(ALGO) RULE(GEN_III, ALGO)
+#define GEN_III(ALGO) GEN(GEN_III, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter1, Iter2...)
 #define _GEN_IIIT(REF, ALGO)                                                                    \
@@ -48,7 +48,7 @@ namespace std {
         -> decltype(std::ALGO(begin(ctn), mid, end(ctn), begin(tgt), args...)) {                \
              return std::ALGO(begin(ctn), mid, end(ctn), begin(tgt), args...);                  \
     }
-#define GEN_IIIT(ALGO) RULE(GEN_IIIT, ALGO)
+#define GEN_IIIT(ALGO) GEN(GEN_IIIT, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2, Iter2...)
 #define _GEN_IITT(REF, ALGO)                                                        \
@@ -57,7 +57,7 @@ namespace std {
         -> decltype(std::ALGO(BEG_END(ctn1), BEG_END(ctn2), args...)) {             \
              return std::ALGO(BEG_END(ctn1), BEG_END(ctn2), args...);               \
     }
-#define GEN_IITT(ALGO) RULE(GEN_IITT, ALGO)
+#define GEN_IITT(ALGO) GEN(GEN_IITT, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2, Iter2, Iter3...)
 #define _GEN_IITTE(REF, ALGO)                                                                           \
@@ -66,7 +66,7 @@ namespace std {
         -> decltype(std::ALGO(BEG_END(ctn1), BEG_END(ctn2), begin(tgt), args...)) {                     \
              return std::ALGO(BEG_END(ctn1), BEG_END(ctn2), begin(tgt), args...);                       \
     }
-#define GEN_IITTE(ALGO) RULE(GEN_IITTE, ALGO)
+#define GEN_IITTE(ALGO) GEN(GEN_IITTE, ALGO)
 
 #define GEN_II_(ALGO)           GEN_II(ALGO);       GEN_IIT(ALGO)
 #define GEN_III_(ALGO)          GEN_III(ALGO);      GEN_IIIT(ALGO)
@@ -172,7 +172,7 @@ inline auto operator << (ContainerT& ctn, size_t n) {
 // undefine all macros for generating code
 #undef REF
 #undef CREF
-#undef RULE
+#undef GEN
 
 #undef _GEN_II
 #undef GEN_II
