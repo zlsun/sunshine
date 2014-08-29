@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
-#include <zalgo.h>
-#include <ztest.h>
+#include "../zalgo.h"
+#include "../ztest.h"
 using namespace std;
 
 test_begin(copy);

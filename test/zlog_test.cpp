@@ -1,6 +1,6 @@
 #include <sstream>
-#include "ztest.h"
-#include "zlog.h"
+#include "../ztest.h"
+#include "../zlog.h"
 using namespace std;
 
 
