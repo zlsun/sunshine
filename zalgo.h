@@ -154,19 +154,22 @@ inline auto
 transform_2(ContainerT_1& ctn1,
             ContainerT_2& ctn2,
             ContainerT_3& tgt,
-            BinaryOperation binary_op){
-    return transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op);
+            BinaryOperation binary_op)
+-> decltype(transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op)) {
+     return transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op);
 }
 
 // shift operators for getting iterator
 template <typename ContainerT>
-inline auto operator >> (ContainerT& ctn, size_t n) {
-    return begin(ctn) + n;
+inline auto operator >> (ContainerT& ctn, size_t n)
+-> decltype(begin(ctn) + n) {
+     return begin(ctn) + n;
 }
 
 template <typename ContainerT>
-inline auto operator << (ContainerT& ctn, size_t n) {
-    return end(ctn) - n;
+inline auto operator << (ContainerT& ctn, size_t n)
+-> decltype(end(ctn) - n) {
+     return end(ctn) - n;
 }
 
 // undefine all macros for generating code
