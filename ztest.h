@@ -9,26 +9,32 @@
 
 static std::vector<std::pair<std::string, bool(*)()>> __tests;
 
-#define test_init() int __passed = 0, __failed = 0
+#define test_init() int __passed = 0, __failed = 0;
 
-#define test_succeed() __failed = 0
+#define test_judge_true(msg) ++__passed;
 
-#define test_failed(msg) (++__failed &&                                                         \
-    std::cout << "(line " << __LINE__ << ") failure #" << __failed << ": "                      \
-              << msg << std::endl)
+#define test_judge_false(msg) ++__failed; std::cout << msg << std::endl;
 
-#define test_true(con) ((con) ? (++__passed) : (++__failed &&                                   \
-    std::cout << "(line " << __LINE__ << ") failure #" << __failed << ": "                      \
-              << #con << std::endl))
+#define test_judge(con, true_msg, false_msg)    \
+    if (con) {                                  \
+        test_judge_true(true_msg)               \
+    } else {                                    \
+        test_judge_false(false_msg)             \
+    }
+
+#define test_succeed() __failed = 0;
+
+#define test_failed(msg) test_judge_false("(line " << __LINE__ << ") failure #" << __failed << ": " << msg)
+
+#define test_true(con) test_judge(con, "", "(line " << __LINE__ << ") failure #" << __failed << ": " << #con)
 
 #define test_false(con) test_true(!(con))
 
-#define test_equal(a, b) ((a) == (b) ? (++__passed) : (++__failed &&                            \
-    std::cout << "(line " << __LINE__ << ") failure #" << __failed << ": "                      \
-              << #a " == " #b " [with (" #a ") = " << (a) << ", (" #b ") = " << (b) << "]"      \
-              << std::endl))
+#define test_equal(a, b) test_judge((a) == (b), "",                                 \
+    "(line " << __LINE__ << ") failure #" << __failed << ": "                       \
+    << #a " == " #b " [with (" #a ") = " << (a) << ", (" #b ") = " << (b) << "]")
 
-#define test_report() (std::cout << "\tPassed: "<< __passed << ", Failed: " << __failed << std::endl)
+#define test_report() std::cout << "\tPassed: "<< __passed << ", Failed: " << __failed << std::endl;
 
 #define test_begin(name)                                        \
     bool name();                                                \
