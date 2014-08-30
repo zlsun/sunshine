@@ -21,6 +21,14 @@ test_begin(sort);
     test_equal(v[2], 3);
 test_end();
 
+test_begin(transform);
+    int array[] {1, 3, 5, 2, 4};
+    transform(array, array, [](int i) { return i + 1; });
+    test_equal(array[1], 4);
+    transform_2(array, array, array, [](int i, int j) { return i + j; });
+    test_equal(array[1], 8);
+test_end();
+
 test_begin(relative_operator);
     const vector<int> v {1, 3, 5, 2, 4};
     test_equal(*(v >> 0), 1);
