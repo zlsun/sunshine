@@ -8,8 +8,9 @@ test_begin(copy);
     const vector<int> v {1, 3, 5, 2, 4};
     vector<int> v2(5);
     copy(v, v2);
-    copy(vector<int> {1, 3, 5, 2, 4}, v2);
     test_equal(v2[1], 3);
+    copy(vector<int> {1, 2, 5, 3, 4}, v2);
+    test_equal(v2[1], 2);
 test_end();
 
 test_begin(sort);
