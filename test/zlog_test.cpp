@@ -20,8 +20,8 @@ test_begin(zlog_test);
     zlogo(ss) vector<int> {1, 2, 3};
     check("[1, 2, 3]\n");
 
-    zlogf("%d %-10d %% %d", ss) 1, 44;
-    check("1 44         %% %d\n");
+    zlogf("%d %-4d %.3f %% %d", ss) 1, 44, 1.0;
+    check("1 44   1.000 %% %d\n");
 
 test_end();
 
