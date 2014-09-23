@@ -143,7 +143,7 @@ GEN_II_         (transform)
 GEN_COPY_II     (unique)
 GEN_II          (upper_bound)
 
-// special case of transform (transform(Iter1, Iter1, Iter2, Iter3, BinaryOperation)), 
+// special case of transform (transform(Iter1, Iter1, Iter2, Iter3, BinaryOperation)),
 // it will confuse with transform(Iter1, Iter1, Iter2, UnaryOperation), so rename it
 // to transform_2
 template <typename ContainerT_1,
@@ -151,8 +151,8 @@ template <typename ContainerT_1,
           typename ContainerT_3,
           typename BinaryOperation>
 inline auto
-transform_2(ContainerT_1& ctn1,
-            ContainerT_2& ctn2,
+transform_2(const ContainerT_1& ctn1,
+            const ContainerT_2& ctn2,
             ContainerT_3& tgt,
             BinaryOperation binary_op)
 -> decltype(transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op)) {

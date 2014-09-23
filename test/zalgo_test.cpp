@@ -28,6 +28,8 @@ test_begin(transform);
     test_equal(array[1], 4);
     transform_2(array, array, array, [](int i, int j) { return i + j; });
     test_equal(array[1], 8);
+    transform_2(vector<int> {1, 2, 5, 3, 4}, array, array, [](int i, int j) { return i + j; });
+    test_equal(array[1], 10);
 test_end();
 
 test_begin(relative_operator);
@@ -36,8 +38,6 @@ test_begin(relative_operator);
     test_equal(*(v >> 2), 5);
     test_equal(*(v << 2), 2);
     test_equal(*(v << 1), 4);
-    const vector<int> v2 {};
-    test_true(*(v >> 0));
 test_end();
 
 test_main();

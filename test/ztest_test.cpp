@@ -11,6 +11,9 @@ test_begin(ztest_test);
     test_equal(__failed, 2);
     test_equal(1 + 1, 1 + 2);
     test_equal(__failed, 3);
+    if (__failed == 3) {
+        test_succeed();
+    }
 test_end();
 
 test_main();

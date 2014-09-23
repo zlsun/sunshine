@@ -51,7 +51,7 @@ static std::vector<std::pair<std::string, bool(*)()>> __tests;
 #define test_end()                                              \
         test_report();                                          \
         return __failed != 0;                                   \
-    } //
+    }
 
 void test_run() {
     using namespace std;
@@ -79,6 +79,6 @@ void test_run() {
         test_run();                             \
         std::getchar();                         \
         return 0;                               \
-    } //
+    }
 
 #endif // ZTEST_H

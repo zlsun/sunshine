@@ -4,7 +4,7 @@ tests := $(addsuffix _test, $(tests))
 
 CPPFLAGS += -std=c++11
 
-all:
+all: $(tests)
 	@$(foreach t,$(tests),./$(t);)
 
 .PHONY: all
