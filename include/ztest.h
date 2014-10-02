@@ -32,18 +32,18 @@ static std::vector<std::pair<std::string, bool(*)()>> __tests;
 
 #define test_equal(a, b) test_judge((a) == (b), "",                                 \
     "(line " << __LINE__ << ") failure #" << __failed << ": "                       \
-    << #a " == " #b " [with (" #a ") = " << (a) << ", (" #b ") = " << (b) << "]")
+    << #a " == " #b ", with\n\t" #a " = " << (a) << "\n\t" #b " = " << (b) << "")
 
 #define test_report() std::cout << "\tPassed: "<< __passed << ", Failed: " << __failed << std::endl;
 
 #define test_begin(name)                                        \
-    bool name();                                                \
+    bool __test_##name();                                       \
     struct __struct_##name {                                    \
         __struct_##name() {                                     \
-            __tests.push_back({#name, name});                   \
+            __tests.push_back({#name, __test_##name});          \
         }                                                       \
     } __struct_##name;                                          \
-    bool name() {                                               \
+    bool __test_##name() {                                      \
         std::cout << "=======================\n"                \
                   << "Test: " #name << std::endl;               \
         test_init()

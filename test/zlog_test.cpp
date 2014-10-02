@@ -1,8 +1,7 @@
 #include <sstream>
-#include "../ztest.h"
-#include "../zlog.h"
+#include "../include/ztest.h"
+#include "../include/zlog.h"
 using namespace std;
-
 
 test_begin(zlog_test);
     ostringstream ss;
@@ -20,8 +19,14 @@ test_begin(zlog_test);
     zlogo(ss) vector<int> {1, 2, 3};
     check("[1, 2, 3]\n");
 
-    zlogf("%d %-4d %.3f %% %d", ss) 1, 44, 1.0;
-    check("1 44   1.000 %% %d\n");
+    zlogf("%1% %2% %3% %%", ss) 1, 44, 1.0;
+    check("1 44 1 %\n");
+
+    zlogf("%d %-4d %.3f %%", ss) 1, 44, 1.0;
+    check("1 44   1.000 %\n");
+
+    zlogf("%1$d %2$-4d %3$.3f %%", ss) 1, 44, 1.0;
+    check("1 44   1.000 %\n");
 
 test_end();
 

@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cctype>
+#include <boost/format.hpp>
 
 namespace zlsun {
 
@@ -19,7 +20,6 @@ private:
     std::ostream& out;
 
 public:
-
     Logger(std::ostream& out = std::cout): out(out), space(false) {}
 
     ~Logger() {
@@ -71,72 +71,29 @@ public:
 class FormatLogger {
 private:
     std::ostream& out;
+    boost::format formatter;
+
 public:
-    FormatLogger(const char* format, std::ostream& out = std::cout): out(out) {
-        int size = std::strlen(format);
-        buffer = new char[size];
-        std::strcpy(buffer, format);
-    }
+    FormatLogger(const char* format, std::ostream& out = std::cout):
+        out(out), formatter(format) {}
+
     ~FormatLogger() {
-        out << buffer << std::endl;
-        delete[] buffer;
+        out << formatter << std::endl;
     }
+
     template <typename T>
     FormatLogger& operator , (const T& t) {
-        int size = std::strlen(buffer);
-        char* new_buffer = new char[size * 2];
-        std::memset(new_buffer, 0, size * 2);
-        generate(new_buffer, buffer, t);
-        std::swap(new_buffer, buffer);
-        delete[] new_buffer;
+        formatter % t;
         return *this;
     }
-private:
-    bool valid(char c) {
-        static const char list[] = "dcfl";
-        for (int i = 0; i < std::strlen(list); ++i)
-            if (c == list[i])
-                return true;
-        return false;
-    }
-    template <typename T>
-    void generate(char* new_buffer, char* format, const T& t) {
-        bool first = true;
-        while (char c = *format++) {
-            if (first && c == '%' && format && *format != '%') {
-                char* fmt = new char[100];
-                std::memset(fmt, 0, 100);
-                char* pfmt = fmt;
-                *pfmt++ = c;
-                while (format && !valid(*format)) {
-                    *pfmt++ = *format++;
-                }
-                char* buf;
-                if (format) {
-                    *pfmt++ = *format++;
-                    buf = new char[100];
-                    std::memset(buf, 0, 100);
-                    std::sprintf(buf, fmt, t);
-                    delete[] fmt;
-                } else {
-                    buf = fmt;
-                }
-                std::strcat(new_buffer, buf);
-                new_buffer += std::strlen(buf);
-                delete[] buf;
-                first = false;
-            } else {
-                *new_buffer++ = c;
-            }
-        }
-    }
-private:
-    char* buffer;
+
 };
 
 template <typename SequenceT>
-std::ostream& print_sequence(std::ostream& out, const SequenceT& seq) {
-    if (seq.size() == 0) return out << "[]";
+std::ostream& printSequence(std::ostream& out, const SequenceT& seq) {
+    if (seq.size() == 0) {
+        return out << "[]";
+    }
     auto it = seq.begin(), end = seq.end();
     out << "[" << *it;
     while (++it != end)
@@ -146,8 +103,10 @@ std::ostream& print_sequence(std::ostream& out, const SequenceT& seq) {
 }
 
 template <typename MapT>
-std::ostream& print_map(std::ostream& out, const MapT& map) {
-    if (map.size() == 0) return out << "{}";
+std::ostream& printMap(std::ostream& out, const MapT& map) {
+    if (map.size() == 0) {
+        return out << "{}";
+    }
     auto it = map.begin();
     out << "{" << it->first << ": " << it->second;
     while (++it != map.end())
@@ -160,17 +119,17 @@ std::ostream& print_map(std::ostream& out, const MapT& map) {
 
 template <typename T>
 std::ostream& operator << (std::ostream& out, const std::vector<T>& vec) {
-    return zlsun::print_sequence(out, vec);
+    return zlsun::printSequence(out, vec);
 }
 
 template <typename T>
 std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils) {
-    return zlsun::print_sequence(out, ils);
+    return zlsun::printSequence(out, ils);
 }
 
 template <typename K, typename V>
 std::ostream& operator << (std::ostream& out, const std::map<K, V>& map) {
-    return zlsun::print_map(out, map);
+    return zlsun::printMap(out, map);
 }
 
 #ifdef NDEBUG

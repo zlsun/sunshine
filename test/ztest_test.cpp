@@ -1,4 +1,4 @@
-#include "../ztest.h"
+#include "../include/ztest.h"
 
 test_begin(ztest_test);
     test_true(1 == 1);

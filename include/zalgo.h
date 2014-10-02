@@ -15,54 +15,54 @@ namespace std {
 #define GEN(name, args...) name##_IMPL(VREF, args) name##_IMPL(CREF, args)
 
 // for ALGO(Iter, Iter, ...)
-#define GEN_II_IMPL(REF, ALGO)                          \
+#define GEN_II_IMPL(IN, ALGO)                           \
     template <typename ContainerT, typename... Args>    \
-    inline auto ALGO(REF(ContainerT) ctn, Args... args) \
+    inline auto ALGO(IN(ContainerT) ctn, Args... args)  \
         -> decltype(std::ALGO(BEG_END(ctn), args...)) { \
              return std::ALGO(BEG_END(ctn), args...);   \
     }
 #define GEN_II(ALGO) GEN(GEN_II, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2...)
-#define GEN_IIT_IMPL(REF, ALGO)                                                 \
+#define GEN_IIT_IMPL(IN, ALGO)                                                  \
     template <typename ContainerT_1, typename ContainerT_2, typename... Args>   \
-    inline auto ALGO(REF(ContainerT_1) ctn, ContainerT_2& tgt, Args... args)    \
+    inline auto ALGO(IN(ContainerT_1) ctn, ContainerT_2& tgt, Args... args)     \
         -> decltype(std::ALGO(BEG_END(ctn), begin(tgt), args...)) {             \
              return std::ALGO(BEG_END(ctn), begin(tgt), args...);               \
     }
 #define GEN_IIT(ALGO) GEN(GEN_IIT, ALGO)
 
 // for ALGO(Iter, Iter, Iter...)
-#define GEN_III_IMPL(REF, ALGO)                                         \
+#define GEN_III_IMPL(IN, ALGO)                                          \
     template <typename ContainerT, typename Iter, typename... Args>     \
-    inline auto ALGO(REF(ContainerT) ctn, Iter mid, Args... args)       \
+    inline auto ALGO(IN(ContainerT) ctn, Iter mid, Args... args)        \
         -> decltype(std::ALGO(begin(ctn), mid, end(ctn), args...)) {    \
              return std::ALGO(begin(ctn), mid, end(ctn), args...);      \
     }
 #define GEN_III(ALGO) GEN(GEN_III, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter1, Iter2...)
-#define GEN_IIIT_IMPL(REF, ALGO)                                                                \
+#define GEN_IIIT_IMPL(IN, ALGO)                                                                 \
     template <typename ContainerT_1, typename Iter, typename ContainerT_2, typename... Args>    \
-    inline auto ALGO(REF(ContainerT_1) ctn, Iter mid, ContainerT_2& tgt, Args... args)          \
+    inline auto ALGO(IN(ContainerT_1) ctn, Iter mid, ContainerT_2& tgt, Args... args)           \
         -> decltype(std::ALGO(begin(ctn), mid, end(ctn), begin(tgt), args...)) {                \
              return std::ALGO(begin(ctn), mid, end(ctn), begin(tgt), args...);                  \
     }
 #define GEN_IIIT(ALGO) GEN(GEN_IIIT, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2, Iter2...)
-#define GEN_IITT_IMPL(REF, ALGO)                                                    \
+#define GEN_IITT_IMPL(IN, ALGO)                                                     \
     template <typename ContainerT_1, typename ContainerT_2, typename... Args>       \
-    inline auto ALGO(REF(ContainerT_1) ctn1, REF(ContainerT_2) ctn2, Args... args)  \
+    inline auto ALGO(IN(ContainerT_1) ctn1, IN(ContainerT_2) ctn2, Args... args)    \
         -> decltype(std::ALGO(BEG_END(ctn1), BEG_END(ctn2), args...)) {             \
              return std::ALGO(BEG_END(ctn1), BEG_END(ctn2), args...);               \
     }
 #define GEN_IITT(ALGO) GEN(GEN_IITT, ALGO)
 
 // for ALGO(Iter1, Iter1, Iter2, Iter2, Iter3...)
-#define GEN_IITTE_IMPL(REF, ALGO)                                                                       \
+#define GEN_IITTE_IMPL(IN, ALGO)                                                                        \
     template <typename ContainerT_1, typename ContainerT_2, typename ContainerT_3, typename... Args>    \
-    inline auto ALGO(REF(ContainerT_1) ctn1, REF(ContainerT_2) ctn2, ContainerT_3& tgt, Args... args)   \
+    inline auto ALGO(IN(ContainerT_1) ctn1, IN(ContainerT_2) ctn2, ContainerT_3& tgt, Args... args)     \
         -> decltype(std::ALGO(BEG_END(ctn1), BEG_END(ctn2), begin(tgt), args...)) {                     \
              return std::ALGO(BEG_END(ctn1), BEG_END(ctn2), begin(tgt), args...);                       \
     }
@@ -146,16 +146,19 @@ GEN_II          (upper_bound)
 // special case of transform (transform(Iter1, Iter1, Iter2, Iter3, BinaryOperation)),
 // it will confuse with transform(Iter1, Iter1, Iter2, UnaryOperation), so rename it
 // to transform_2
-template <typename ContainerT_1,
-          typename ContainerT_2,
-          typename ContainerT_3,
-          typename BinaryOperation>
-inline auto
-transform_2(const ContainerT_1& ctn1,
-            const ContainerT_2& ctn2,
-            ContainerT_3& tgt,
-            BinaryOperation binary_op)
--> decltype(transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op)) {
+template <
+    typename ContainerT_1,
+    typename ContainerT_2,
+    typename ContainerT_3,
+    typename BinaryOperation
+>
+inline auto transform_2(
+    const ContainerT_1& ctn1,
+    const ContainerT_2& ctn2,
+          ContainerT_3& tgt,
+    BinaryOperation binary_op
+)
+-> decltype(transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op)){
      return transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op);
 }
 
@@ -173,7 +176,7 @@ inline auto operator << (ContainerT& ctn, size_t n)
 }
 
 // undefine all macros for generating code
-#undef REF
+#undef VREF
 #undef CREF
 #undef GEN
 

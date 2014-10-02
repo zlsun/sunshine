@@ -1,13 +1,13 @@
-#ifndef OJ_H
-#define OJ_H
+#ifndef ZFIO_H
+#define ZFIO_H
 
 #include <iostream> // Don't delete this line!
 #include <fstream>
 
 namespace std {
 
-ifstream fin("in.txt");
-ofstream fout("out.txt");
+ifstream fin(IN_FILE);
+ofstream fout(OUT_FILE);
 
 }
 
@@ -16,4 +16,4 @@ ofstream fout("out.txt");
 
 #include "zlog.h"
 
-#endif // OJ_H
+#endif // ZFIO_H

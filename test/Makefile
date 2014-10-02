@@ -1,5 +1,5 @@
 
-tests := zalgo zlog zrequire ztest
+tests := zalgo zassert zlog ztest
 tests := $(addsuffix _test, $(tests))
 
 CPPFLAGS += -std=c++11
