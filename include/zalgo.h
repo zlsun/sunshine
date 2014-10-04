@@ -143,7 +143,7 @@ GEN_II_         (transform)
 GEN_COPY_II     (unique)
 GEN_II          (upper_bound)
 
-// wrapped function of transform(Iter1, Iter1, Iter2, Iter3, BinaryOperation),
+// wrapper function of transform(Iter1, Iter1, Iter2, Iter3, BinaryOperation),
 // it can be confused with transform(Iter1, Iter1, Iter2, UnaryOperation),
 // so rename it to transform_2
 template <
