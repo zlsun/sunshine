@@ -74,6 +74,6 @@ inline Assert makeAssert(bool needAbort, const char* msg) {
         zlsun::makeAssert(false, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
 #endif
 
-} // zlsun
+} // namespace zlsun
 
 #endif // ZREQUIRE_H

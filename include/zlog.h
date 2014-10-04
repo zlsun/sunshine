@@ -115,7 +115,7 @@ std::ostream& printMap(std::ostream& out, const MapT& map) {
     return out;
 }
 
-}
+} // namespace zlsun
 
 template <typename T>
 std::ostream& operator << (std::ostream& out, const std::vector<T>& vec) {

@@ -202,6 +202,6 @@ inline auto operator << (ContainerT& ctn, size_t n)
 #undef GEN_COPY_III
 #undef GEN_COPYIF_II
 
-}
+} // namespace std
 
 #endif // ZALGO_H
