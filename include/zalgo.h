@@ -12,7 +12,7 @@ namespace std {
 // macros for generating code
 #define VREF(T) T&
 #define CREF(T) const T&
-#define GEN(name, args...) name##_IMPL(VREF, args) name##_IMPL(CREF, args)
+#define GEN(NAME, ALGO) NAME##_IMPL(VREF, ALGO) NAME##_IMPL(CREF, ALGO)
 
 // for ALGO(Iter, Iter, ...)
 #define GEN_II_IMPL(IN, ALGO)                           \
