@@ -1,6 +1,6 @@
 
-tests := zalgo zassert zlog ztest
-tests := $(addsuffix _test, $(tests))
+tests := $(wildcard *_test.cpp)
+tests := $(patsubst %.cpp, %, $(tests))
 
 CPPFLAGS += -std=c++11
 
