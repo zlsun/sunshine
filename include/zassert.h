@@ -7,7 +7,7 @@
 #include <fstream>
 #include <cstdlib>
 
-namespace zlsun {
+namespace zl {
 
 class NullAssert {
 public:
@@ -62,18 +62,18 @@ inline Assert makeAssert(bool needAbort, const char* msg) {
 
 #ifdef NDEBUG
 # define __SMART_ASSERT_OP(x, next) __SMART_ASSERT_##next
-# define SMART_ASSERT(expr) zlsun::NullAssert().__SMART_ASSERT_A
-# define SMART_ASSERT_NOABORT(expr) zlsun::NullAssert().__SMART_ASSERT_A
+# define SMART_ASSERT(expr) zl::NullAssert().__SMART_ASSERT_A
+# define SMART_ASSERT_NOABORT(expr) zl::NullAssert().__SMART_ASSERT_A
 #else
 # define __SMART_ASSERT_OP(x, next) printValue(#x, (x)).__SMART_ASSERT_##next
 # define SMART_ASSERT(expr)  \
     if (!(expr))             \
-        zlsun::makeAssert(true, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
+        zl::makeAssert(true, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
 # define SMART_ASSERT_NOABORT(expr)  \
     if (!(expr))             \
-        zlsun::makeAssert(false, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
+        zl::makeAssert(false, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
 #endif
 
-} // namespace zlsun
+} // namespace zl
 
 #endif // ZREQUIRE_H

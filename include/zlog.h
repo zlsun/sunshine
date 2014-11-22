@@ -12,7 +12,7 @@
 #include <cctype>
 #include <boost/format.hpp>
 
-namespace zlsun {
+namespace zl {
 
 class Logger {
 private:
@@ -115,21 +115,21 @@ std::ostream& printMap(std::ostream& out, const MapT& map) {
     return out;
 }
 
-} // namespace zlsun
+} // namespace zl
 
 template <typename T>
 std::ostream& operator << (std::ostream& out, const std::vector<T>& vec) {
-    return zlsun::printSequence(out, vec);
+    return zl::printSequence(out, vec);
 }
 
 template <typename T>
 std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils) {
-    return zlsun::printSequence(out, ils);
+    return zl::printSequence(out, ils);
 }
 
 template <typename K, typename V>
 std::ostream& operator << (std::ostream& out, const std::map<K, V>& map) {
-    return zlsun::printMap(out, map);
+    return zl::printMap(out, map);
 }
 
 #ifdef NDEBUG
@@ -137,9 +137,9 @@ std::ostream& operator << (std::ostream& out, const std::map<K, V>& map) {
 # define zlogo(out)     //
 # define zlogf(format)  //
 #else
-# define zlog           zlsun::Logger(),
-# define zlogo(out)     (zlsun::Logger(out)),
-# define zlogf(args...) zlsun::FormatLogger(args),
+# define zlog           zl::Logger(),
+# define zlogo(out)     (zl::Logger(out)),
+# define zlogf(args...) zl::FormatLogger(args),
 #endif
 
 #endif // ZLOG_H
