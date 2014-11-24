@@ -1,3 +1,3 @@
 sunlib
 ===========
-A collection of useful macro-based utilities.
+A collection of useful utilities.
