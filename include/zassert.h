@@ -66,11 +66,11 @@ inline Assert makeAssert(bool needAbort, const char* msg) {
 # define SMART_ASSERT_NOABORT(expr) zl::NullAssert().__SMART_ASSERT_A
 #else
 # define __SMART_ASSERT_OP(x, next) printValue(#x, (x)).__SMART_ASSERT_##next
-# define SMART_ASSERT(expr)  \
-    if (!(expr))             \
+# define SMART_ASSERT(expr) \
+    if (!(expr))            \
         zl::makeAssert(true, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
-# define SMART_ASSERT_NOABORT(expr)  \
-    if (!(expr))             \
+# define SMART_ASSERT_NOABORT(expr) \
+    if (!(expr))                    \
         zl::makeAssert(false, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
 #endif
 
