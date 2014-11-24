@@ -31,10 +31,10 @@ static std::vector<std::pair<std::string, bool(*)()>> __tests;
 #define test_false(con) test_true(!(con))
 
 #define test_equal(a, b) test_judge((a) == (b), "",                                 \
-    "(line " << __LINE__ << ") failure #" << __failed << ": "                       \
+    "(line " << __LINE__ << ") failure #" << __failed << ":\n"                       \
     << #a " == " #b ", with\n\t" #a " = " << (a) << "\n\t" #b " = " << (b) << "")
 
-#define test_report() std::cout << "\tPassed: "<< __passed << ", Failed: " << __failed << std::endl;
+#define test_report() std::cout << "Passed: "<< __passed << ", Failed: " << __failed << std::endl;
 
 #define test_begin(name)                                        \
     bool __test_##name();                                       \
@@ -63,15 +63,17 @@ void test_run() {
             passed_tests.push_back(p.first);
         }
     }
-    cout << "\n***********************" << endl;
+    cout << "***********************" << endl;
     cout << passed_tests.size() << " tests passed:" << endl;
     for (auto p : passed_tests) {
-        cout << "\t" << p << endl;
+        cout << "  " << p;
     }
+    cout << endl;
     cout << failed_tests.size() << " tests failed:" << endl;
     for (auto p : failed_tests) {
-        cout << "\t" << p << endl;
+        cout << "  " << p << endl;
     }
+    cout << endl;
 }
 
 #define test_main()                             \
