@@ -26,6 +26,15 @@ public:
         out << std::endl;
     }
 
+    template <typename T>
+    Logger& operator , (const T& t) {
+        if (space) out << " ";
+        else space = true;
+        out << t;
+        return *this;
+    }
+
+    // add support for array because it's ambiguous to overloading 'operator<<' for array
     template <typename T, size_t N>
     Logger& operator , (const T (&array)[N]) {
         if (space) out << " ";
@@ -42,27 +51,12 @@ public:
         return *this;
     }
 
+    // special case of const T (&array)[N], print the string directly
     template <size_t N>
     Logger& operator , (const char (&string)[N]) {
         if (space) out << " ";
         else space = true;
         out << string;
-        return *this;
-    }
-
-    template <typename T>
-    Logger& operator , (const T& t) {
-        if (space) out << " ";
-        else space = true;
-        out << t;
-        return *this;
-    }
-
-    template <typename T>
-    Logger& operator , (const std::initializer_list<T>& ils) {
-        if (space) out << " ";
-        else space = true;
-        out << ils;
         return *this;
     }
 
