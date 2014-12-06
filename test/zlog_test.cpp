@@ -7,9 +7,9 @@ test_begin(zlog_test);
     ostringstream ss;
     string s;
 
-    #define check(valid)       \
+    #define check(right)       \
         s = ss.str();          \
-        test_equal(s, valid);  \
+        test_equal(s, right);  \
         s.clear();             \
         ss.str(s);
 
