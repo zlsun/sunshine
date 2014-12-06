@@ -96,8 +96,9 @@ std::ostream& printSequence(std::ostream& out, const SequenceT& seq) {
     }
     auto it = seq.begin(), end = seq.end();
     out << "[" << *it;
-    while (++it != end)
+    while (++it != end) {
         out << ", " << *it;
+    }
     out << "]";
     return out;
 }
@@ -109,8 +110,9 @@ std::ostream& printMap(std::ostream& out, const MapT& map) {
     }
     auto it = map.begin();
     out << "{" << it->first << ": " << it->second;
-    while (++it != map.end())
+    while (++it != map.end()) {
         out << ", " << it->first << ": " << it->second;
+    }
     out << "}";
     return out;
 }
@@ -125,6 +127,11 @@ std::ostream& operator << (std::ostream& out, const std::vector<T>& vec) {
 template <typename T>
 std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils) {
     return zl::printSequence(out, ils);
+}
+
+template <typename K, typename V>
+std::ostream& operator << (std::ostream& out, const std::pair<K, V>& p) {
+    return out << "<" << p.first << ", " << p.second << ">";
 }
 
 template <typename K, typename V>
