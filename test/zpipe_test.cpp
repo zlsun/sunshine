@@ -24,6 +24,9 @@ test_begin(zpipe);
     string vt = ifrom(vs) | iconcat('|');
     test_equal(vt, "1|2|3");
 
+    string vr = ifrom(vs) | iconcat('|', 2);
+    test_equal(vr, "1||2||3");
+
     int A[] {1, 2, 3, 4, 5};
     int m = ifrom(A + 2, A + 3) | isum();
     test_equal(m, 3);

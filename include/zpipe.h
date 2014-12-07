@@ -198,8 +198,8 @@ template <typename R, typename T>
 Concat<T, R> iconcat(const T& t) {
     return Concat<T, R>(t);
 }
-Concat<string, string> iconcat(char c) {
-    return iconcat<string, string>(string(1, c));
+Concat<string, string> iconcat(char c, int n = 1) {
+    return iconcat<string, string>(string(n, c));
 }
 Concat<string, string> iconcat(const char* s) {
     return iconcat<string, string>(string(s));
