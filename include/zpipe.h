@@ -61,8 +61,7 @@ Enum<const char*> ifrom(const char* s) {
 
 struct ToVector {
     template <typename E>
-    vector<typename E::T> operator () (E& e) const
-    {
+    vector<typename E::T> operator () (E& e) const {
         vector<typename E::T> v;
         while (!e.over()) {
             v.push_back(e.current());
