@@ -2,4 +2,7 @@
 test:
 	@cd ./test;make
 
-.PHONY: test
+clean:
+	@cd ./test;make clean
+
+.PHONY: test clean

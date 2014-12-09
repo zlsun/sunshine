@@ -1,10 +1,14 @@
 
-tests := $(wildcard *_test.cpp)
-tests := $(patsubst %.cpp, %, $(tests))
+cpps := $(wildcard *_test.cpp) ../src/ztest.cpp
+objs := $(patsubst %.cpp, %.o, $(cpps))
 
-CPPFLAGS += -std=c++11
+CXXFLAGS += -std=c++11
 
-all: $(tests)
-	@$(foreach t,$(tests),./$(t);)
+test_main: $(objs)
+	gcc $^ -o main -lstdc++
+	./main
 
-.PHONY: all
+clean:
+	$(RM) $(objs) *.exe
+
+.PHONY: clean

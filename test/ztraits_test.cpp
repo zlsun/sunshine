@@ -3,12 +3,10 @@
 
 using namespace zl;
 
-test_begin(ztraits_test);
+TEST(ztraits)
     auto f1 = [](int a) {};
     auto f2 = [](int a, int b) {};
-    test_equal(is_unary_function<decltype(f1)>::value, true);
-    test_equal(is_unary_function<decltype(f2)>::value, false);
-    test_equal(is_binary_function<decltype(f2)>::value, true);
-test_end();
-
-test_main();
+    EQUAL(is_unary_function<decltype(f1)>::value, true)
+    EQUAL(is_unary_function<decltype(f2)>::value, false)
+    EQUAL(is_binary_function<decltype(f2)>::value, true)
+END
