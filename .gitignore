@@ -15,6 +15,7 @@ $RECYCLE.BIN/
 *.msp
 
 *.exe
+*.o
 
 # Thumbnails
 ._*
