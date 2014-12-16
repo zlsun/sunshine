@@ -68,14 +68,14 @@ namespace std {
     }
 #define GEN_IITTE(ALGO) GEN(GEN_IITTE, ALGO)
 
-#define GEN_II_(ALGO)           GEN_II(ALGO)       GEN_IIT(ALGO)
-#define GEN_III_(ALGO)          GEN_III(ALGO)      GEN_IIIT(ALGO)
-#define GEN_IITT_(ALGO)         GEN_IITT(ALGO)     GEN_IITTE(ALGO)
+#define GEN_IIX(ALGO)           GEN_II(ALGO)       GEN_IIT(ALGO)
+#define GEN_IIIX(ALGO)          GEN_III(ALGO)      GEN_IIIT(ALGO)
+#define GEN_IITTX(ALGO)         GEN_IITT(ALGO)     GEN_IITTE(ALGO)
 #define GEN_IF_II(ALGO)         GEN_II(ALGO)       GEN_II(ALGO##_if)
-#define GEN_IF_II_(ALGO)        GEN_II_(ALGO)      GEN_II_(ALGO##_if)
-#define GEN_COPY_II(ALGO)       GEN_II(ALGO)       GEN_II_(ALGO##_copy)
-#define GEN_COPY_III(ALGO)      GEN_III(ALGO)      GEN_III_(ALGO##_copy)
-#define GEN_COPYIF_II(ALGO)     GEN_COPY_II(ALGO)  GEN_II(ALGO##_if)     GEN_II_(ALGO##_copy_if)
+#define GEN_IF_IIX(ALGO)        GEN_IIX(ALGO)      GEN_IIX(ALGO##_if)
+#define GEN_COPY_II(ALGO)       GEN_II(ALGO)       GEN_IIX(ALGO##_copy)
+#define GEN_COPY_III(ALGO)      GEN_III(ALGO)      GEN_IIIX(ALGO##_copy)
+#define GEN_COPYIF_II(ALGO)     GEN_COPY_II(ALGO)  GEN_II(ALGO##_if)     GEN_IIX(ALGO##_copy_if)
 
 // generate algorithm wrapper functions
 
@@ -83,10 +83,10 @@ GEN_II          (adjacent_find)
 GEN_II          (all_of)
 GEN_II          (any_of)
 GEN_II          (binary_search)
-GEN_IF_II_      (copy)
-GEN_II_         (copy_backward)
+GEN_IF_IIX      (copy)
+GEN_IIX         (copy_backward)
 GEN_IF_II       (count)
-GEN_II_         (equal)
+GEN_IIX         (equal)
 GEN_II          (equal_range)
 GEN_II          (fill)
 GEN_IF_II       (find)
@@ -100,17 +100,17 @@ GEN_III         (inplace_merge)
 GEN_II          (is_heap)
 GEN_II          (is_heap_until)
 GEN_II          (is_partitioned)
-GEN_II_         (is_permutation)
+GEN_IIX         (is_permutation)
 GEN_II          (is_sorted)
 GEN_II          (is_sorted_until)
 GEN_IITT        (lexicographical_compare)
 GEN_II          (lower_bound)
 GEN_II          (make_heap)
 GEN_II          (max_element)
-GEN_IITT_       (merge)
+GEN_IITTX       (merge)
 GEN_II          (min_element)
 GEN_II          (minmax_element)
-GEN_II_         (mismatch)
+GEN_IIX         (mismatch)
 GEN_II          (next_permutation)
 GEN_II          (none_of)
 GEN_III         (nth_element)
@@ -129,17 +129,17 @@ GEN_COPY_II     (reverse)
 GEN_COPY_III    (rotate)
 GEN_IITT        (search)
 GEN_II          (search_n)
-GEN_IITT_       (set_difference)
-GEN_IITT_       (set_intersection)
-GEN_IITT_       (set_symmetric_difference)
-GEN_IITT_       (set_union)
+GEN_IITTX       (set_difference)
+GEN_IITTX       (set_intersection)
+GEN_IITTX       (set_symmetric_difference)
+GEN_IITTX       (set_union)
 GEN_II          (shuffle)
 GEN_II          (sort)
 GEN_II          (sort_heap)
 GEN_II          (stable_partition)
 GEN_II          (stable_sort)
-GEN_II_         (swap_ranges)
-GEN_II_         (transform)
+GEN_IIX         (swap_ranges)
+GEN_IIX         (transform)
 GEN_COPY_II     (unique)
 GEN_II          (upper_bound)
 
@@ -193,11 +193,11 @@ inline auto operator << (ContainerT& ctn, size_t n)
 #undef GEN_IITT_IMPL
 #undef GEN_IITT
 
-#undef GEN_II_
-#undef GEN_III_
-#undef GEN_IITT_
+#undef GEN_IIX
+#undef GEN_IIIX
+#undef GEN_IITTX
 #undef GEN_IF_II
-#undef GEN_IF_II_
+#undef GEN_IF_IIX
 #undef GEN_COPY_II
 #undef GEN_COPY_III
 #undef GEN_COPYIF_II
