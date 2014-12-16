@@ -68,14 +68,14 @@ namespace std {
     }
 #define GEN_IITTE(ALGO) GEN(GEN_IITTE, ALGO)
 
-#define GEN_II_(ALGO)           GEN_II(ALGO);       GEN_IIT(ALGO)
-#define GEN_III_(ALGO)          GEN_III(ALGO);      GEN_IIIT(ALGO)
-#define GEN_IITT_(ALGO)         GEN_IITT(ALGO);     GEN_IITTE(ALGO)
-#define GEN_IF_II(ALGO)         GEN_II(ALGO);       GEN_II(ALGO##_if)
-#define GEN_IF_II_(ALGO)        GEN_II_(ALGO);      GEN_II_(ALGO##_if)
-#define GEN_COPY_II(ALGO)       GEN_II(ALGO);       GEN_II_(ALGO##_copy)
-#define GEN_COPY_III(ALGO)      GEN_III(ALGO);      GEN_III_(ALGO##_copy)
-#define GEN_COPYIF_II(ALGO)     GEN_COPY_II(ALGO);  GEN_II(ALGO##_if);     GEN_II_(ALGO##_copy_if)
+#define GEN_II_(ALGO)           GEN_II(ALGO)       GEN_IIT(ALGO)
+#define GEN_III_(ALGO)          GEN_III(ALGO)      GEN_IIIT(ALGO)
+#define GEN_IITT_(ALGO)         GEN_IITT(ALGO)     GEN_IITTE(ALGO)
+#define GEN_IF_II(ALGO)         GEN_II(ALGO)       GEN_II(ALGO##_if)
+#define GEN_IF_II_(ALGO)        GEN_II_(ALGO)      GEN_II_(ALGO##_if)
+#define GEN_COPY_II(ALGO)       GEN_II(ALGO)       GEN_II_(ALGO##_copy)
+#define GEN_COPY_III(ALGO)      GEN_III(ALGO)      GEN_III_(ALGO##_copy)
+#define GEN_COPYIF_II(ALGO)     GEN_COPY_II(ALGO)  GEN_II(ALGO##_if)     GEN_II_(ALGO##_copy_if)
 
 // generate algorithm wrapper functions
 
