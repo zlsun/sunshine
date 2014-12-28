@@ -1,5 +1,8 @@
 // clone from https://github.com/kennytm/utils/blob/master/traits.hpp
 
+#ifndef ZTRAITS_H
+#define ZTRAITS_H
+
 #include <tuple>
 #include <functional>
 #include <type_traits>
@@ -139,17 +142,16 @@ struct function_traits<volatile T&&> : public function_traits<T> {};
 template <typename T>
 struct function_traits<const volatile T&&> : public function_traits<T> {};
 
-
 template <typename Op>
 struct is_unary_function {
     enum { value = function_traits<Op>::arity == 1 };
 };
-
 
 template <typename Op>
 struct is_binary_function {
     enum { value = function_traits<Op>::arity == 2 };
 };
 
-
 } // namespace zl
+
+#endif // ZTRAITS_H

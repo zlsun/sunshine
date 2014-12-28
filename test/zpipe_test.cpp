@@ -13,24 +13,62 @@ TEST(zpipe)
                return (i + 1) * 2;
            })
            | to_vector;
-    EQUAL(u, (vector<int> {4, 8}));
-    EQUAL(ifrom(u) | isum(), 12);
+    EQUAL(u, (vector<int> {4, 8}))
+    EQUAL(ifrom(u) | isum(), 12)
 
     const char* s = "ABC";
-    string t = ifrom(s) | iconcat(", ");
-    EQUAL(t, "A, B, C")
+    EQUAL(ifrom(s) | iconcat(", "), "A, B, C")
 
     vector<string> vs {"1", "2", "3"};
-    string vt = ifrom(vs) | iconcat('|');
-    EQUAL(vt, "1|2|3")
+    EQUAL(ifrom(vs) | iconcat('|'), "1|2|3")
 
-    string vr = ifrom(vs) | iconcat('|', 2);
-    EQUAL(vr, "1||2||3")
+    EQUAL(ifrom(vs) | iconcat('|', 2), "1||2||3")
 
     int A[] {1, 2, 3, 4, 5};
-    int m = ifrom(A + 2, A + 3) | isum();
-    EQUAL(m, 3)
+    EQUAL(ifrom(A + 2, A + 3) | isum(), 3)
 
     EQUAL(ifrom({1, 2, 2, 4}) | icount(2), 2)
 
+    EQUAL(ifrom({1, 2, 3, 0}) | iall([](int i) {
+      return i > 0;
+    }), false)
+
+    EQUAL(ifrom({1, 2, 3, 0}) | iany([](int i) {
+      return i == 0;
+    }), true)
+
+    EQUAL(irepeat(1, 10) | isum(), 10)
+END
+
+TEST(zpipe_range)
+    EQUAL(irange(10) | isum(), 45)
+    EQUAL(irange(2, 10) | isum(), 44)
+    EQUAL(irange(1, 10, 2) | isum(), 25)
+    EQUAL(irange(10, 1, -2) | isum(), 30)
+    EQUAL(irange('a', 'c' + 1) | iconcat('|'), "a|b|c")
+END
+
+TEST(zpipe_print)
+    ostringstream ss;
+    string s;
+
+    #define check(right) \
+        s = ss.str();    \
+        EQUAL(s, right)  \
+        s.clear();       \
+        ss.str(s);
+
+    zlogo(ss) ifrom({1, 2, 3});
+    check("[1, 2, 3]\n");
+
+    zlogo(ss) ifrom({1, 2, 3}) | iselect([](int i) {
+        return i + 1;
+    });
+    check("[2, 3, 4]\n");
+
+    zlogo(ss) irange(3);
+    check("[0, 1, 2]\n");
+
+    zlogo(ss) irepeat(1, 3);
+    check("[1, 1, 1]\n");
 END

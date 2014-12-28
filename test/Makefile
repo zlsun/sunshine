@@ -8,6 +8,8 @@ test_main: $(objs)
 	gcc $^ -o main -lstdc++
 	./main
 
+*_test.o: ../include/*.h
+
 clean:
 	$(RM) $(objs) *.exe
 
