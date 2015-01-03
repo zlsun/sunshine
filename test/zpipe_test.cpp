@@ -14,20 +14,6 @@ TEST(zpipe)
            })
            | to_vector;
     EQUAL(u, (vector<int> {4, 8}))
-    EQUAL(ifrom(u) | isum(), 12)
-
-    const char* s = "ABC";
-    EQUAL(ifrom(s) | iconcat(", "), "A, B, C")
-
-    vector<string> vs {"1", "2", "3"};
-    EQUAL(ifrom(vs) | iconcat('|'), "1|2|3")
-
-    EQUAL(ifrom(vs) | iconcat('|', 2), "1||2||3")
-
-    int A[] {1, 2, 3, 4, 5};
-    EQUAL(ifrom(A + 2, A + 3) | isum(), 3)
-
-    EQUAL(ifrom({1, 2, 2, 4}) | icount(2), 2)
 
     EQUAL(ifrom({1, 2, 3, 0}) | iall([](int i) {
       return i > 0;
@@ -38,6 +24,22 @@ TEST(zpipe)
     }), true)
 
     EQUAL(irepeat(1, 10) | isum(), 10)
+END
+
+TEST(zpipe_aggregate)
+    int A[] {1, 2, 3, 4, 5};
+    EQUAL(ifrom(A) | imax(), 5)
+    EQUAL(ifrom(A) | imin(), 1)
+    EQUAL(ifrom(A + 2, A + 3) | isum(), 3)
+    EQUAL(ifrom({1, 2, 2, 4}) | icount(2), 2)
+END
+
+TEST(zpipe_concat)
+    const char* s = "ABC";
+    EQUAL(ifrom(s) | iconcat(", "), "A, B, C")
+    vector<string> vs {"1", "2", "3"};
+    EQUAL(ifrom(vs) | iconcat('|'), "1|2|3")
+    EQUAL(ifrom(vs) | iconcat('|', 2), "1||2||3")
 END
 
 TEST(zpipe_range)

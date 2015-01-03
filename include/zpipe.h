@@ -18,6 +18,7 @@ using namespace std;
 
 template <typename T>
 struct IEnum {
+    using value_t = T;
     T current() const;
     bool over() const;
     void advance() const;
@@ -48,9 +49,9 @@ auto operator | (Enum e, Func f)
 
 template <typename It>
 struct StdEnum : IEnum<typename iterator_traits<It>::value_type> {
+    using T = typename iterator_traits<It>::value_type;
     It icurrent;
     It iend;
-    using T = typename iterator_traits<It>::value_type;
     StdEnum(It b, It e): icurrent(b), iend(e) {}
     T current() const {
         return *icurrent;
@@ -143,8 +144,8 @@ RangeEnum<int> irange(int e) {
 
 struct ToVector {
     template <typename E>
-    vector<typename E::T> operator () (E& e) const {
-        vector<typename E::T> v;
+    vector<typename E::value_t> operator () (E& e) const {
+        vector<typename E::value_t> v;
         while (!e.over()) {
             v.push_back(e.current());
             e.advance();
@@ -209,84 +210,134 @@ Where<F> iwhere(F f) {
 
 // ===========================================================================
 
-template <typename T, typename R>
-struct Concat {
-    T split;
-    Concat(const T& s): split(s) {}
+template <typename F>
+struct Aggregate {
+    F f;
+    Aggregate(F f): f(f) {}
     template <typename E>
-    R operator () (E& e) const {
-        R result;
-        if (!e.over()) {
-            result += e.current();
-            e.advance();
+    typename E::value_t operator () (E& e) const {
+        typename E::value_t result;
+        if (e.over()) {
+            return result;
         }
+        result = e.current();
         while (!e.over()) {
-            result += split;
-            result += e.current();
+            result = f(result, e.current());
             e.advance();
         }
         return result;
     }
 };
-template <typename R, typename T>
-Concat<T, R> iconcat(const T& t) {
-    return Concat<T, R>(t);
-}
-Concat<string, string> iconcat(char c, int n = 1) {
-    return iconcat<string, string>(string(n, c));
-}
-Concat<string, string> iconcat(const char* s) {
-    return iconcat<string, string>(string(s));
-}
-Concat<string, string> iconcat() {
-    return iconcat("");
+template <typename F>
+Aggregate<F> iaggrerate(F f) {
+    return Aggregate<F>(f);
 }
 
 // ===========================================================================
 
-template <typename T>
-struct Sum {
+template <typename F, typename T>
+struct Aggregate2 {
+    F f;
     T init;
-    Sum(const T& i): init(i) {}
+    Aggregate2(F f, T t): f(f), init(t) {}
     template <typename E>
     T operator () (E& e) const {
-        T sum(init);
+        T result = init;
         while (!e.over()) {
-            sum += e.current();
+            result = f(result, e.current());
             e.advance();
         }
-        return sum;
+        return result;
+    }
+};
+template <typename F, typename T>
+Aggregate2<F, T> iaggrerate2(F f, T init) {
+    return Aggregate2<F, T>(f, init);
+}
+
+// ===========================================================================
+
+struct Max {
+    template <typename U>
+    U operator () (const U& u, const U& v) const {
+        return v > u ? v : u;
+    }
+};
+Aggregate<Max> imax() {
+    return Aggregate<Max>(Max());
+}
+
+// ===========================================================================
+
+struct Min {
+    template <typename U>
+    U operator () (const U& u, const U& v) const {
+        return v < u ? v : u;
+    }
+};
+Aggregate<Min> imin() {
+    return Aggregate<Min>(Min());
+}
+
+// ===========================================================================
+
+struct Sum {
+    template <typename U, typename V>
+    U operator () (const U& u, const V& v) const {
+        return u + v;
     }
 };
 template <typename T>
-Sum<T> isum(const T& init) {
-    return Sum<T>(init);
+Aggregate2<Sum, T> isum(const T& init) {
+    return Aggregate2<Sum, T>(Sum(), init);
 }
-Sum<int> isum() {
-    return isum(0);
+Aggregate2<Sum, size_t> isum() {
+    return Aggregate2<Sum, size_t>(Sum(), 0);
 }
 
 // ===========================================================================
 
-template <typename T, typename S>
+template <typename T>
 struct Count {
     T x;
-    Count(const T& x): x(x) {}
-    template <typename E>
-    S operator () (E& e) const {
-        S count = 0;
-        while (!e.over()) {
-            if (e.current() == x) {
-                ++count;
-            }
-            e.advance();
+    Count(T x): x(x) {}
+    template <typename U, typename V>
+    U operator () (const U& u, const V& v) const {
+        if (v == x) {
+            return u + 1;
+        } else {
+            return u;
         }
-        return count;
     }
 };
 template <typename T, typename S = size_t>
-Count<T, S> icount(const T& x) {
-    return Count<T, S>(x);
+Aggregate2<Count<T>, S> icount(const T& x, const S& init = 0) {
+    return Aggregate2<Count<T>, S>(Count<T>(x), init);
+}
+
+// ===========================================================================
+
+template <typename T>
+struct Concat {
+    T split;
+    Concat(const T& s): split(s) {}
+    template <typename U, typename V>
+    decltype operator () (const U& u, const V& v) const {
+        return u + split + v;
+    }
+};
+template <typename T>
+Aggregate<Concat<T>> iconcat(const T& s) {
+    return Aggregate<Concat<T>>(s);
+}
+auto iconcat(char c, int n = 1) -> decltype(iconcat<string>(string(n, c))) {
+    return iconcat<string>(string(n, c));
+}
+auto iconcat(const char* s) -> decltype(iconcat<string>(string(s))) {
+    return iconcat<string>(string(s));
+}
+auto iconcat() -> decltype(iconcat("")) {
+    return iconcat("");
 }
 
 // ===========================================================================
@@ -294,9 +345,9 @@ Count<T, S> icount(const T& x) {
 template <typename F>
 struct All {
     F f;
-    All(const F& f): f(f) {}
+    All(const F & f): f(f) {}
     template <typename E>
-    bool operator () (E& e) const {
+    bool operator () (E & e) const {
         while (!e.over()) {
             if (!f(e.current())) {
                 return false;
@@ -316,9 +367,9 @@ All<F> iall(const F& f) {
 template <typename F>
 struct Any {
     F f;
-    Any(const F& f): f(f) {}
+    Any(const F & f): f(f) {}
     template <typename E>
-    bool operator () (E& e) const {
+    bool operator () (E & e) const {
         while (!e.over()) {
             if (f(e.current())) {
                 return true;
