@@ -16,8 +16,8 @@ namespace zl {
 
 class Logger {
 private:
-    bool space;
     std::ostream& out;
+    bool space;
 
 public:
     Logger(std::ostream& out = std::cout): out(out), space(false) {}
