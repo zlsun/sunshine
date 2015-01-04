@@ -12,13 +12,11 @@
 
 namespace zl {
 
-using namespace std;
-
 // ===========================================================================
 
-template <typename Derived>
+template <typename Enum>
 struct IEnum {
-    friend ostream& operator << (ostream& out, Derived e) {
+    friend std::ostream& operator << (std::ostream& out, Enum e) {
         if (e.over()) {
             return out << "[]";
         }
@@ -42,7 +40,7 @@ auto operator | (Enum e, Func f)
 
 template <typename It>
 struct StdEnum : IEnum<StdEnum<It>> {
-    using ValueT = typename iterator_traits<It>::value_type;
+    using ValueT = typename std::iterator_traits<It>::value_type;
     using IterT = It;
     IterT icur;
     IterT iend;
@@ -64,16 +62,16 @@ StdEnum<It> ifrom(It start, It end) {
 }
 template <typename T>
 auto ifrom(const T& t)
--> decltype(ifrom(begin(t), end(t))) {
-    return ifrom(begin(t), end(t));
+-> decltype(ifrom(std::begin(t), std::end(t))) {
+    return ifrom(std::begin(t), std::end(t));
 }
 template <typename T>
-auto ifrom(const initializer_list<T>& t)
--> decltype(ifrom(begin(t), end(t))) {
-    return ifrom(begin(t), end(t));
+auto ifrom(const std::initializer_list<T>& t)
+-> decltype(ifrom(std::begin(t), std::end(t))) {
+    return ifrom(std::begin(t), std::end(t));
 }
 StdEnum<const char*> ifrom(const char* s) {
-    return ifrom(s, s + strlen(s));
+    return ifrom(s, s + std::strlen(s));
 }
 
 // ===========================================================================
@@ -138,8 +136,8 @@ RangeEnum<int> irange(int e) {
 
 struct ToVector {
     template <typename E>
-    vector<typename E::ValueT> operator () (E& e) const {
-        vector<typename E::ValueT> v;
+    std::vector<typename E::ValueT> operator () (E& e) const {
+        std::vector<typename E::ValueT> v;
         while (!e.over()) {
             v.push_back(e.current());
             e.advance();
@@ -307,7 +305,7 @@ struct Count {
     }
 };
 
-template <typename T, typename S = size_t>
+template <typename T, typename S = std::size_t>
 Aggregate2<Count<T>, S> icount(const T& x, const S& init = 0) {
     return Aggregate2<Count<T>, S>(Count<T>(x), init);
 }
@@ -338,13 +336,13 @@ template <typename R, typename T>
 Concat<T, R> iconcat(const T& t) {
     return Concat<T, R>(t);
 }
-Concat<string, string> iconcat(char c, int n = 1) {
-    return iconcat<string, string>(string(n, c));
+Concat<std::string, std::string> iconcat(char c, int n = 1) {
+    return iconcat<std::string, std::string>(std::string(n, c));
 }
-Concat<string, string> iconcat(const char* s) {
-    return iconcat<string, string>(string(s));
+Concat<std::string, std::string> iconcat(const char* s) {
+    return iconcat<std::string, std::string>(std::string(s));
 }
-Concat<string, string> iconcat() {
+Concat<std::string, std::string> iconcat() {
     return iconcat("");
 }
 
@@ -397,9 +395,17 @@ Any<F> iany(const F& f) {
 // ===========================================================================
 
 template <typename M>
-struct MemberHolder {
+class MemberHolder {
+private:
     M m;
+public:
     MemberHolder(M m): m(m){}
+    M& get() {
+        return m;
+    };
+    const M& get() const {
+        return m;
+    };
 };
 
 template <typename E>
@@ -408,11 +414,11 @@ struct ReverseEnum
     , MemberHolder<std::vector<typename E::ValueT>>
     , StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>
 {
-    using Vector = MemberHolder<std::vector<typename E::ValueT>>;
-    using StdEnum = StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>;
-    ReverseEnum(E e)
-        : Vector(e | to_vector)
-        , StdEnum(Vector::m.rbegin(), Vector::m.rend())
+    using VecMem = MemberHolder<std::vector<typename E::ValueT>>;
+    using Base = StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>;
+    ReverseEnum(const E& e)
+        : VecMem(e | to_vector)
+        , Base(VecMem::get().rbegin(), VecMem::get().rend())
     {}
 };
 
