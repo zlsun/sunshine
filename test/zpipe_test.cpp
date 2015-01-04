@@ -45,6 +45,7 @@ END
 
 TEST(zpipe_range)
     EQUAL(irange(10) | isum(), 45)
+    EQUAL(irange(10) | isum(2), 47)
     EQUAL(irange(2, 10) | isum(), 44)
     EQUAL(irange(1, 10, 2) | isum(), 25)
     EQUAL(irange(10, 1, -2) | isum(), 30)
