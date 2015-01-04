@@ -16,28 +16,21 @@ using namespace std;
 
 // ===========================================================================
 
-template <typename T>
+template <typename Derived>
 struct IEnum {
-    using value_t = T;
-    T current() const;
-    bool over() const;
-    void advance() const;
-};
-
-#define DEFINE_PRINT_FUNCTION(Enum)                             \
-    template <typename... Args>                                 \
-    ostream& operator << (ostream& out, Enum<Args...> e) {      \
-        if (e.over()) {                                         \
-            return out << "[]";                                 \
-        }                                                       \
-        out << "[" << e.current();                              \
-        e.advance();                                            \
-        while (!e.over()) {                                     \
-            out << ", " << e.current();                         \
-            e.advance();                                        \
-        }                                                       \
-        return out << "]";                                      \
+    friend ostream& operator << (ostream& out, Derived e) {
+        if (e.over()) {
+            return out << "[]";
+        }
+        out << "[" << e.current();
+        e.advance();
+        while (!e.over()) {
+            out << ", " << e.current();
+            e.advance();
+        }
+        return out << "]";
     }
+};
 
 template <typename Enum, typename Func>
 auto operator | (Enum e, Func f)
@@ -48,22 +41,22 @@ auto operator | (Enum e, Func f)
 // ===========================================================================
 
 template <typename It>
-struct StdEnum : IEnum<typename iterator_traits<It>::value_type> {
-    using T = typename iterator_traits<It>::value_type;
-    It icurrent;
-    It iend;
-    StdEnum(It b, It e): icurrent(b), iend(e) {}
-    T current() const {
-        return *icurrent;
+struct StdEnum : IEnum<StdEnum<It>> {
+    using ValueT = typename iterator_traits<It>::value_type;
+    using IterT = It;
+    IterT icur;
+    IterT iend;
+    StdEnum(IterT b, IterT e): icur(b), iend(e) {}
+    ValueT current() const {
+        return *icur;
     }
     bool over() const {
-        return icurrent == iend;
+        return icur == iend;
     }
     void advance() {
-        ++icurrent;
+        ++icur;
     }
 };
-DEFINE_PRINT_FUNCTION(StdEnum)
 
 template <typename It>
 StdEnum<It> ifrom(It start, It end) {
@@ -86,7 +79,8 @@ StdEnum<const char*> ifrom(const char* s) {
 // ===========================================================================
 
 template <typename T>
-struct RepeatEnum : IEnum<T> {
+struct RepeatEnum : IEnum<RepeatEnum<T>> {
+    using ValueT = T;
     T x;
     size_t n, i = 0;
     RepeatEnum(const T& x, size_t n): x(x), n(n) {}
@@ -100,7 +94,6 @@ struct RepeatEnum : IEnum<T> {
         ++i;
     }
 };
-DEFINE_PRINT_FUNCTION(RepeatEnum)
 
 template <typename T>
 RepeatEnum<T> irepeat(T t, size_t n = 0) {
@@ -110,10 +103,12 @@ RepeatEnum<T> irepeat(T t, size_t n = 0) {
 // ===========================================================================
 
 template <typename T>
-struct RangeEnum : IEnum<T> {
-    T cur, end, step;
-    RangeEnum(const T& b, const T& e, const T& s): cur(b), end(e), step(s) {}
-    T current() const {
+struct RangeEnum : IEnum<RangeEnum<T>> {
+    using ValueT = T;
+    ValueT cur, end, step;
+    RangeEnum(const ValueT& b, const ValueT& e, const ValueT& s)
+        : cur(b), end(e), step(s) {}
+    ValueT current() const {
         return cur;
     }
     bool over() const {
@@ -123,7 +118,6 @@ struct RangeEnum : IEnum<T> {
         cur += step;
     }
 };
-DEFINE_PRINT_FUNCTION(RangeEnum)
 
 template <typename T>
 RangeEnum<T> irange(const T& b, const T& e, const T& s) {
@@ -144,8 +138,8 @@ RangeEnum<int> irange(int e) {
 
 struct ToVector {
     template <typename E>
-    vector<typename E::value_t> operator () (E& e) const {
-        vector<typename E::value_t> v;
+    vector<typename E::ValueT> operator () (E& e) const {
+        vector<typename E::ValueT> v;
         while (!e.over()) {
             v.push_back(e.current());
             e.advance();
@@ -157,14 +151,13 @@ struct ToVector {
 // ===========================================================================
 
 template <typename E, typename F>
-struct SelectEnum: E {
+struct SelectEnum: IEnum<SelectEnum<E, F>>, E {
     F f;
     SelectEnum(const E& e, F f): E(e), f(f) {}
     typename function_traits<F>::result_type current() const {
         return f(E::current());
     }
 };
-DEFINE_PRINT_FUNCTION(SelectEnum)
 
 template <typename F>
 struct Select {
@@ -175,6 +168,7 @@ struct Select {
         return SelectEnum<E, F>(e, f);
     }
 };
+
 template <typename F>
 Select<F> iselect(F f) {
     return Select<F>(f);
@@ -183,7 +177,7 @@ Select<F> iselect(F f) {
 // ===========================================================================
 
 template <typename E, typename F>
-struct WhereEnum: E {
+struct WhereEnum: IEnum<WhereEnum<E, F>>, E {
     F f;
     WhereEnum(const E& e, F f): E(e), f(f) {}
     void advance() {
@@ -192,7 +186,6 @@ struct WhereEnum: E {
         } while (!E::over() && !f(E::current()));
     }
 };
-DEFINE_PRINT_FUNCTION(WhereEnum)
 
 template <typename F>
 struct Where {
@@ -203,6 +196,7 @@ struct Where {
         return WhereEnum<E, F>(e, f);
     }
 };
+
 template <typename F>
 Where<F> iwhere(F f) {
     return Where<F>(f);
@@ -215,8 +209,8 @@ struct Aggregate {
     F f;
     Aggregate(F f): f(f) {}
     template <typename E>
-    typename E::value_t operator () (E& e) const {
-        typename E::value_t result;
+    typename E::ValueT operator () (E& e) const {
+        typename E::ValueT result;
         if (e.over()) {
             return result;
         }
@@ -228,6 +222,7 @@ struct Aggregate {
         return result;
     }
 };
+
 template <typename F>
 Aggregate<F> iaggrerate(F f) {
     return Aggregate<F>(f);
@@ -250,6 +245,7 @@ struct Aggregate2 {
         return result;
     }
 };
+
 template <typename F, typename T>
 Aggregate2<F, T> iaggrerate2(F f, T init) {
     return Aggregate2<F, T>(f, init);
@@ -263,9 +259,8 @@ struct Max {
         return v > u ? v : u;
     }
 };
-Aggregate<Max> imax() {
-    return Aggregate<Max>(Max());
-}
+
+auto imax = Aggregate<Max>(Max());
 
 // ===========================================================================
 
@@ -275,9 +270,8 @@ struct Min {
         return v < u ? v : u;
     }
 };
-Aggregate<Min> imin() {
-    return Aggregate<Min>(Min());
-}
+
+auto imin = Aggregate<Min>(Min());
 
 // ===========================================================================
 
@@ -287,12 +281,14 @@ struct Sum {
         return u + v;
     }
 };
+
 template <typename T>
 Aggregate2<Sum, T> isum(const T& init) {
     return Aggregate2<Sum, T>(Sum(), init);
 }
-Aggregate2<Sum, size_t> isum() {
-    return Aggregate2<Sum, size_t>(Sum(), 0);
+
+auto isum() -> decltype(isum(0)) {
+    return isum(0);
 }
 
 // ===========================================================================
@@ -310,6 +306,7 @@ struct Count {
         }
     }
 };
+
 template <typename T, typename S = size_t>
 Aggregate2<Count<T>, S> icount(const T& x, const S& init = 0) {
     return Aggregate2<Count<T>, S>(Count<T>(x), init);
@@ -317,26 +314,37 @@ Aggregate2<Count<T>, S> icount(const T& x, const S& init = 0) {
 
 // ===========================================================================
 
-template <typename T>
+template <typename T, typename R>
 struct Concat {
     T split;
     Concat(const T& s): split(s) {}
-    template <typename U, typename V>
-    decltype operator () (const U& u, const V& v) const {
-        return u + split + v;
+    template <typename E>
+    R operator () (E& e) const {
+        R result;
+        if (!e.over()) {
+            result += e.current();
+            e.advance();
+        }
+        while (!e.over()) {
+            result += split;
+            result += e.current();
+            e.advance();
+        }
+        return result;
     }
 };
-template <typename T>
-Aggregate<Concat<T>> iconcat(const T& s) {
-    return Aggregate<Concat<T>>(s);
+
+template <typename R, typename T>
+Concat<T, R> iconcat(const T& t) {
+    return Concat<T, R>(t);
 }
-auto iconcat(char c, int n = 1) -> decltype(iconcat<string>(string(n, c))) {
-    return iconcat<string>(string(n, c));
+Concat<string, string> iconcat(char c, int n = 1) {
+    return iconcat<string, string>(string(n, c));
 }
-auto iconcat(const char* s) -> decltype(iconcat<string>(string(s))) {
-    return iconcat<string>(string(s));
+Concat<string, string> iconcat(const char* s) {
+    return iconcat<string, string>(string(s));
 }
-auto iconcat() -> decltype(iconcat("")) {
+Concat<string, string> iconcat() {
     return iconcat("");
 }
 
@@ -345,9 +353,9 @@ auto iconcat() -> decltype(iconcat("")) {
 template <typename F>
 struct All {
     F f;
-    All(const F & f): f(f) {}
+    All(const F& f): f(f) {}
     template <typename E>
-    bool operator () (E & e) const {
+    bool operator () (E& e) const {
         while (!e.over()) {
             if (!f(e.current())) {
                 return false;
@@ -357,6 +365,7 @@ struct All {
         return true;
     }
 };
+
 template <typename F>
 All<F> iall(const F& f) {
     return All<F>(f);
@@ -367,9 +376,9 @@ All<F> iall(const F& f) {
 template <typename F>
 struct Any {
     F f;
-    Any(const F & f): f(f) {}
+    Any(const F& f): f(f) {}
     template <typename E>
-    bool operator () (E & e) const {
+    bool operator () (E& e) const {
         while (!e.over()) {
             if (f(e.current())) {
                 return true;
@@ -379,6 +388,7 @@ struct Any {
         return false;
     }
 };
+
 template <typename F>
 Any<F> iany(const F& f) {
     return Any<F>(f);
@@ -386,7 +396,34 @@ Any<F> iany(const F& f) {
 
 // ===========================================================================
 
-#undef DEFINE_PRINT_FUNCTION
+template <typename M>
+struct MemberHolder {
+    M m;
+    MemberHolder(M m): m(m){}
+};
+
+template <typename E>
+struct ReverseEnum
+    : IEnum<ReverseEnum<E>>
+    , MemberHolder<std::vector<typename E::ValueT>>
+    , StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>
+{
+    using Vector = MemberHolder<std::vector<typename E::ValueT>>;
+    using StdEnum = StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>;
+    ReverseEnum(E e)
+        : Vector(e | to_vector)
+        , StdEnum(Vector::m.rbegin(), Vector::m.rend())
+    {}
+};
+
+struct Reverse {
+    template <typename E>
+    ReverseEnum<E> operator () (E& e) const {
+        return ReverseEnum<E>(e);
+    }
+} ireverse;
+
+// ===========================================================================
 
 } // namespace zl
 

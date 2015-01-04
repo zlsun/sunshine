@@ -28,8 +28,8 @@ END
 
 TEST(zpipe_aggregate)
     int A[] {1, 2, 3, 4, 5};
-    EQUAL(ifrom(A) | imax(), 5)
-    EQUAL(ifrom(A) | imin(), 1)
+    EQUAL(ifrom(A) | imax, 5)
+    EQUAL(ifrom(A) | imin, 1)
     EQUAL(ifrom(A + 2, A + 3) | isum(), 3)
     EQUAL(ifrom({1, 2, 2, 4}) | icount(2), 2)
 END
@@ -73,4 +73,8 @@ TEST(zpipe_print)
 
     zlogo(ss) irepeat(1, 3);
     check("[1, 1, 1]\n");
+END
+
+TEST(zpipe_reverse)
+    EQUAL(ifrom({1, 2}) | ireverse | to_vector, (vector<int> {2, 1}))
 END
