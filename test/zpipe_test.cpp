@@ -1,5 +1,6 @@
 #include "../include/zpipe.h"
 #include "../include/ztest.h"
+#include "../include/zlog.h"
 using namespace std;
 using namespace zl;
 

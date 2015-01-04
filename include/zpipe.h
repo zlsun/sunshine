@@ -7,7 +7,6 @@
 #include <cstring>
 
 #include "ztraits.h"
-#include "zlog.h"
 #include "zassert.h"
 
 namespace zl {
