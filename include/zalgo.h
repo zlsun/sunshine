@@ -145,9 +145,9 @@ GEN_II          (upper_bound)
 
 // wrapper function of transform(Iter1, Iter1, Iter2, Iter3, BinaryOp),
 // it can be confused with transform(Iter1, Iter1, Iter2, UnaryOp),
-// so rename it to transform_2
+// so rename it to transform2
 template <typename T1, typename T2, typename T3, typename BinaryOp>
-inline auto transform_2(CREF(T1) ctn1, CREF(T2) ctn2, T3& tgt, BinaryOp binary_op)
+inline auto transform2(CREF(T1) ctn1, CREF(T2) ctn2, T3& tgt, BinaryOp binary_op)
 -> decltype(transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op)) {
      return transform(BEG_END(ctn1), begin(ctn2), begin(tgt), binary_op);
 }

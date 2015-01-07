@@ -28,11 +28,11 @@ TEST(transform)
         return i + 1;
     });
     EQUAL(array[1], 4)
-    transform_2(array, array, array, [](int i, int j) {
+    transform2(array, array, array, [](int i, int j) {
         return i + j;
     });
     EQUAL(array[1], 8)
-    transform_2(vector<int> {1, 2, 5, 3, 4}, array, array, [](int i, int j) {
+    transform2(vector<int> {1, 2, 5, 3, 4}, array, array, [](int i, int j) {
         return i + j;
     });
     EQUAL(array[1], 10)
