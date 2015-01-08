@@ -2,6 +2,7 @@
 #define ZALGO_H
 
 #include <algorithm>
+#include <iterator>
 
 // define all algorithm wrapper functions in std namespace
 namespace std {
@@ -154,15 +155,19 @@ inline auto transform2(CREF(T1) ctn1, CREF(T2) ctn2, T3& tgt, BinaryOp binary_op
 
 // shift operators for getting iterator
 template <typename T>
-inline auto operator >> (T& ctn, size_t n)
--> decltype(begin(ctn) + n) {
-     return begin(ctn) + n;
+inline auto operator >> (T& ctn, int n)
+-> decltype(std::begin(ctn)) {
+    auto it = std::begin(ctn);
+    std::advance(it, n);
+    return it;
 }
 
 template <typename T>
-inline auto operator << (T& ctn, size_t n)
--> decltype(end(ctn) - n) {
-     return end(ctn) - n;
+inline auto operator << (T& ctn, int n)
+-> decltype(std::end(ctn)) {
+    auto it = std::end(ctn);
+    std::advance(it, -n);
+    return it;
 }
 
 // undefine all macros for generating code
