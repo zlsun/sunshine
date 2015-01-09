@@ -1,15 +1,12 @@
 #ifndef ZLOG_H
 #define ZLOG_H
 
-#include <sstream>
 #include <iostream>
+#include <sstream>
 #include <vector>
+#include <list>
 #include <map>
-#include <algorithm>
-#include <iterator>
-#include <cstdio>
-#include <cstring>
-#include <cctype>
+#include <utility>
 #include <boost/format.hpp>
 
 namespace zl {
@@ -119,6 +116,11 @@ std::ostream& operator << (std::ostream& out, const std::vector<T>& vec) {
 }
 
 template <typename T>
+std::ostream& operator << (std::ostream& out, const std::list<T>& vec) {
+    return zl::printSequence(out, vec);
+}
+
+template <typename T>
 std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils) {
     return zl::printSequence(out, ils);
 }
@@ -138,9 +140,9 @@ std::ostream& operator << (std::ostream& out, const std::map<K, V>& map) {
 # define zlogo(out)     //
 # define zlogf(format)  //
 #else
-# define zlog           zl::Logger(),
+# define zlog           (zl::Logger()),
 # define zlogo(out)     (zl::Logger(out)),
-# define zlogf(args...) zl::FormatLogger(args),
+# define zlogf(args...) (zl::FormatLogger(args)),
 #endif
 
 #endif // ZLOG_H
