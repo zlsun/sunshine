@@ -4,8 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <iterator>
+#include <algorithm>
 #include <cstring>
 
+#include "zlog.h"
 #include "ztraits.h"
 #include "zassert.h"
 
@@ -395,7 +397,7 @@ Any<F> iany(const F& f) {
 
 template <typename M>
 class MemberHolder {
-private:
+protected:
     M m;
 public:
     MemberHolder(M m): m(m){}
@@ -427,6 +429,63 @@ struct Reverse {
         return ReverseEnum<E>(e);
     }
 } ireverse;
+
+// ===========================================================================
+
+template <typename M>
+class SortedMemberHolder: public MemberHolder<M> {
+public:
+    SortedMemberHolder(M m): MemberHolder<M>(m) {
+        std::sort(MemberHolder<M>::get().begin(), MemberHolder<M>::get().end());
+    }
+    template <typename F>
+    SortedMemberHolder(M m, F cmp): MemberHolder<M>(m) {
+        std::sort(MemberHolder<M>::get().begin(), MemberHolder<M>::get().end(), cmp);
+    }
+};
+
+template <typename E>
+struct SortEnum
+    : IEnum<SortEnum<E>>
+    , SortedMemberHolder<std::vector<typename E::ValueT>>
+    , StdEnum<typename std::vector<typename E::ValueT>::iterator>
+{
+    using SortedVecMem = SortedMemberHolder<std::vector<typename E::ValueT>>;
+    using Base = StdEnum<typename std::vector<typename E::ValueT>::iterator>;
+    SortEnum(const E& e)
+        : SortedVecMem(e | to_vector)
+        , Base(SortedVecMem::get().begin(), SortedVecMem::get().end())
+    {}
+    template <typename F>
+    SortEnum(const E& e, F cmp)
+        : SortedVecMem(e | to_vector, cmp)
+        , Base(SortedVecMem::get().begin(), SortedVecMem::get().end())
+    {}
+};
+
+struct Sort {
+    template <typename E>
+    SortEnum<E> operator () (E& e) const {
+        return SortEnum<E>(e);
+    }
+} isort;
+
+template <typename F>
+struct SortBy {
+    F cmp;
+    SortBy(F f): cmp(f) {}
+    template <typename E>
+    SortEnum<E> operator () (E& e) const {
+        return SortEnum<E>(e, cmp);
+    }
+};
+
+template <typename F>
+auto isortby(F cmp) -> SortBy<F> {
+    return SortBy<F>(cmp);
+}
+
+// ===========================================================================
 
 // ===========================================================================
 

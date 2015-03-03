@@ -77,6 +77,7 @@ TEST(zpipe_print)
     check("[1, 1, 1]\n");
 END
 
-TEST(zpipe_reverse)
-    EQUAL(ifrom({1, 2}) | ireverse | to_vector, (vector<int> {2, 1}))
+TEST(zpipe_algorithm)
+    EQUAL(ifrom({3, 2, 4, 1}) | ireverse | to_vector, (vector<int> {1, 4, 2, 3}))
+    EQUAL(ifrom({3, 2, 4, 1}) | isort | to_vector, (vector<int> {1, 2, 3, 4}))
 END
