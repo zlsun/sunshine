@@ -15,7 +15,8 @@ END
 
 TEST(sort)
     int array[] {1, 3, 5, 2, 4};
-    vector<int> v(BEG_END(array));
+    const int N = sizeof(array) / sizeof(*array);
+    vector<int> v(array, array + N);
     sort(array);
     EQUAL(array[4], 5)
     sort(v);
@@ -44,4 +45,5 @@ TEST(relative_access)
     EQUAL(*(v >> 2), 5)
     EQUAL(*(v << 2), 2)
     EQUAL(*(v << 1), 4)
+    EQUAL((*(vector<int> {1, 2, 5, 3, 4} << 1)), 4)
 END
