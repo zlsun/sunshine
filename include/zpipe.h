@@ -6,47 +6,60 @@
 #include <iterator>
 #include <algorithm>
 #include <cstring>
+#include <cassert>
 
 #include "zlog.h"
 #include "ztraits.h"
-#include "zassert.h"
 
 namespace zl {
 
 // ===========================================================================
 
 template <typename Enum>
-struct IEnum {
+struct GenFuncFor {
     friend std::ostream& operator << (std::ostream& out, Enum e) {
-        if (e.over()) {
+        if (!e) {
             return out << "[]";
         }
-        out << "[" << e.current();
-        e.advance();
-        while (!e.over()) {
-            out << ", " << e.current();
-            e.advance();
+        out << "[" << *e;
+        ++e;
+        for (auto i : e) {
+            out << ", " << i;
         }
         return out << "]";
+    }
+    friend Enum& begin(Enum& e) {
+        return e;
+    }
+    friend Enum& end(Enum& e) {
+        return e;
+    }
+    friend Enum& operator ++ (Enum& e) {
+        e.advance();
+        return e;
+    }
+    friend bool operator != (Enum& a, Enum& b) {
+        return !a.over();
+    }
+    friend bool operator ! (Enum& a) {
+        return a.over();
     }
 };
 
 template <typename Enum, typename Func>
-auto operator | (Enum e, Func f)
--> decltype(f(e)) {
+auto operator | (Enum e, Func f) {
     return f(e);
 }
 
 // ===========================================================================
 
 template <typename It>
-struct StdEnum : IEnum<StdEnum<It>> {
+struct StdEnum : GenFuncFor<StdEnum<It>> {
     using ValueT = typename std::iterator_traits<It>::value_type;
-    using IterT = It;
-    IterT icur;
-    IterT iend;
-    StdEnum(IterT b, IterT e): icur(b), iend(e) {}
-    ValueT current() const {
+    It icur;
+    It iend;
+    StdEnum(It b, It e): icur(b), iend(e) {}
+    ValueT operator * () const {
         return *icur;
     }
     bool over() const {
@@ -58,32 +71,30 @@ struct StdEnum : IEnum<StdEnum<It>> {
 };
 
 template <typename It>
-StdEnum<It> ifrom(It start, It end) {
+auto ifrom(It start, It end) {
     return StdEnum<It>(start, end);
 }
 template <typename T>
-auto ifrom(const T& t)
--> decltype(ifrom(std::begin(t), std::end(t))) {
+auto ifrom(const T& t) {
     return ifrom(std::begin(t), std::end(t));
 }
 template <typename T>
-auto ifrom(const std::initializer_list<T>& t)
--> decltype(ifrom(std::begin(t), std::end(t))) {
+auto ifrom(const std::initializer_list<T>& t) {
     return ifrom(std::begin(t), std::end(t));
 }
-StdEnum<const char*> ifrom(const char* s) {
+auto ifrom(const char* s) {
     return ifrom(s, s + std::strlen(s));
 }
 
 // ===========================================================================
 
 template <typename T>
-struct RepeatEnum : IEnum<RepeatEnum<T>> {
+struct RepeatEnum : GenFuncFor<RepeatEnum<T>> {
     using ValueT = T;
     T x;
     size_t n, i = 0;
     RepeatEnum(const T& x, size_t n): x(x), n(n) {}
-    T current() const {
+    T operator * () const {
         return x;
     }
     bool over() const {
@@ -102,34 +113,33 @@ RepeatEnum<T> irepeat(T t, size_t n = 0) {
 // ===========================================================================
 
 template <typename T>
-struct RangeEnum : IEnum<RangeEnum<T>> {
+struct RangeEnum : GenFuncFor<RangeEnum<T>> {
     using ValueT = T;
-    ValueT cur, end, step;
+    ValueT icur, iend, istep;
     RangeEnum(const ValueT& b, const ValueT& e, const ValueT& s)
-        : cur(b), end(e), step(s) {}
-    ValueT current() const {
-        return cur;
+        : icur(b), iend(e), istep(s) {}
+    ValueT operator * () const {
+        return icur;
     }
     bool over() const {
-        return cur == end;
+        return icur == iend;
     }
     void advance() {
-        cur += step;
+        icur += istep;
     }
 };
 
 template <typename T>
-RangeEnum<T> irange(const T& b, const T& e, const T& s) {
+auto irange(const T& b, const T& e, const T& s) {
     return RangeEnum<T>(b, e, s);
 }
-RangeEnum<int> irange(int b, int e, int s) {
-    SMART_ASSERT((s > 0 && b <= e) || (s < 0 && b >= e))(b)(e)(s);
+auto irange(int b, int e, int s) {
     return RangeEnum<int>(b, e + (e - b) % s, s);
 }
-RangeEnum<int> irange(int b, int e) {
+auto irange(int b, int e) {
     return RangeEnum<int>(b, e, (b < e ? 1 : -1));
 }
-RangeEnum<int> irange(int e) {
+auto irange(int e) {
     return irange(0, e);
 }
 
@@ -139,9 +149,8 @@ struct ToVector {
     template <typename E>
     std::vector<typename E::ValueT> operator () (E& e) const {
         std::vector<typename E::ValueT> v;
-        while (!e.over()) {
-            v.push_back(e.current());
-            e.advance();
+        for (auto i : e) {
+            v.push_back(i);
         }
         return v;
     }
@@ -150,11 +159,11 @@ struct ToVector {
 // ===========================================================================
 
 template <typename E, typename F>
-struct SelectEnum: IEnum<SelectEnum<E, F>>, E {
+struct SelectEnum: GenFuncFor<SelectEnum<E, F>>, E {
     F f;
     SelectEnum(const E& e, F f): E(e), f(f) {}
-    typename function_traits<F>::result_type current() const {
-        return f(E::current());
+    auto operator * () const {
+        return f(E::operator * ());
     }
 };
 
@@ -163,7 +172,7 @@ struct Select {
     F f;
     Select(F f): f(f) {}
     template <typename E>
-    SelectEnum<E, F> operator () (E& e) const {
+    auto operator () (E& e) const {
         return SelectEnum<E, F>(e, f);
     }
 };
@@ -176,13 +185,13 @@ Select<F> iselect(F f) {
 // ===========================================================================
 
 template <typename E, typename F>
-struct WhereEnum: IEnum<WhereEnum<E, F>>, E {
+struct WhereEnum: GenFuncFor<WhereEnum<E, F>>, E {
     F f;
     WhereEnum(const E& e, F f): E(e), f(f) {}
     void advance() {
         do {
             E::advance();
-        } while (!E::over() && !f(E::current()));
+        } while (!E::over() && !f(E::operator * ()));
     }
 };
 
@@ -210,13 +219,13 @@ struct Aggregate {
     template <typename E>
     typename E::ValueT operator () (E& e) const {
         typename E::ValueT result;
-        if (e.over()) {
+        if (!e) {
             return result;
         }
-        result = e.current();
-        while (!e.over()) {
-            result = f(result, e.current());
-            e.advance();
+        result = *e;
+        ++e;
+        for (auto i : e) {
+            result = f(result, i);
         }
         return result;
     }
@@ -230,24 +239,23 @@ Aggregate<F> iaggrerate(F f) {
 // ===========================================================================
 
 template <typename F, typename T>
-struct Aggregate2 {
+struct AggregateInit {
     F f;
     T init;
-    Aggregate2(F f, T t): f(f), init(t) {}
+    AggregateInit(F f, T t): f(f), init(t) {}
     template <typename E>
     T operator () (E& e) const {
         T result = init;
-        while (!e.over()) {
-            result = f(result, e.current());
-            e.advance();
+        for (auto i : e) {
+            result = f(result, i);
         }
         return result;
     }
 };
 
 template <typename F, typename T>
-Aggregate2<F, T> iaggrerate2(F f, T init) {
-    return Aggregate2<F, T>(f, init);
+AggregateInit<F, T> iaggrerate(F f, T init) {
+    return AggregateInit<F, T>(f, init);
 }
 
 // ===========================================================================
@@ -259,7 +267,7 @@ struct Max {
     }
 };
 
-auto imax = Aggregate<Max>(Max());
+auto imax = iaggrerate(Max());
 
 // ===========================================================================
 
@@ -270,7 +278,7 @@ struct Min {
     }
 };
 
-auto imin = Aggregate<Min>(Min());
+auto imin = iaggrerate(Min());
 
 // ===========================================================================
 
@@ -282,11 +290,11 @@ struct Sum {
 };
 
 template <typename T>
-Aggregate2<Sum, T> isum(const T& init) {
-    return Aggregate2<Sum, T>(Sum(), init);
+auto isum(const T& init) {
+    return iaggrerate(Sum(), init);
 }
 
-auto isum() -> decltype(isum(0)) {
+auto isum() {
     return isum(0);
 }
 
@@ -307,8 +315,8 @@ struct Count {
 };
 
 template <typename T, typename S = std::size_t>
-Aggregate2<Count<T>, S> icount(const T& x, const S& init = 0) {
-    return Aggregate2<Count<T>, S>(Count<T>(x), init);
+auto icount(const T& x, const S& init = 0) {
+    return iaggrerate(Count<T>(x), init);
 }
 
 // ===========================================================================
@@ -320,30 +328,30 @@ struct Concat {
     template <typename E>
     R operator () (E& e) const {
         R result;
-        if (!e.over()) {
-            result += e.current();
-            e.advance();
+        if (!e) {
+            return result;
         }
-        while (!e.over()) {
+        result += *e;
+        ++e;
+        for (auto i : e) {
             result += split;
-            result += e.current();
-            e.advance();
+            result += i;
         }
         return result;
     }
 };
 
 template <typename R, typename T>
-Concat<T, R> iconcat(const T& t) {
+auto iconcat(const T& t) {
     return Concat<T, R>(t);
 }
-Concat<std::string, std::string> iconcat(char c, int n = 1) {
-    return iconcat<std::string, std::string>(std::string(n, c));
+auto iconcat(char c, int n = 1) {
+    return iconcat<std::string>(std::string(n, c));
 }
-Concat<std::string, std::string> iconcat(const char* s) {
-    return iconcat<std::string, std::string>(std::string(s));
+auto iconcat(const char* s) {
+    return iconcat<std::string>(std::string(s));
 }
-Concat<std::string, std::string> iconcat() {
+auto iconcat() {
     return iconcat("");
 }
 
@@ -355,11 +363,10 @@ struct All {
     All(const F& f): f(f) {}
     template <typename E>
     bool operator () (E& e) const {
-        while (!e.over()) {
-            if (!f(e.current())) {
+        for (auto i : e) {
+            if (!i) {
                 return false;
             }
-            e.advance();
         }
         return true;
     }
@@ -378,11 +385,10 @@ struct Any {
     Any(const F& f): f(f) {}
     template <typename E>
     bool operator () (E& e) const {
-        while (!e.over()) {
-            if (f(e.current())) {
+        for (auto i : e) {
+            if (i) {
                 return true;
             }
-            e.advance();
         }
         return false;
     }
@@ -400,7 +406,7 @@ class MemberHolder {
 protected:
     M m;
 public:
-    MemberHolder(M m): m(m){}
+    MemberHolder(M m): m(m) {}
     M& get() {
         return m;
     };
@@ -411,10 +417,9 @@ public:
 
 template <typename E>
 struct ReverseEnum
-    : IEnum<ReverseEnum<E>>
+    : GenFuncFor<ReverseEnum<E>>
     , MemberHolder<std::vector<typename E::ValueT>>
-    , StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>
-{
+    , StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator> {
     using VecMem = MemberHolder<std::vector<typename E::ValueT>>;
     using Base = StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>;
     ReverseEnum(const E& e)
@@ -446,10 +451,9 @@ public:
 
 template <typename E>
 struct SortEnum
-    : IEnum<SortEnum<E>>
+    : GenFuncFor<SortEnum<E>>
     , SortedMemberHolder<std::vector<typename E::ValueT>>
-    , StdEnum<typename std::vector<typename E::ValueT>::iterator>
-{
+    , StdEnum<typename std::vector<typename E::ValueT>::iterator> {
     using SortedVecMem = SortedMemberHolder<std::vector<typename E::ValueT>>;
     using Base = StdEnum<typename std::vector<typename E::ValueT>::iterator>;
     SortEnum(const E& e)
@@ -481,7 +485,7 @@ struct SortBy {
 };
 
 template <typename F>
-auto isortby(F cmp) -> SortBy<F> {
+auto isortby(F cmp) {
     return SortBy<F>(cmp);
 }
 
