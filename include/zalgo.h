@@ -170,17 +170,11 @@ inline auto operator << (T&& ctn, int n)
 #undef FWBE
 #undef FW_ARGS
 
-#undef GEN_II_IMPL
 #undef GEN_II
-#undef GEN_IIT_IMPL
 #undef GEN_IIT
-#undef GEN_III_IMPL
 #undef GEN_III
-#undef GEN_IIIT_IMPL
 #undef GEN_IIIT
-#undef GEN_IITT_IMPL
 #undef GEN_IITT
-#undef GEN_IITT_IMPL
 #undef GEN_IITT
 
 #undef GEN_IIX
