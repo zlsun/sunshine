@@ -10,3 +10,6 @@ TEST(ztraits)
     EQUAL(is_unary_function<decltype(f2)>::value, false)
     EQUAL(is_binary_function<decltype(f2)>::value, true)
 END
+
+TEST_MAIN
+

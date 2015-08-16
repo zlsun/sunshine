@@ -81,3 +81,6 @@ TEST(zpipe_algorithm)
     EQUAL(ifrom({3, 2, 4, 1}) | ireverse | to_vector, (vector<int> {1, 4, 2, 3}))
     EQUAL(ifrom({3, 2, 4, 1}) | isort | to_vector, (vector<int> {1, 2, 3, 4}))
 END
+
+TEST_MAIN
+

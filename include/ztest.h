@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-extern std::vector<std::pair<std::string, bool(*)()>> __tests;
+std::vector<std::pair<std::string, bool(*)()>> __tests;
 
 #define JUDGE_TRUE(msg) ++__passed;
 
@@ -20,8 +20,9 @@ extern std::vector<std::pair<std::string, bool(*)()>> __tests;
         JUDGE_FALSE(false_msg)          \
     }
 
-#define EQUAL(a, b) JUDGE((a) == (b), "", "(line " << __LINE__ << ") failure #" << __failed << ":\n" \
-    << #a " == " #b ", with\n\t" #a " : " << (a) << "\n\t" #b " : " << (b) << "")
+#define EQUAL(a, b) JUDGE((a) == (b), "",                                       \
+    "(line " << __LINE__ << ") failure #" << __failed << ":\n" <<               \
+    #a " == " #b ", with\n\t" #a " : " << (a) << "\n\t" #b " : " << (b) << "")
 
 #define SUCCEED __failed = 0;
 
@@ -36,13 +37,34 @@ extern std::vector<std::pair<std::string, bool(*)()>> __tests;
     } __struct_##name;                                          \
     bool __test_##name() {                                      \
         int __passed = 0, __failed = 0;                         \
-        std::cout << "=======================\n"                \
-                  << "Test: " #name << std::endl;               \
 
 #define END                                                     \
-        std::cout << "Passed: "<< __passed << ", Failed: "      \
-                  << __failed << std::endl;                     \
-        return __failed != 0;                                   \
+        return __passed != 0 && __failed != 0;                  \
+    }
+
+#define TEST_MAIN                                                   \
+    int main(int argc, char const *argv[]) {                        \
+        using namespace std;                                        \
+        vector<string> passed_tests, failed_tests;                  \
+        cout << "[" __FILE__ "]" << endl;                           \
+        for (auto p : __tests) {                                    \
+            if ((p.second)()) {                                     \
+                failed_tests.push_back(p.first);                    \
+            } else {                                                \
+                passed_tests.push_back(p.first);                    \
+            }                                                       \
+        }                                                           \
+        cout << passed_tests.size() << " tests passed:";            \
+        for (auto p : passed_tests) {                               \
+            cout << "  " << p;                                      \
+        }                                                           \
+        cout << endl;                                               \
+        cout << failed_tests.size() << " tests failed:";            \
+        for (auto p : failed_tests) {                               \
+            cout << "  " << p << endl;                              \
+        }                                                           \
+        cout << endl << endl;                                       \
+        return 0;                                                   \
     }
 
 #endif // ZTEST_H

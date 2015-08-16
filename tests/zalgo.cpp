@@ -47,3 +47,6 @@ TEST(relative_access)
     EQUAL(*(v << 1), 4)
     EQUAL((*(vector<int> {1, 2, 5, 3, 4} << 1)), 4)
 END
+
+TEST_MAIN
+

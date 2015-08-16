@@ -11,6 +11,59 @@
 
 namespace zl {
 
+template <typename SequenceT>
+std::ostream& printSequence(std::ostream& out, const SequenceT& seq) {
+    if (seq.size() == 0) {
+        return out << "[]";
+    }
+    auto it = seq.begin(), end = seq.end();
+    out << "[" << *it;
+    while (++it != end) {
+        out << ", " << *it;
+    }
+    out << "]";
+    return out;
+}
+
+template <typename MapT>
+std::ostream& printMap(std::ostream& out, const MapT& map) {
+    if (map.size() == 0) {
+        return out << "{}";
+    }
+    auto it = map.begin();
+    out << "{" << it->first << ": " << it->second;
+    while (++it != map.end()) {
+        out << ", " << it->first << ": " << it->second;
+    }
+    out << "}";
+    return out;
+}
+
+template <typename T>
+std::ostream& operator << (std::ostream& out, const std::vector<T>& vec) {
+    return zl::printSequence(out, vec);
+}
+
+template <typename T>
+std::ostream& operator << (std::ostream& out, const std::list<T>& vec) {
+    return zl::printSequence(out, vec);
+}
+
+template <typename T>
+std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils) {
+    return zl::printSequence(out, ils);
+}
+
+template <typename K, typename V>
+std::ostream& operator << (std::ostream& out, const std::pair<K, V>& p) {
+    return out << "<" << p.first << ", " << p.second << ">";
+}
+
+template <typename K, typename V>
+std::ostream& operator << (std::ostream& out, const std::map<K, V>& map) {
+    return zl::printMap(out, map);
+}
+
 class Logger {
 private:
     std::ostream& out;
@@ -24,10 +77,10 @@ public:
     }
 
     template <typename T>
-    Logger& operator , (const T& t) {
+    Logger& operator , (T&& t) {
         if (space) out << " ";
         else space = true;
-        out << t;
+        out << std::forward<T>(t);
         return *this;
     }
 
@@ -73,67 +126,15 @@ public:
     }
 
     template <typename T>
-    FormatLogger& operator , (const T& t) {
-        formatter % t;
+    FormatLogger& operator , (T&& t) {
+        formatter % std::forward<T>(t);
         return *this;
     }
 
 };
 
-template <typename SequenceT>
-std::ostream& printSequence(std::ostream& out, const SequenceT& seq) {
-    if (seq.size() == 0) {
-        return out << "[]";
-    }
-    auto it = seq.begin(), end = seq.end();
-    out << "[" << *it;
-    while (++it != end) {
-        out << ", " << *it;
-    }
-    out << "]";
-    return out;
-}
-
-template <typename MapT>
-std::ostream& printMap(std::ostream& out, const MapT& map) {
-    if (map.size() == 0) {
-        return out << "{}";
-    }
-    auto it = map.begin();
-    out << "{" << it->first << ": " << it->second;
-    while (++it != map.end()) {
-        out << ", " << it->first << ": " << it->second;
-    }
-    out << "}";
-    return out;
-}
-
 } // namespace zl
 
-template <typename T>
-std::ostream& operator << (std::ostream& out, const std::vector<T>& vec) {
-    return zl::printSequence(out, vec);
-}
-
-template <typename T>
-std::ostream& operator << (std::ostream& out, const std::list<T>& vec) {
-    return zl::printSequence(out, vec);
-}
-
-template <typename T>
-std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils) {
-    return zl::printSequence(out, ils);
-}
-
-template <typename K, typename V>
-std::ostream& operator << (std::ostream& out, const std::pair<K, V>& p) {
-    return out << "<" << p.first << ", " << p.second << ">";
-}
-
-template <typename K, typename V>
-std::ostream& operator << (std::ostream& out, const std::map<K, V>& map) {
-    return zl::printMap(out, map);
-}
 
 #ifdef NDEBUG
 # define zlog           //

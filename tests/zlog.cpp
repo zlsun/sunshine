@@ -29,3 +29,6 @@ TEST(zlog)
     check("1 44   1.000 %\n")
 
 END
+
+TEST_MAIN
+
