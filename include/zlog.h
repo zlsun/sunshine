@@ -64,6 +64,14 @@ std::ostream& operator << (std::ostream& out, const std::map<K, V>& map) {
     return zl::printMap(out, map);
 }
 
+class DummyLogger {
+public:
+    template <typename T>
+    DummyLogger& operator , (T&& t) {
+        return *this;
+    }
+};
+
 class Logger {
 private:
     std::ostream& out;
@@ -137,9 +145,9 @@ public:
 
 
 #ifdef NDEBUG
-# define zlog           //
-# define zlogo(out)     //
-# define zlogf(format)  //
+# define zlog           (zl::DummyLogger()),
+# define zlogo(out)     (zl::DummyLogger()),
+# define zlogf(format)  (zl::DummyLogger()),
 #else
 # define zlog           (zl::Logger()),
 # define zlogo(out)     (zl::Logger(out)),
