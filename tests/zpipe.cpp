@@ -4,7 +4,7 @@
 using namespace std;
 using namespace zl;
 
-TEST(zpipe)
+TEST(basic)
     const vector<int> v {1, 2, 3};
     auto u = ifrom(v)
            | iwhere([](int i) {
@@ -27,7 +27,7 @@ TEST(zpipe)
     EQUAL(irepeat(1, 10) | isum(), 10)
 END
 
-TEST(zpipe_aggregate)
+TEST(aggregate)
     int A[] {1, 2, 3, 4, 5};
     EQUAL(ifrom(A) | imax, 5)
     EQUAL(ifrom(A) | imin, 1)
@@ -35,7 +35,7 @@ TEST(zpipe_aggregate)
     EQUAL(ifrom({1, 2, 2, 4}) | icount(2), 2)
 END
 
-TEST(zpipe_concat)
+TEST(concat)
     const char* s = "ABC";
     EQUAL(ifrom(s) | iconcat(", "), "A, B, C")
     vector<string> vs {"1", "2", "3"};
@@ -43,7 +43,7 @@ TEST(zpipe_concat)
     EQUAL(ifrom(vs) | iconcat('|', 2), "1||2||3")
 END
 
-TEST(zpipe_range)
+TEST(range)
     EQUAL(irange(10) | isum(), 45)
     EQUAL(irange(10) | isum(2), 47)
     EQUAL(irange(2, 10) | isum(), 44)
@@ -52,7 +52,7 @@ TEST(zpipe_range)
     EQUAL(irange('a', 'c' + 1) | iconcat('|'), "a|b|c")
 END
 
-TEST(zpipe_print)
+TEST(print)
     ostringstream ss;
     string s;
 
@@ -77,7 +77,7 @@ TEST(zpipe_print)
     check("[1, 1, 1]\n");
 END
 
-TEST(zpipe_algorithm)
+TEST(algorithm)
     EQUAL(ifrom({3, 2, 4, 1}) | ireverse | to_vector, (vector<int> {1, 4, 2, 3}))
     EQUAL(ifrom({3, 2, 4, 1}) | isort | to_vector, (vector<int> {1, 2, 3, 4}))
 END

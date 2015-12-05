@@ -9,7 +9,7 @@ INCLUDE_FLAGS = $(patsubst %,-I%,$(I))
 CPPFLAGS      = $(INCLUDE_FLAGS)
 CXXFLAGS      = -Wall -std=c++1y
 LDFLAGS       =
-LDLIBS        = -lstdc++
+LDLIBS        = -lstdc++ -lboost_system -lboost_filesystem
 
 cpps = $(wildcard $S/*.cpp)
 objs = $(patsubst $S/%, $B/%, $(cpps:.cpp=.o))
@@ -17,10 +17,16 @@ deps = $(objs:.o=.d)
 tests = $(objs:.o=)
 
 # phony targets
-.PHONY : test clean
+.PHONY : test test_filesystem clean rebuild
 
-test: $(tests)
+test: $(tests) test_filesystem
 	@$(foreach t, $(tests), ./$t;)
+
+test_filesystem: $B/testdir/file
+
+$B/testdir/file:
+	@mkdir -p $(@D)
+	@touch $@
 
 $B/%: $B/%.o
 	@echo -e 'Linking $^\t-> $@'
@@ -44,7 +50,7 @@ ifneq ($(MAKECMDGOALS), clean)
 endif
 
 clean:
-	$(RM) -r $(B)
+	$(RM) -r $B
 
 rebuild:
 	@make clean --no-print-directory

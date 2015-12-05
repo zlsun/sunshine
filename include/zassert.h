@@ -1,7 +1,7 @@
 // clone from https://github.com/hjcapple/clover/blob/master/clover/Debug.h
 
-#ifndef ZREQUIRE_H
-#define ZREQUIRE_H
+#ifndef ZASSERT_H
+#define ZASSERT_H
 
 #include <iostream>
 #include <fstream>
@@ -11,8 +11,8 @@ namespace zl {
 
 class NullAssert {
 public:
-    char __SMART_ASSERT_A;
-    char __SMART_ASSERT_B;
+    char __ZASSERT_A;
+    char __ZASSERT_B;
 };
 
 class Assert : public NullAssert {
@@ -57,27 +57,27 @@ inline Assert makeAssert(bool needAbort, const char* msg) {
     return Assert(needAbort);
 }
 
-#define __SMART_ASSERT_A(x) __SMART_ASSERT_OP(x, B)
-#define __SMART_ASSERT_B(x) __SMART_ASSERT_OP(x, A)
+#define __ZASSERT_A(x) __ZASSERT_OP(x, B)
+#define __ZASSERT_B(x) __ZASSERT_OP(x, A)
 
 #ifdef NDEBUG
-# define __SMART_ASSERT_OP(x, next) __SMART_ASSERT_##next
-# define SMART_ASSERT(expr) zl::NullAssert().__SMART_ASSERT_A
-# define SMART_ASSERT_NOCONTEXT(expr) zl::NullAssert().__SMART_ASSERT_A
-# define SMART_ASSERT_NOABORT(expr) zl::NullAssert().__SMART_ASSERT_A
-# define SMART_ASSERT_NOCONTEXT_NOABORT(expr) zl::NullAssert().__SMART_ASSERT_A
+# define __ZASSERT_OP(x, next) __ZASSERT_##next
+# define ZASSERT(expr) zl::NullAssert().__ZASSERT_A
+# define ZASSERT_NOCONTEXT(expr) zl::NullAssert().__ZASSERT_A
+# define ZASSERT_NOABORT(expr) zl::NullAssert().__ZASSERT_A
+# define ZASSERT_NOCONTEXT_NOABORT(expr) zl::NullAssert().__ZASSERT_A
 #else
-# define __SMART_ASSERT_OP(x, next) printValue(#x, (x)).__SMART_ASSERT_##next
-# define SMART_ASSERT(expr) \
-    if (!(expr)) zl::makeAssert(true, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
-# define SMART_ASSERT_NOCONTEXT(expr) \
-    if (!(expr)) zl::makeAssert(true, #expr).__SMART_ASSERT_A
-# define SMART_ASSERT_NOABORT(expr) \
-    if (!(expr)) zl::makeAssert(false, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__SMART_ASSERT_A
-# define SMART_ASSERT_NOCONTEXT_NOABORT(expr) \
-    if (!(expr)) zl::makeAssert(false, #expr).__SMART_ASSERT_A
+# define __ZASSERT_OP(x, next) printValue(#x, (x)).__ZASSERT_##next
+# define ZASSERT(expr) \
+    if (!(expr)) zl::makeAssert(true, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__ZASSERT_A
+# define ZASSERT_NOCONTEXT(expr) \
+    if (!(expr)) zl::makeAssert(true, #expr).__ZASSERT_A
+# define ZASSERT_NOABORT(expr) \
+    if (!(expr)) zl::makeAssert(false, #expr).printContext(__FILE__, __FUNCTION__, __LINE__).__ZASSERT_A
+# define ZASSERT_NOCONTEXT_NOABORT(expr) \
+    if (!(expr)) zl::makeAssert(false, #expr).__ZASSERT_A
 #endif
 
 } // namespace zl
 
-#endif // ZREQUIRE_H
+#endif // ZASSERT_H

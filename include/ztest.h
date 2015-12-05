@@ -24,6 +24,10 @@ std::vector<std::pair<std::string, bool(*)()>> __tests;
     "(line " << __LINE__ << ") failure #" << __failed << ":\n" <<               \
     #a " == " #b ", with\n\t" #a " : " << (a) << "\n\t" #b " : " << (b) << "")
 
+#define TRUE(s) EQUAL(s, true)
+
+#define FALSE(s) EQUAL(s, false)
+
 #define SUCCEED __failed = 0;
 
 #define FAILED(msg) JUDGE_FALSE("(line " << __LINE__ << ") failure #" << __failed << ": " << msg);
