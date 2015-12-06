@@ -1,3 +1,3 @@
 sunlib
 ===========
-A collection of useful utilities.
+Header-only library for C++.
