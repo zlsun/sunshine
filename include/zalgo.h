@@ -8,13 +8,14 @@
 namespace std {
 
 // macros for generating code
+
 #define FW(T, t)      std::forward<T>(t)
 #define FWB(T, ctn)   std::begin(FW(T, ctn))
 #define FWE(T, ctn)   std::end(FW(T, ctn))
 #define FWBE(T, ctn)  FWB(T, ctn), FWE(T, ctn)
 #define FW_ARGS       FW(Args, args)...
 
-// for ALGO(Iter, Iter, ...)
+// ALGO(Iter, Iter, ...)
 #define GEN_II(ALGO)                                        \
     template <typename T, typename... Args>                 \
     inline auto ALGO(T&& ctn, Args&&... args)               \
@@ -22,7 +23,7 @@ namespace std {
              return std::ALGO(FWBE(T, ctn), FW_ARGS);       \
     }
 
-// for ALGO(Iter1, Iter1, Iter2...)
+// ALGO(Iter1, Iter1, Iter2...)
 #define GEN_IIT(ALGO)                                                   \
     template <typename T1, typename T2, typename... Args>               \
     inline auto ALGO(T1&& ctn, T2&& tgt, Args&&... args)                \
@@ -30,7 +31,7 @@ namespace std {
              return std::ALGO(FWBE(T1, ctn), FWB(T2, tgt), FW_ARGS);    \
     }
 
-// for ALGO(Iter, Iter, Iter...)
+// ALGO(Iter, Iter, Iter...)
 #define GEN_III(ALGO)                                                               \
     template <typename T, typename Iter, typename... Args>                          \
     inline auto ALGO(T&& ctn, Iter&& mid, Args&&... args)                           \
@@ -38,7 +39,7 @@ namespace std {
              return std::ALGO(FWB(T, ctn), FW(Iter, mid), FWE(T, ctn), FW_ARGS);    \
     }
 
-// for ALGO(Iter1, Iter1, Iter1, Iter2...)
+// ALGO(Iter1, Iter1, Iter1, Iter2...)
 #define GEN_IIIT(ALGO)                                                                              \
     template <typename T1, typename Iter, typename T2, typename... Args>                            \
     inline auto ALGO(T1&& ctn, Iter&& mid, T2&& tgt, Args&&... args)                                \
@@ -46,7 +47,7 @@ namespace std {
              return std::ALGO(FWB(T1, ctn), FW(Iter, mid), FWE(T1, ctn), FWB(T2, tgt), FW_ARGS);    \
     }
 
-// for ALGO(Iter1, Iter1, Iter2, Iter2...)
+// ALGO(Iter1, Iter1, Iter2, Iter2...)
 #define GEN_IITT(ALGO)                                                      \
     template <typename T1, typename T2, typename... Args>                   \
     inline auto ALGO(T1&& ctn1, T2&& ctn2, Args&&... args)                  \
@@ -54,7 +55,7 @@ namespace std {
              return std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FW_ARGS);     \
     }
 
-// for ALGO(Iter1, Iter1, Iter2, Iter2, Iter3...)
+// ALGO(Iter1, Iter1, Iter2, Iter2, Iter3...)
 #define GEN_IITTE(ALGO)                                                                 \
     template <typename T1, typename T2, typename T3, typename... Args>                  \
     inline auto ALGO(T1&& ctn1, T2&& ctn2, T3&& tgt, Args&&... args)                    \
@@ -146,7 +147,7 @@ inline auto transform2(T1&& ctn1, T2&& ctn2, T3&& tgt, Op&& op)
      return std::transform(FWBE(T1, ctn1), FWB(T2, ctn2), FWB(T3, tgt), FW(Op, op));
 }
 
-// shift operators for getting iterator
+// get offset iterator
 template <typename T>
 inline auto operator >> (T&& ctn, int n)
 -> decltype(std::begin(ctn)) {

@@ -8,31 +8,24 @@
 #include <cstring>
 #include <cassert>
 
+#include "zcommon.h"
 #include "zlog.h"
 #include "ztraits.h"
 
-namespace zl {
+NS_ZL_BEGIN
 
 // ===========================================================================
 
 template <typename Enum>
-struct GenFuncFor {
-    friend std::ostream& operator << (std::ostream& out, Enum e) {
-        if (!e) {
-            return out << "[]";
-        }
-        out << "[" << *e;
-        ++e;
-        for (auto i : e) {
-            out << ", " << i;
-        }
-        return out << "]";
-    }
+struct IEnum {
     friend Enum& begin(Enum& e) {
         return e;
     }
     friend Enum& end(Enum& e) {
         return e;
+    }
+    friend auto operator * (Enum& e) {
+        return e.current();
     }
     friend Enum& operator ++ (Enum& e) {
         e.advance();
@@ -44,6 +37,25 @@ struct GenFuncFor {
     friend bool operator ! (Enum& a) {
         return a.over();
     }
+    friend std::ostream& operator << (std::ostream& out, Enum e) {
+        if (!e) {
+            return out << "[]";
+        }
+        out << "[" << *e;
+        ++e;
+        for (auto i : e) {
+            out << ", " << i;
+        }
+        return out << "]";
+    }
+};
+
+template <typename Func>
+struct IFunc {
+    template <typename Enum>
+    auto operator () (Enum e) {
+        return Func::apply(e);
+    }
 };
 
 template <typename Enum, typename Func>
@@ -54,12 +66,12 @@ auto operator | (Enum e, Func f) {
 // ===========================================================================
 
 template <typename It>
-struct StdEnum : GenFuncFor<StdEnum<It>> {
+struct StdEnum : IEnum<StdEnum<It>> {
     using ValueT = typename std::iterator_traits<It>::value_type;
     It icur;
     It iend;
     StdEnum(It b, It e): icur(b), iend(e) {}
-    ValueT operator * () const {
+    ValueT current() const {
         return *icur;
     }
     bool over() const {
@@ -89,12 +101,12 @@ auto ifrom(const char* s) {
 // ===========================================================================
 
 template <typename T>
-struct RepeatEnum : GenFuncFor<RepeatEnum<T>> {
+struct RepeatEnum : IEnum<RepeatEnum<T>> {
     using ValueT = T;
     T x;
     size_t n, i = 0;
     RepeatEnum(const T& x, size_t n): x(x), n(n) {}
-    T operator * () const {
+    T current() const {
         return x;
     }
     bool over() const {
@@ -113,12 +125,12 @@ RepeatEnum<T> irepeat(T t, size_t n = 0) {
 // ===========================================================================
 
 template <typename T>
-struct RangeEnum : GenFuncFor<RangeEnum<T>> {
+struct RangeEnum : IEnum<RangeEnum<T>> {
     using ValueT = T;
     ValueT icur, iend, istep;
     RangeEnum(const ValueT& b, const ValueT& e, const ValueT& s)
         : icur(b), iend(e), istep(s) {}
-    ValueT operator * () const {
+    ValueT current() const {
         return icur;
     }
     bool over() const {
@@ -145,9 +157,9 @@ auto irange(int e) {
 
 // ===========================================================================
 
-struct ToVector {
+struct ToVector : IFunc<ToVector> {
     template <typename E>
-    std::vector<typename E::ValueT> operator () (E& e) const {
+    auto operator () (E& e) const {
         std::vector<typename E::ValueT> v;
         for (auto i : e) {
             v.push_back(i);
@@ -159,11 +171,11 @@ struct ToVector {
 // ===========================================================================
 
 template <typename E, typename F>
-struct SelectEnum: GenFuncFor<SelectEnum<E, F>>, E {
+struct SelectEnum: IEnum<SelectEnum<E, F>>, E {
     F f;
     SelectEnum(const E& e, F f): E(e), f(f) {}
-    auto operator * () const {
-        return f(E::operator * ());
+    auto current() const {
+        return f(E::current());
     }
 };
 
@@ -185,13 +197,13 @@ Select<F> iselect(F f) {
 // ===========================================================================
 
 template <typename E, typename F>
-struct WhereEnum: GenFuncFor<WhereEnum<E, F>>, E {
+struct WhereEnum: IEnum<WhereEnum<E, F>>, E {
     F f;
     WhereEnum(const E& e, F f): E(e), f(f) {}
     void advance() {
         do {
             E::advance();
-        } while (!E::over() && !f(E::operator * ()));
+        } while (!E::over() && !f(E::current()));
     }
 };
 
@@ -222,8 +234,8 @@ struct Aggregate {
         if (!e) {
             return result;
         }
-        result = *e;
-        ++e;
+        result = e.current();
+        e.advance();
         for (auto i : e) {
             result = f(result, i);
         }
@@ -331,8 +343,8 @@ struct Concat {
         if (!e) {
             return result;
         }
-        result += *e;
-        ++e;
+        result += e.current();
+        e.advance();
         for (auto i : e) {
             result += split;
             result += i;
@@ -417,7 +429,7 @@ public:
 
 template <typename E>
 struct ReverseEnum
-    : GenFuncFor<ReverseEnum<E>>
+    : IEnum<ReverseEnum<E>>
     , MemberHolder<std::vector<typename E::ValueT>>
     , StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator> {
     using VecMem = MemberHolder<std::vector<typename E::ValueT>>;
@@ -451,7 +463,7 @@ public:
 
 template <typename E>
 struct SortEnum
-    : GenFuncFor<SortEnum<E>>
+    : IEnum<SortEnum<E>>
     , SortedMemberHolder<std::vector<typename E::ValueT>>
     , StdEnum<typename std::vector<typename E::ValueT>::iterator> {
     using SortedVecMem = SortedMemberHolder<std::vector<typename E::ValueT>>;
@@ -493,6 +505,6 @@ auto isortby(F cmp) {
 
 // ===========================================================================
 
-} // namespace zl
+NS_ZL_END
 
 #endif // ZPIPE_H

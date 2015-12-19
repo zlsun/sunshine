@@ -7,6 +7,10 @@
 #include <cstdlib>
 #include <cstdio>
 
+#include "zcommon.h"
+
+NS_ZL_BEGIN
+
 std::vector<std::pair<std::string, bool(*)()>> __tests;
 
 #define JUDGE_TRUE(msg) ++__passed;
@@ -36,7 +40,7 @@ std::vector<std::pair<std::string, bool(*)()>> __tests;
     bool __test_##name();                                       \
     struct __struct_##name {                                    \
         __struct_##name() {                                     \
-            __tests.push_back({#name, __test_##name});          \
+            zl::__tests.push_back({#name, __test_##name});  \
         }                                                       \
     } __struct_##name;                                          \
     bool __test_##name() {                                      \
@@ -51,7 +55,7 @@ std::vector<std::pair<std::string, bool(*)()>> __tests;
         using namespace std;                                        \
         vector<string> passed_tests, failed_tests;                  \
         cout << "[" __FILE__ "]" << endl;                           \
-        for (auto p : __tests) {                                    \
+        for (auto p : zl::__tests) {                                \
             if ((p.second)()) {                                     \
                 failed_tests.push_back(p.first);                    \
             } else {                                                \
@@ -70,5 +74,7 @@ std::vector<std::pair<std::string, bool(*)()>> __tests;
         cout << endl << endl;                                       \
         return 0;                                                   \
     }
+
+NS_ZL_END
 
 #endif // ZTEST_H

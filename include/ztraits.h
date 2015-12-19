@@ -7,7 +7,9 @@
 #include <functional>
 #include <type_traits>
 
-namespace zl {
+#include "zcommon.h"
+
+NS_ZL_BEGIN
 
 namespace detail {
     template <typename C, typename R, typename... A>
@@ -152,6 +154,6 @@ struct is_binary_function {
     enum { value = function_traits<Op>::arity == 2 };
 };
 
-} // namespace zl
+NS_ZL_END
 
 #endif // ZTRAITS_H

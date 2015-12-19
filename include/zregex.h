@@ -3,6 +3,7 @@
 
 #include <regex>
 
+#include "zcommon.h"
 #include "zstring.h"
 
 #define FORWARD_METHOD_TO(reciver, method)                  \
@@ -12,7 +13,7 @@
     }
 #define FORWARD_TO_REGEX(method) FORWARD_METHOD_TO(regex, method)
 
-namespace zl {
+NS_ZL_BEGIN
 
 template <
     typename CharT,
@@ -296,6 +297,6 @@ WRegex operator "" _wr (const wchar_t* s, std::size_t len) {
     return WRegex(s, len);
 }
 
-}
+NS_ZL_END
 
 #endif // ZREGEX_H

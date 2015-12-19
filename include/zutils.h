@@ -1,10 +1,12 @@
 #ifndef ZUTILS_H
 #define ZUTILS_H
 
-namespace zl {
+#include "zcommon.h"
+
+NS_ZL_BEGIN
 
 template <class T>
-struct implement_relational_operators {
+struct ImplementRelationalOperators {
     friend bool operator <= (const T& a, const T& b) {
         return a < b || a == b;
     }
@@ -19,6 +21,6 @@ struct implement_relational_operators {
     }
 };
 
-}
+NS_ZL_END
 
 #endif // ZUTILS_H

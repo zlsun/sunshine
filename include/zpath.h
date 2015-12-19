@@ -3,10 +3,11 @@
 
 #include <boost/filesystem.hpp>
 
+#include "zcommon.h"
 #include "zalgo.h"
 #include "zstring.h"
 
-namespace zl {
+NS_ZL_BEGIN
 
 namespace detail {
     using namespace boost::system;
@@ -116,6 +117,6 @@ Path operator "" _path (const char* s, size_t len) {
     return Path(s);
 }
 
-}
+NS_ZL_END
 
 #endif // ZPATH_H

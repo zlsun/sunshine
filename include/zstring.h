@@ -7,6 +7,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
+#include "zcommon.h"
 #include "zalgo.h"
 #include "zutils.h"
 
@@ -17,15 +18,15 @@
     }
 #define FORWARD_TO_STR(method) FORWARD_METHOD_TO(str, method)
 
-namespace zl {
+NS_ZL_BEGIN
 
 template <
     class CharT,
     class Traits = std::char_traits<CharT>,
     class Allocator = std::allocator<CharT>
-    >
+>
 class BasicString
-    : implement_relational_operators<BasicString<CharT>>
+    : ImplementRelationalOperators<BasicString<CharT>>
 {
 private:
     using StringT = std::basic_string<CharT, Traits, Allocator>;
@@ -425,6 +426,6 @@ boost::wformat operator "" _wf (const wchar_t* s, std::size_t len) {
     return boost::wformat(s);
 }
 
-}
+NS_ZL_END
 
 #endif // ZSTRING_H

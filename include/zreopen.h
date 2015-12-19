@@ -3,6 +3,10 @@
 
 #include <cstdio>
 
+#include "zcommon.h"
+
+NS_ZL_BEGIN
+
 struct __stdreopen {
     __stdreopen() {
         std::freopen(IN_FILE, "r", stdin);
@@ -10,5 +14,6 @@ struct __stdreopen {
     }
 } __stdreopen_instance;
 
+NS_ZL_END
 
 #endif // ZSTDRO_H

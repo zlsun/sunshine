@@ -7,7 +7,9 @@
 #include <fstream>
 #include <cstdlib>
 
-namespace zl {
+#include "zcommon.h"
+
+NS_ZL_BEGIN
 
 class NullAssert {
 public:
@@ -78,6 +80,6 @@ inline Assert makeAssert(bool needAbort, const char* msg) {
     if (!(expr)) zl::makeAssert(false, #expr).__ZASSERT_A
 #endif
 
-} // namespace zl
+NS_ZL_END
 
 #endif // ZASSERT_H
