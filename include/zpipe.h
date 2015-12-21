@@ -229,8 +229,8 @@ struct Aggregate {
     F f;
     Aggregate(F f): f(f) {}
     template <typename E>
-    typename E::ValueT operator () (E& e) const {
-        typename E::ValueT result;
+    auto operator () (E& e) const {
+        auto result = typename E::ValueT();
         if (!e) {
             return result;
         }

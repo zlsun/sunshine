@@ -15,7 +15,8 @@ namespace detail {
 #endif
 #ifdef MEM_FN_SYMBOL
     template <typename F>
-    using UniverseFunctionType = std::conditional_t<std::is_member_pointer<F>::value,
+    using UniverseFunctionType = std::conditional_t<
+        std::is_member_pointer<F>::value,
         MEM_FN_SYMBOL<F>,
         std::function<F>
     >;
@@ -27,7 +28,8 @@ template <typename F>
 struct Function: detail::UniverseFunctionType<F> {
     using BaseType = detail::UniverseFunctionType<F>;
     template <typename... Args>
-    Function(Args... args): BaseType(args...) {}
+    Function(Args&&... args)
+        : BaseType(std::forward<Args>(args)...) {}
 };
 
 NS_ZL_END

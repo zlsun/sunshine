@@ -8,6 +8,9 @@ TEST(construct)
     String s = "1234";
     String ss(5, 's');
     const String cs = {'1', '2', '3', '4'};
+    EQUAL(s, "1234")
+    EQUAL(ss, "sssss")
+    EQUAL(cs, s)
 END
 
 TEST(access)

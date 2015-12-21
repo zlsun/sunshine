@@ -74,17 +74,13 @@ public:
 
     BasicString(const BasicString& s) : str(s.str) {}
     BasicString(const BasicString& s, const Allocator& alloc) : str(s.str, alloc) {}
-    BasicString(BasicString&& s)
-        : str(std::move(s.str)) {}
-    BasicString(BasicString&& s, const Allocator& alloc)
-        : str(std::move(s.str), alloc) {}
+    BasicString(BasicString&& s) : str(std::move(s.str)) {}
+    BasicString(BasicString&& s, const Allocator& alloc) : str(std::move(s.str), alloc) {}
 
     BasicString(const StringT& s) : str(s) {}
     BasicString(const StringT& s, const Allocator& alloc) : str(s, alloc) {}
-    BasicString(StringT&& s)
-        : str(std::move(s)) {}
-    BasicString(StringT&& s, const Allocator& alloc)
-        : str(std::move(s), alloc) {}
+    BasicString(StringT&& s) : str(std::move(s)) {}
+    BasicString(StringT&& s, const Allocator& alloc) : str(std::move(s), alloc) {}
 
     BasicString(IListT ilist, const Allocator& alloc = Allocator())
         : str(std::move(ilist), alloc) {}
@@ -353,7 +349,7 @@ public:
     // Extended Methods
 
     int count(char c) const {
-        return std::count(str, c);
+        return std::count(str.begin(), str.end(), c);
     }
 
     BasicString lower() const {

@@ -130,8 +130,8 @@ private:
 
     // special case of const T (&array)[N], print the string directly
     template <size_t N>
-    void print(const char (&string)[N]) {
-        out << string;
+    void print(const char (&str)[N]) {
+        out << str;
     }
 };
 

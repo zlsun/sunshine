@@ -14,30 +14,35 @@ namespace detail {
     using namespace boost::filesystem;
 }
 
-#define MODIFIER_FORWARD(name)              \
-    template <class... Args>                \
-    Path& name(Args... args) {              \
-        detail::path::name(args...);        \
-        return *this;                       \
+#define MODIFIER_FORWARD(name)                           \
+    template <class... Args>                             \
+    Path& name(Args&&... args) {                         \
+        detail::path::name(std::forward<Args>(args)...); \
+        return *this;                                    \
     }
 
-#define DECOMPOSITION_FORWARD(name)         \
-    template <class... Args>                \
-    Path name(Args... args) const {         \
-        return detail::path::name(args...); \
+#define DECOMPOSITION_FORWARD(name)                             \
+    template <class... Args>                                    \
+    Path name(Args&&... args) const {                           \
+        return detail::path::name(std::forward<Args>(args)...); \
     }
 
-#define OPERATIONAL_FORWARD(name)                           \
-    template <class... Args>                                \
-    auto name(Args... args) const {                         \
-        return detail::name(get_path(), args...);           \
+#define OPERATIONAL_FORWARD(name)                                     \
+    template <class... Args>                                          \
+    auto name(Args&&... args) const {                                 \
+        return detail::name(get_path(), std::forward<Args>(args)...); \
     }
 
 class Path : public detail::path {
 public:
+    using detail::path::value_type;
+    using detail::path::string_type;
+    using detail::path::codecvt_type;
+
     template <class... Args>
-    Path(Args... args): detail::path(args...) {}
+    Path(Args&&... args): detail::path(std::forward<Args>(args)...) {}
     Path(const BasicString<value_type>& str): Path(str.c_str()) {}
+    Path(BasicString<value_type>&& str): Path(str.c_str()) {}
 
     detail::path& get_path() {
         return *this;
@@ -101,12 +106,12 @@ public:
     OPERATIONAL_FORWARD(system_complete)
 
     template <class... Args>
-    static Path temp_directory_path(Args... args) {
-        return detail::temp_directory_path(args...);
+    static Path temp_directory_path(Args&&... args) {
+        return detail::temp_directory_path(std::forward<Args>(args)...);
     }
     template <class... Args>
-    static Path unique_path(Args... args) {
-        return detail::unique_path(args...);
+    static Path unique_path(Args&&... args) {
+        return detail::unique_path(std::forward<Args>(args)...);
     }
     static Path unique_path(const Path& model="%%%%-%%%%-%%%%-%%%%") {
         return detail::unique_path(model);

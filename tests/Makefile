@@ -5,6 +5,8 @@ S  = .
 B  = build
 
 # compile and link flags
+CC            = clang
+CXX           = clang
 INCLUDE_FLAGS = $(patsubst %,-I%,$(I))
 CPPFLAGS      = $(INCLUDE_FLAGS)
 CXXFLAGS      = -Wall -std=c++1y

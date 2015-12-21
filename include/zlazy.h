@@ -25,11 +25,7 @@ public:
     ~LazyInit() {
         delete lazy;
     }
-    LazyInit& operator = (const T& o) {
-        lazy = new T(o);
-        return *this;
-    }
-    LazyInit& operator = (T&& o) {
+    LazyInit& operator = (T o) {
         lazy = new T(std::move(o));
         return *this;
     }
