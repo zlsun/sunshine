@@ -1,6 +1,8 @@
 #include <sstream>
+
 #include "../include/ztest.h"
 #include "../include/zlog.h"
+
 using namespace std;
 
 TEST(zlog)

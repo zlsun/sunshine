@@ -1,7 +1,9 @@
 #include <vector>
 #include <iostream>
+
 #include "../include/zalgo.h"
 #include "../include/ztest.h"
+
 using namespace std;
 
 TEST(copy)
