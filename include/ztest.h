@@ -34,7 +34,8 @@ std::vector<std::pair<std::string, void(*)(int&, int&)>> __tests;
 
 #define SUCCEED __failed = 0;
 
-#define FAILED(msg) JUDGE_FALSE("(line " << __LINE__ << ") failure #" << __failed << ": " << msg);
+#define FAILED(msg) JUDGE_FALSE("(line " << __LINE__ << ") " <<         \
+                                "failure #" << __failed << ": " << msg);
 
 #define TEST(name)                                         \
     void __test_##name(int&, int&);                        \

@@ -188,7 +188,7 @@ public:
 NS_ZL_END
 
 
-#ifdef NDEBUG
+#ifdef DISABLE_ZLOG
 # define zlog            (zl::DummyLogger()),
 # define zlogg(args...)  (zl::DummyLogger()),
 # define zlogo(args...)  (zl::DummyLogger()),

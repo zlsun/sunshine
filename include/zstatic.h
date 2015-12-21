@@ -30,7 +30,6 @@ namespace detail
         {
             return *this;
         }
-        void operator () () const {}
     };
     template <>
     struct StaticBranch<true>

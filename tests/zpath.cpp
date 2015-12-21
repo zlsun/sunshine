@@ -11,13 +11,13 @@ Path test_dir;
 Path test_file;
 Path test_file2;
 
-INIT_BEGIN
-current_file = Path(__FILE__).absolute();
-current_dir = current_file.parent_path();
-test_dir = current_dir / "build" / "testdir";
-test_file = test_dir / "file";
-test_file2 = test_dir / "file2";
-INIT_END
+INIT {
+    current_file = Path(__FILE__).absolute();
+    current_dir = current_file.parent_path();
+    test_dir = current_dir / "build" / "testdir";
+    test_file = test_dir / "file";
+    test_file2 = test_dir / "file2";
+}
 
 TEST(zpath)
 {

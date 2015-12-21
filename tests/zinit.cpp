@@ -4,10 +4,10 @@
 int a;
 int b;
 
-INIT_BEGIN {
+INIT {
     a = 1;
     b = a + 1;
-} INIT_END
+}
 
 TEST(init)
 {
