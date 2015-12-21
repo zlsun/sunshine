@@ -9,7 +9,8 @@
 
 NS_ZL_BEGIN
 
-namespace detail {
+namespace detail
+{
     using namespace boost::system;
     using namespace boost::filesystem;
 }
@@ -33,7 +34,8 @@ namespace detail {
         return detail::name(get_path(), std::forward<Args>(args)...); \
     }
 
-class Path : public detail::path {
+class Path : public detail::path
+{
 public:
     using detail::path::value_type;
     using detail::path::string_type;
@@ -44,17 +46,20 @@ public:
     Path(const BasicString<value_type>& str): Path(str.c_str()) {}
     Path(BasicString<value_type>&& str): Path(str.c_str()) {}
 
-    detail::path& get_path() {
+    detail::path& get_path()
+    {
         return *this;
     }
-    const detail::path& get_path() const {
+    const detail::path& get_path() const
+    {
         return *this;
     }
 
     MODIFIER_FORWARD(make_preferred)
     MODIFIER_FORWARD(remove_filename)
 
-    Path& replace_extension(const Path& new_ext = Path()) {
+    Path& replace_extension(const Path& new_ext = Path())
+    {
         detail::path::replace_extension(new_ext.get_path());
         return *this;
     }
@@ -68,16 +73,19 @@ public:
     DECOMPOSITION_FORWARD(stem)
     DECOMPOSITION_FORWARD(extension)
 
-    static Path current_path() {
+    static Path current_path()
+    {
         return detail::current_path();
     }
 
-    Path absolute(const Path& base = current_path()) {
+    Path absolute(const Path& base = current_path())
+    {
         return detail::absolute(get_path(), base.get_path());
     }
 
     OPERATIONAL_FORWARD(canonical)
-    Path canonical(const Path& base = current_path()) {
+    Path canonical(const Path& base = current_path())
+    {
         return detail::canonical(get_path(), base.get_path());
     }
 
@@ -106,19 +114,23 @@ public:
     OPERATIONAL_FORWARD(system_complete)
 
     template <class... Args>
-    static Path temp_directory_path(Args&&... args) {
+    static Path temp_directory_path(Args&&... args)
+    {
         return detail::temp_directory_path(std::forward<Args>(args)...);
     }
     template <class... Args>
-    static Path unique_path(Args&&... args) {
+    static Path unique_path(Args&&... args)
+    {
         return detail::unique_path(std::forward<Args>(args)...);
     }
-    static Path unique_path(const Path& model="%%%%-%%%%-%%%%-%%%%") {
+    static Path unique_path(const Path& model="%%%%-%%%%-%%%%-%%%%")
+    {
         return detail::unique_path(model);
     }
 };
 
-Path operator "" _path (const char* s, size_t len) {
+Path operator "" _path (const char* s, size_t len)
+{
     return Path(s);
 }
 

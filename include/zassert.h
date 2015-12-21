@@ -11,31 +11,37 @@
 
 NS_ZL_BEGIN
 
-class NullAssert {
+class NullAssert
+{
 public:
     char __ZASSERT_A;
     char __ZASSERT_B;
 };
 
-class Assert : public NullAssert {
+class Assert : public NullAssert
+{
 public:
-    Assert(bool needAbort) : _hasPrintValue(false), _abort(needAbort) {
+    Assert(bool needAbort) : _hasPrintValue(false), _abort(needAbort)
+    {
     }
 
-    ~Assert() {
+    ~Assert()
+    {
         std::cout << "\n";
         if (_abort) {
             abort();
         }
     }
-    Assert& printContext(const char* file, const char* function, int line) {
+    Assert& printContext(const char* file, const char* function, int line)
+    {
         std::cout << "File: " << file << " "
                   << "Line: " << line << "\n"
                   << "Function: " << function << "\n";
         return *this;
     }
     template <typename T>
-    Assert& printValue(const char* key, const T& value) {
+    Assert& printValue(const char* key, const T& value)
+    {
         if (!_hasPrintValue) {
             std::cout << "Context Variables: \n";
             _hasPrintValue = true;
@@ -52,7 +58,8 @@ private:
     bool _abort;
 };
 
-inline Assert makeAssert(bool needAbort, const char* msg) {
+inline Assert makeAssert(bool needAbort, const char* msg)
+{
     if (msg && *msg) {
         std::cout << "Assert failed: " << msg << "\n";
     }

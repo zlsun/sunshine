@@ -18,14 +18,16 @@ NS_ZL_BEGIN
 template <
     typename CharT,
     typename Traits = std::regex_traits<CharT>
-    >
-class BasicRegex {
+>
+class BasicRegex
+{
 private:
     using RegexT = std::basic_regex<CharT, Traits>;
     using IListT  = std::initializer_list<CharT>;
     RegexT regex;
 public:
-    class Flag {
+    class Flag
+    {
     private:
         using T = std::regex_constants::syntax_option_type;
     public:
@@ -43,11 +45,13 @@ public:
         T flag;
     public:
         Flag(T f = ECMAScript): flag(f) {}
-        operator T() const {
+        operator T() const
+        {
             return flag;
         }
     };
-    class Error {
+    class Error
+    {
     private:
         using T = std::regex_constants::error_type;
     public:
@@ -68,11 +72,13 @@ public:
         T error;
     public:
         Error(T e): error(e) {}
-        operator T() const {
+        operator T() const
+        {
             return error;
         }
     };
-    class Match {
+    class Match
+    {
     private:
         using T = std::regex_constants::match_flag_type;
     public:
@@ -89,11 +95,13 @@ public:
         T match;
     public:
         Match(T m): match(m) {}
-        operator T() const {
+        operator T() const
+        {
             return match;
         }
     };
-    class Format {
+    class Format
+    {
     private:
         using T = std::regex_constants::match_flag_type;
     public:
@@ -105,7 +113,8 @@ public:
         T format;
     public:
         Format(T f): format(f) {}
-        operator T() const {
+        operator T() const
+        {
             return format;
         }
     };
@@ -123,118 +132,144 @@ public:
     BasicRegex(BasicString<CharT, ST, SA> s, Flag f = Flag::ECMAScript)
         : regex(s, f) {}
 
-    BasicRegex& operator = (const BasicRegex& other) {
+    BasicRegex& operator = (const BasicRegex& other)
+    {
         return assign(other);
     }
-    BasicRegex& operator = (BasicRegex&& other) {
+    BasicRegex& operator = (BasicRegex&& other)
+    {
         return assign(std::move(other));
     }
-    BasicRegex& operator = (IListT ilist) {
+    BasicRegex& operator = (IListT ilist)
+    {
         return assign(std::move(ilist));
     }
 
-    BasicRegex& assign(const BasicRegex& other) {
+    BasicRegex& assign(const BasicRegex& other)
+    {
         regex.assign(other.regex);
         return *this;
     }
-    BasicRegex& assign(BasicRegex&& other) {
+    BasicRegex& assign(BasicRegex&& other)
+    {
         regex.assign(std::move(other.regex));
         return *this;
     }
-    BasicRegex& assign(IListT ilist) {
+    BasicRegex& assign(IListT ilist)
+    {
         regex.assign(std::move(ilist));
         return *this;
     }
 
-    unsigned mark_count() const {
+    unsigned mark_count() const
+    {
         return regex.mark_count();
     }
 
-    Flag flags() const {
+    Flag flags() const
+    {
         return (Flag)regex.flags();
     }
 
-    void swap(BasicRegex& other) {
+    void swap(BasicRegex& other)
+    {
         regex.swap(other.regex);
     }
 
-    friend void swap(BasicRegex<CharT, Traits>& lhs, BasicRegex<CharT, Traits>& rhs) {
+    friend void swap(BasicRegex<CharT, Traits>& lhs, BasicRegex<CharT, Traits>& rhs)
+    {
         return std::swap(lhs, rhs);
     }
 
     // regex_match
 
     template <class BiIter>
-    bool is_match(BiIter first, BiIter last, Match flags = Match::Default) {
+    bool is_match(BiIter first, BiIter last, Match flags = Match::Default)
+    {
         return std::regex_match(first, last, regex, flags);
     }
-    bool is_match(const CharT* str, Match flags = Match::Default) {
+    bool is_match(const CharT* str, Match flags = Match::Default)
+    {
         return is_match(str, str + Traits::length(str), flags);
     }
     template <class STraits, class SAlloc>
-    bool is_match(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default) {
+    bool is_match(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    {
         return is_match(s.begin(), s.end(), flags);
     }
     template <class STraits, class SAlloc>
-    bool is_match(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default) {
+    bool is_match(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    {
         return is_match(s.begin(), s.end(), flags);
     }
 
     template <class BiIter, class Alloc = std::allocator<CharT>>
     decltype(auto)
-    match(BiIter first, BiIter last, Match flags = Match::Default) {
+    match(BiIter first, BiIter last, Match flags = Match::Default)
+    {
         using MatchResult = std::match_results<BiIter, Alloc>;
         MatchResult result;
         std::regex_match(first, last, result, regex, flags);
         return result;
     }
-    decltype(auto) match(const CharT* str, Match flags = Match::Default) {
+    decltype(auto) match(const CharT* str, Match flags = Match::Default)
+    {
         return match(str, str + Traits::length(str), flags);
     }
     template <class STraits, class SAlloc>
-    decltype(auto) match(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default) {
+    decltype(auto) match(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    {
         return match(s.begin(), s.end(), flags);
     }
     template <class STraits, class SAlloc>
-    decltype(auto) match(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default) {
+    decltype(auto) match(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    {
         return match(s.begin(), s.end(), flags);
     }
 
     // regex_search
 
     template <class BiIter>
-    bool found(BiIter first, BiIter last, Match flags = Match::Default) {
+    bool found(BiIter first, BiIter last, Match flags = Match::Default)
+    {
         return std::regex_search(first, last, regex, flags);
     }
-    bool found(const CharT* str, Match flags = Match::Default) {
+    bool found(const CharT* str, Match flags = Match::Default)
+    {
         return found(str, str + Traits::length(str), flags);
     }
     template <class STraits, class SAlloc>
-    bool found(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default) {
+    bool found(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    {
         return found(s.begin(), s.end(), flags);
     }
     template <class STraits, class SAlloc>
-    bool found(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default) {
+    bool found(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    {
         return found(s.begin(), s.end(), flags);
     }
 
     template <class BiIter, class Alloc = std::allocator<CharT>>
     std::match_results<BiIter, Alloc>
-    search(BiIter first, BiIter last, Match flags = Match::Default) {
+    search(BiIter first, BiIter last, Match flags = Match::Default)
+    {
         using MatchResult = std::match_results<BiIter, Alloc>;
         MatchResult result;
         std::regex_search(first, last, result, regex, flags);
         return result;
     }
-    decltype(auto) search(const CharT* str, Match flags = Match::Default) {
+    decltype(auto) search(const CharT* str, Match flags = Match::Default)
+    {
         return search(str, str + Traits::length(str), flags);
     }
     template <class STraits, class SAlloc>
-    decltype(auto) search(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default) {
+    decltype(auto) search(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    {
         return search(s.begin(), s.end(), flags);
     }
     template <class STraits, class SAlloc>
-    decltype(auto) search(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default) {
+    decltype(auto) search(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    {
         return search(s.begin(), s.end(), flags);
     }
 
@@ -244,28 +279,32 @@ public:
     OutIter
     replace(OutIter out, BiIter first, BiIter last,
             const CharT* fmt,
-            Match flags = Match::Default) {
+            Match flags = Match::Default)
+    {
         return std::regex_replace(out, first, last, regex, fmt, flags);
     }
     template <class OutIter, class BiIter, class SAlloc>
     OutIter
     replace(OutIter out, BiIter first, BiIter last,
             const BasicString<CharT, Traits, SAlloc>& fmt,
-            Match flags = Match::Default) {
+            Match flags = Match::Default)
+    {
         return std::regex_replace(out, first, last, regex, fmt, flags);
     }
 
     BasicString <CharT>
     replace(const CharT* s,
             const CharT* fmt,
-            Match flags = Match::Default) {
+            Match flags = Match::Default)
+    {
         return std::regex_replace(s, regex, fmt, flags);
     }
     template <class FTraits, class FAlloc>
     BasicString <CharT>
     replace(const CharT* s,
             const BasicString<CharT, FTraits, FAlloc>& fmt,
-            Match flags = Match::Default) {
+            Match flags = Match::Default)
+    {
         return std::regex_replace(s, regex, fmt, flags);
     }
 
@@ -273,14 +312,16 @@ public:
     BasicString <CharT, STraits, SAlloc>
     replace(const BasicString<CharT, STraits, SAlloc>& s,
             const CharT* fmt,
-            Match flags = Match::Default) {
+            Match flags = Match::Default)
+    {
         return std::regex_replace(s.c_str(), regex, fmt, flags);
     }
     template <class STraits, class SAlloc, class FTraits, class FAlloc>
     BasicString <CharT, STraits, SAlloc>
     replace(const BasicString<CharT, STraits, SAlloc>& s,
             const BasicString<CharT, FTraits, FAlloc>& fmt,
-            Match flags = Match::Default) {
+            Match flags = Match::Default)
+    {
         return std::regex_replace(s.c_str(), regex, fmt, flags);
     }
 
@@ -289,11 +330,13 @@ public:
 using Regex = BasicRegex<char>;
 using WRegex = BasicRegex<wchar_t>;
 
-Regex operator "" _r (const char* s, std::size_t len) {
+Regex operator "" _r (const char* s, std::size_t len)
+{
     return Regex(s, len);
 }
 
-WRegex operator "" _wr (const wchar_t* s, std::size_t len) {
+WRegex operator "" _wr (const wchar_t* s, std::size_t len)
+{
     return WRegex(s, len);
 }
 

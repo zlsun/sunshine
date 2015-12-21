@@ -88,312 +88,387 @@ public:
     BasicString(const boost::basic_format<CharT, Traits, Allocator>& format)
         : str(boost::str(format)) {}
 
-    BasicString& operator = (const BasicString& s) {
+    BasicString& operator = (const BasicString& s)
+    {
         return assign(s);
     }
-    BasicString& operator = (BasicString&& s) {
+    BasicString& operator = (BasicString&& s)
+    {
         return assign(std::move(s));
     }
-    BasicString& operator = (IListT ilist) {
+    BasicString& operator = (IListT ilist)
+    {
         return assign(std::move(ilist));
     }
 
-    BasicString& assign(const BasicString& s) {
+    BasicString& assign(const BasicString& s)
+    {
         str.assign(s.str);
         return *this;
     }
-    BasicString& assign(BasicString&& s) {
+    BasicString& assign(BasicString&& s)
+    {
         str.assign(std::move(s.str));
         return *this;
     }
-    BasicString& assign(IListT ilist) {
+    BasicString& assign(IListT ilist)
+    {
         str.assign(std::move(ilist));
         return *this;
     }
 
-    allocator_type get_allocator() const {
+    allocator_type get_allocator() const
+    {
         return str.get_allocator();
     }
 
     // Element Access
 
-    reference at(size_type pos) {
+    reference at(size_type pos)
+    {
         return str.at();
     }
-    const_reference at(size_type pos) const {
+    const_reference at(size_type pos) const
+    {
         return str.at(pos);
     }
 
-    reference operator [] (size_type pos) {
+    reference operator [] (size_type pos)
+    {
         return str[pos];
     }
-    const_reference operator [] (size_type pos) const {
+    const_reference operator [] (size_type pos) const
+    {
         return str[pos];
     }
 
-    CharT& front() {
+    CharT& front()
+    {
         return str.front();
     }
-    const CharT& front() const {
+    const CharT& front() const
+    {
         return str.front();
     }
 
-    CharT& back() {
+    CharT& back()
+    {
         return str.back();
     }
-    const CharT& back() const {
+    const CharT& back() const
+    {
         return str.back();
     }
 
-    const CharT* data() const {
+    const CharT* data() const
+    {
         return str.data();
     }
 
-    const CharT* c_str() const {
+    const CharT* c_str() const
+    {
         return str.c_str();
     }
 
     // Iterators
 
-    iterator begin() {
+    iterator begin()
+    {
         return str.begin();
     }
-    const_iterator begin() const {
+    const_iterator begin() const
+    {
         return str.begin();
     }
-    const_iterator cbegin() const {
+    const_iterator cbegin() const
+    {
         return str.cbegin();
     }
-    iterator end() {
+    iterator end()
+    {
         return str.end();
     }
-    const_iterator end() const {
+    const_iterator end() const
+    {
         return str.end();
     }
-    const_iterator cend() const {
+    const_iterator cend() const
+    {
         return str.cend();
     }
 
-    iterator rbegin() {
+    iterator rbegin()
+    {
         return str.rbegin();
     }
-    const_iterator rbegin() const {
+    const_iterator rbegin() const
+    {
         return str.rbegin();
     }
-    const_iterator crbegin() const {
+    const_iterator crbegin() const
+    {
         return str.crbegin();
     }
-    iterator rend() {
+    iterator rend()
+    {
         return str.rend();
     }
-    const_iterator rend() const {
+    const_iterator rend() const
+    {
         return str.rend();
     }
-    const_iterator crend() const {
+    const_iterator crend() const
+    {
         return str.crend();
     }
 
     // Capacity
 
-    bool empty() const {
+    bool empty() const
+    {
         return str.empty();
     }
-    bool size() const {
+    bool size() const
+    {
         return str.size();
     }
-    bool length() const {
+    bool length() const
+    {
         return str.length();
     }
-    bool max_size() const {
+    bool max_size() const
+    {
         return str.max_size();
     }
-    bool capacity() const {
+    bool capacity() const
+    {
         return str.capacity();
     }
 
-    void reserve(size_type new_cap = 0) {
+    void reserve(size_type new_cap = 0)
+    {
         str.reserve(new_cap);
     }
-    void shrink_to_fit() {
+    void shrink_to_fit()
+    {
         str.shrink_to_fit();
     }
 
     // Operations
 
-    void clear() {
+    void clear()
+    {
         str.clear();
     }
 
     FORWARD_TO_STR(insert)
 
     FORWARD_TO_STR(erase)
-    BasicString& erase(size_type index = 0, size_type count = npos) {
+    BasicString& erase(size_type index = 0, size_type count = npos)
+    {
         return str.erase(index, count);
     }
 
-    void push_back(CharT ch) {
+    void push_back(CharT ch)
+    {
         str.push_back(ch);
     }
-    void pop_back() {
+    void pop_back()
+    {
         str.pop_back();
     }
 
     FORWARD_TO_STR(append)
-    BasicString& append(const BasicString& str) {
+    BasicString& append(const BasicString& str)
+    {
         return str.append(str.str);
     }
 
-    BasicString& operator += (const BasicString& s) {
+    BasicString& operator += (const BasicString& s)
+    {
         str.operator += (s.str);
         return *this;
     }
-    BasicString& operator += (const IListT& ilist) {
+    BasicString& operator += (const IListT& ilist)
+    {
         str.operator += (ilist);
         return *this;
     }
 
     FORWARD_TO_STR(compare)
-    BasicString& compare(const BasicString& s) {
+    BasicString& compare(const BasicString& s)
+    {
         return str.compare(s.str);
     }
 
     FORWARD_TO_STR(replace)
-    BasicString& replace(const BasicString& s) {
+    BasicString& replace(const BasicString& s)
+    {
         return str.replace(s.str);
     }
 
-    BasicString substr(size_type pos = 0, size_type count = npos ) const {
+    BasicString substr(size_type pos = 0, size_type count = npos ) const
+    {
         return str.substr(pos, count);
     }
 
-    size_type copy(CharT* dest, size_type count, size_type pos = 0) const {
+    size_type copy(CharT* dest, size_type count, size_type pos = 0) const
+    {
         return str.copy(dest, count, pos);
     }
 
     FORWARD_TO_STR(resize);
 
-    void swap(BasicString& other) {
+    void swap(BasicString& other)
+    {
         str.swap(other.str);
     }
 
     // Search
 
-    size_type find(const BasicString& str, size_type pos = 0 ) const {
+    size_type find(const BasicString& str, size_type pos = 0 ) const
+    {
         return str.find(str.str, pos);
     }
-    size_type find(const CharT* s, size_type pos, size_type count ) const {
+    size_type find(const CharT* s, size_type pos, size_type count ) const
+    {
         return str.find(s, pos, count);
     }
-    size_type find(const CharT* s, size_type pos = 0 ) const {
+    size_type find(const CharT* s, size_type pos = 0 ) const
+    {
         return str.find(s, pos);
     }
-    size_type find(CharT ch, size_type pos = 0 ) const {
+    size_type find(CharT ch, size_type pos = 0 ) const
+    {
         return str.find(ch, pos);
     }
 
     // Non-member Functions
 
-    friend BasicString operator + (const BasicString& a, const BasicString& b) {
+    friend BasicString operator + (const BasicString& a, const BasicString& b)
+    {
         return a.str + b.str;
     }
 
-    friend bool operator < (const BasicString& a, const BasicString& b) {
+    friend bool operator < (const BasicString& a, const BasicString& b)
+    {
         return a.str < b.str;
     }
-    friend bool operator == (const BasicString& a, const BasicString& b) {
+    friend bool operator == (const BasicString& a, const BasicString& b)
+    {
         return a.str == b.str;
     }
 
-    friend void swap(BasicString& a, BasicString& b) {
+    friend void swap(BasicString& a, BasicString& b)
+    {
         std::swap(a, b);
     }
 
     friend decltype(auto) operator << (
         std::basic_ostream<CharT, Traits>& os,
         const BasicString& s
-    ) {
+    )
+    {
         return os << s.str;
     }
     friend decltype(auto) operator >> (
         std::basic_istream<CharT, Traits>& is,
         BasicString& str
-    ) {
+    )
+    {
         return is >> str.str;
     }
 
     friend decltype(auto) getline(
         std::basic_istream<CharT, Traits>& input,
         BasicString& str, CharT delim
-    ) {
+    )
+    {
         return std::getline(input, str.str, delim);
     }
     friend decltype(auto) getline(
         std::basic_istream<CharT, Traits>&& input,
         BasicString& str, CharT delim
-    ) {
+    )
+    {
         return std::getline(std::move(input), str.str, delim);
     }
     friend decltype(auto) getline(
         std::basic_istream<CharT, Traits>& input,
         BasicString& str
-    ) {
+    )
+    {
         return std::getline(input, str.str);
     }
     friend decltype(auto) getline(
         std::basic_istream<CharT, Traits>&& input,
         BasicString& str
-    ) {
+    )
+    {
         return std::getline(std::move(input), str.str);
     }
 
     // Extended Methods
 
-    int count(char c) const {
+    int count(char c) const
+    {
         return std::count(str.begin(), str.end(), c);
     }
 
-    BasicString lower() const {
+    BasicString lower() const
+    {
         return boost::to_lower_copy(str);
     }
-    BasicString upper() const {
+    BasicString upper() const
+    {
         return boost::to_upper_copy(str);
     }
-    BasicString capitalize() const {
+    BasicString capitalize() const
+    {
         BasicString res = lower();
         res[0] = std::toupper(res[0]);
         return res;
     }
 
-    BasicString trim() const {
+    BasicString trim() const
+    {
         return boost::trim_copy(str);
     }
-    BasicString trim_left() const {
+    BasicString trim_left() const
+    {
         return boost::trim_left_copy(str);
     }
-    BasicString trim_right() const {
+    BasicString trim_right() const
+    {
         return boost::trim_right_copy(str);
     }
 
-    bool startswith(const BasicString& s) const {
+    bool startswith(const BasicString& s) const
+    {
         return boost::starts_with(str, s.str);
     }
-    bool endswith(const BasicString& s) const {
+    bool endswith(const BasicString& s) const
+    {
         return boost::ends_with(str, s.str);
     }
 
-    bool contains(const BasicString& s) const {
+    bool contains(const BasicString& s) const
+    {
         return boost::contains(str, s.str);
     }
 
     template <typename ContainerT>
-    BasicString join(const ContainerT& t) const {
+    BasicString join(const ContainerT& t) const
+    {
         return boost::join(t, str);
     }
-    BasicString join(const std::initializer_list<BasicString>& t) const {
+    BasicString join(const std::initializer_list<BasicString>& t) const
+    {
         return boost::join(t, str);
     }
 
-    std::vector<BasicString> split(const BasicString& delim = " \n\r") const {
+    std::vector<BasicString> split(const BasicString& delim = " \n\r") const
+    {
         std::vector<BasicString> v;
         boost::split(v, str, [&](char ch) {
             return delim.find(ch) != npos;
@@ -406,19 +481,23 @@ public:
 using String = BasicString<char>;
 using WString = BasicString<wchar_t>;
 
-String operator "" _s (const char* s, std::size_t len) {
+String operator "" _s (const char* s, std::size_t len)
+{
     return String(s, len);
 }
 
-WString operator "" _ws (const wchar_t* s, std::size_t len) {
+WString operator "" _ws (const wchar_t* s, std::size_t len)
+{
     return WString(s, len);
 }
 
-boost::format operator "" _f (const char* s, std::size_t len) {
+boost::format operator "" _f (const char* s, std::size_t len)
+{
     return boost::format(s);
 }
 
-boost::wformat operator "" _wf (const wchar_t* s, std::size_t len) {
+boost::wformat operator "" _wf (const wchar_t* s, std::size_t len)
+{
     return boost::wformat(s);
 }
 

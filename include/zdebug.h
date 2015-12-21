@@ -3,10 +3,12 @@
 
 #include <iostream>
 #include <boost/type_index.hpp>
+
 #include "zlog.h"
 
 template <typename T>
-std::string typestr() {
+std::string typestr()
+{
     using boost::typeindex::type_id_with_cvr;
     return type_id_with_cvr<T>().pretty_name();
 }

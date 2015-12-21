@@ -4,10 +4,11 @@
 using namespace std;
 
 TEST(zlog)
+{
     ostringstream ss;
     string s;
 
-    #define check(right) \
+#define check(right) \
         s = ss.str();    \
         EQUAL(s, right)  \
         s.clear();       \
@@ -37,7 +38,6 @@ TEST(zlog)
     zlogfo("%1$d %2$-4d %3$.3f %%", ss, false) 1, 44, 1.0;
     check("1 44   1.000 %")
 
-END
+}
 
 TEST_MAIN
-

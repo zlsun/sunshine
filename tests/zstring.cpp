@@ -5,28 +5,32 @@ using namespace std;
 using namespace zl;
 
 TEST(construct)
+{
     String s = "1234";
     String ss(5, 's');
     const String cs = {'1', '2', '3', '4'};
     EQUAL(s, "1234")
     EQUAL(ss, "sssss")
     EQUAL(cs, s)
-END
+}
 
 TEST(access)
+{
     String s = "1234";
     const String cs = s;
     EQUAL(s[0], '1')
     EQUAL(cs[1], '2')
-END
+}
 
 TEST(search)
+{
     String s = "1234";
     EQUAL(s.find('1'), 0)
     EQUAL(s.find('4'), 3)
-END
+}
 
 TEST(non_member)
+{
     String s = "1234";
     String t = "2345";
     String r = "01234";
@@ -37,9 +41,10 @@ TEST(non_member)
     TRUE(s == cs)
     TRUE(s > r)
     TRUE(s < t)
-END
+}
 
 TEST(extended)
+{
     String ss(5, 's');
     EQUAL(ss.count('s'), 5)
 
@@ -61,11 +66,12 @@ TEST(extended)
     String joined = " "_s.join({"123", "234", s});
     EQUAL(joined, "123 234 1234")
     EQUAL(joined.split(), (vector<String> {"123", "234", "1234"}));
-END
+}
 
 TEST(format)
+{
     auto format = "%d %d"_f;
     EQUAL(String(format % 1 % 2), "1 2")
-END
+}
 
 TEST_MAIN

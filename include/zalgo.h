@@ -5,7 +5,8 @@
 #include <iterator>
 
 // define all algorithm wrapper functions in std namespace
-namespace std {
+namespace std
+{
 
 // macros for generating code
 
@@ -142,14 +143,16 @@ GEN_II          (upper_bound)
 // it will be confused with transform(Iter1, Iter1, Iter2, UnaryOp),
 // so rename it to transform2
 template <typename T1, typename T2, typename T3, typename Op>
-auto transform2(T1&& ctn1, T2&& ctn2, T3&& tgt, Op&& op) ->
-  decltype(std::transform(FWBE(T1, ctn1), FWB(T2, ctn2), FWB(T3, tgt), FW(Op, op))) {
+auto transform2(T1&& ctn1, T2&& ctn2, T3&& tgt, Op&& op)
+-> decltype(std::transform(FWBE(T1, ctn1), FWB(T2, ctn2), FWB(T3, tgt), FW(Op, op)))
+{
     return std::transform(FWBE(T1, ctn1), FWB(T2, ctn2), FWB(T3, tgt), FW(Op, op));
 }
 
 // get iterator of ctn by offset n from begin
 template <typename T>
-auto operator >> (T&& ctn, int n) -> decltype(FWB(T, ctn)) {
+auto operator >> (T&& ctn, int n) -> decltype(FWB(T, ctn))
+{
     auto it = FWB(T, ctn);
     std::advance(it, n);
     return it;
@@ -157,7 +160,8 @@ auto operator >> (T&& ctn, int n) -> decltype(FWB(T, ctn)) {
 
 // get iterator of ctn by offset n from end
 template <typename T>
-auto operator << (T&& ctn, int n) -> decltype(FWE(T, ctn)) {
+auto operator << (T&& ctn, int n) -> decltype(FWE(T, ctn))
+{
     auto it = FWE(T, ctn);
     std::advance(it, -n);
     return it;

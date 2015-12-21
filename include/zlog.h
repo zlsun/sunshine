@@ -14,7 +14,8 @@
 NS_ZL_BEGIN
 
 template <typename SequenceT>
-std::ostream& printSequence(std::ostream& out, const SequenceT& seq) {
+std::ostream& printSequence(std::ostream& out, const SequenceT& seq)
+{
     if (seq.size() == 0) {
         return out << "[]";
     }
@@ -28,7 +29,8 @@ std::ostream& printSequence(std::ostream& out, const SequenceT& seq) {
 }
 
 template <typename MapT>
-std::ostream& printMap(std::ostream& out, const MapT& map) {
+std::ostream& printMap(std::ostream& out, const MapT& map)
+{
     if (map.size() == 0) {
         return out << "{}";
     }
@@ -42,39 +44,47 @@ std::ostream& printMap(std::ostream& out, const MapT& map) {
 }
 
 template <typename T>
-std::ostream& operator << (std::ostream& out, const std::vector<T>& vec) {
+std::ostream& operator << (std::ostream& out, const std::vector<T>& vec)
+{
     return zl::printSequence(out, vec);
 }
 
 template <typename T>
-std::ostream& operator << (std::ostream& out, const std::list<T>& vec) {
+std::ostream& operator << (std::ostream& out, const std::list<T>& vec)
+{
     return zl::printSequence(out, vec);
 }
 
 template <typename T>
-std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils) {
+std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils)
+{
     return zl::printSequence(out, ils);
 }
 
 template <typename K, typename V>
-std::ostream& operator << (std::ostream& out, const std::pair<K, V>& p) {
+std::ostream& operator << (std::ostream& out, const std::pair<K, V>& p)
+{
     return out << "<" << p.first << ", " << p.second << ">";
 }
 
 template <typename K, typename V>
-std::ostream& operator << (std::ostream& out, const std::map<K, V>& map) {
+std::ostream& operator << (std::ostream& out, const std::map<K, V>& map)
+{
     return zl::printMap(out, map);
 }
 
-class DummyLogger {
+class DummyLogger
+{
 public:
     template <typename T>
-    DummyLogger& operator , (T&& t) {
+    DummyLogger& operator , (T&& t)
+    {
         return *this;
     }
 };
 
-class Logger {
+class Logger
+{
 private:
     std::ostream& out;
     bool addNewline;
@@ -89,34 +99,40 @@ public:
     )
         : out(out)
         , addNewline(addNewline)
-        , addSpace(addSpace) {
+        , addSpace(addSpace)
+    {
     }
 
-    ~Logger() {
+    ~Logger()
+    {
         if (addNewline) out << std::endl;
     }
 
     template <typename T>
-    Logger& operator , (T&& t) {
+    Logger& operator , (T&& t)
+    {
         printSpace();
         print(std::forward<T>(t));
         return *this;
     }
 
 private:
-    void printSpace() {
+    void printSpace()
+    {
         if (addSpace && space) out << " ";
         else space = true;
     }
 
     template <typename T>
-    void print(T&& t) {
+    void print(T&& t)
+    {
         out << std::forward<T>(t);
     }
 
     // add support for array because it's ambiguous to overloading 'operator<<' for array
     template <typename T, size_t N>
-    void print(const T (&array)[N]) {
+    void print(const T (&array)[N])
+    {
         if (N == 0) {
             out << "[]";
             return;
@@ -130,12 +146,14 @@ private:
 
     // special case of const T (&array)[N], print the string directly
     template <size_t N>
-    void print(const char (&str)[N]) {
+    void print(const char (&str)[N])
+    {
         out << str;
     }
 };
 
-class FormatLogger {
+class FormatLogger
+{
 private:
     boost::format formatter;
     std::ostream& out;
@@ -152,13 +170,15 @@ public:
         , addNewline(addNewline)
     {}
 
-    ~FormatLogger() {
+    ~FormatLogger()
+    {
         out << formatter;
         if (addNewline) out << std::endl;
     }
 
     template <typename T>
-    FormatLogger& operator , (T&& t) {
+    FormatLogger& operator , (T&& t)
+    {
         formatter % std::forward<T>(t);
         return *this;
     }

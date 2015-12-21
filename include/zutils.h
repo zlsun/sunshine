@@ -6,17 +6,23 @@
 NS_ZL_BEGIN
 
 template <class T>
-struct ImplementRelationalOperators {
-    friend bool operator <= (const T& a, const T& b) {
+class ImplementRelationalOperators
+{
+public:
+    friend bool operator <= (const T& a, const T& b)
+    {
         return a < b || a == b;
     }
-    friend bool operator > (const T& a, const T& b) {
+    friend bool operator > (const T& a, const T& b)
+    {
         return !(a <= b);
     }
-    friend bool operator != (const T& a, const T& b) {
+    friend bool operator != (const T& a, const T& b)
+    {
         return !(a == b);
     }
-    friend bool operator >= (const T& a, const T& b) {
+    friend bool operator >= (const T& a, const T& b)
+    {
         return !(a < b);
     }
 };

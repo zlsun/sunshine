@@ -3,6 +3,7 @@
 #ifndef ZTRAITS_H
 #define ZTRAITS_H
 
+#include <cstdlib>
 #include <tuple>
 #include <functional>
 #include <type_traits>
@@ -11,7 +12,8 @@
 
 NS_ZL_BEGIN
 
-namespace detail {
+namespace detail
+{
     template <typename C, typename R, typename... A>
     struct memfn_type
     {
@@ -40,6 +42,7 @@ template <typename ReturnType, typename... Args>
 struct function_traits<ReturnType(Args...)>
 {
     typedef ReturnType result_type;
+
     typedef ReturnType function_type(Args...);
 
     template <typename OwnerType>
@@ -96,9 +99,9 @@ struct function_traits<std::function<FunctionType>>
 {};
 
 #if defined(_GLIBCXX_FUNCTIONAL)
-#define MEM_FN_SYMBOL std::_Mem_fn
+# define MEM_FN_SYMBOL std::_Mem_fn
 #elif defined(_LIBCPP_FUNCTIONAL)
-#define MEM_FN_SYMBOL std::__mem_fn
+# define MEM_FN_SYMBOL std::__mem_fn
 #endif
 
 #ifdef MEM_FN_SYMBOL
@@ -143,6 +146,45 @@ template <typename T>
 struct function_traits<volatile T&&> : public function_traits<T> {};
 template <typename T>
 struct function_traits<const volatile T&&> : public function_traits<T> {};
+
+#define FORWARD_RES                               \
+    typename std::conditional<                    \
+        std::is_lvalue_reference<R>::value,       \
+        T&,                                       \
+        typename std::remove_reference<T>::type&& \
+    >::type
+
+template <typename R, typename T>
+FORWARD_RES forward_like(T&& input) noexcept
+{
+    return static_cast<FORWARD_RES>(input);
+}
+
+#undef FORWARD_RES
+
+template <typename From, typename To>
+struct copy_cv
+{
+private:
+    typedef typename std::remove_cv<To>::type raw_To;
+    typedef typename std::conditional<std::is_const<From>::value,
+                                      const raw_To, raw_To>::type const_raw_To;
+public:
+    typedef typename std::conditional<std::is_volatile<From>::value,
+                                      volatile const_raw_To, const_raw_To>::type type;
+};
+
+template <typename T>
+struct pointee
+{
+    typedef typename std::remove_reference<decltype(*std::declval<T>())>::type type;
+};
+
+template <typename T>
+typename std::add_rvalue_reference<T>::type rt_val() noexcept
+{
+    return std::move(*static_cast<T*>(nullptr));
+}
 
 template <typename Op>
 struct is_unary_function {

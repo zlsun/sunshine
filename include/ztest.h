@@ -11,7 +11,7 @@
 
 NS_ZL_BEGIN
 
-std::vector<std::pair<std::string, bool(*)()>> __tests;
+std::vector<std::pair<std::string, void(*)(int&, int&)>> __tests;
 
 #define JUDGE_TRUE(msg) ++__passed;
 
@@ -36,43 +36,44 @@ std::vector<std::pair<std::string, bool(*)()>> __tests;
 
 #define FAILED(msg) JUDGE_FALSE("(line " << __LINE__ << ") failure #" << __failed << ": " << msg);
 
-#define TEST(name)                                              \
-    bool __test_##name();                                       \
-    struct __struct_##name {                                    \
-        __struct_##name() {                                     \
-            zl::__tests.push_back({#name, __test_##name});  \
-        }                                                       \
-    } __struct_##name;                                          \
-    bool __test_##name() {                                      \
-        int __passed = 0, __failed = 0;                         \
+#define TEST(name)                                         \
+    void __test_##name(int&, int&);                        \
+    struct __struct_##name                                 \
+    {                                                      \
+        __struct_##name()                                  \
+        {                                                  \
+            zl::__tests.push_back({#name, __test_##name}); \
+        }                                                  \
+    } __struct_##name;                                     \
+    void __test_##name(int& __passed, int& __failed)       \
 
-#define END                                                     \
-        return __passed != 0 && __failed != 0;                  \
-    }
 
-#define TEST_MAIN                                                   \
-    int main(int argc, char const *argv[]) {                        \
-        using namespace std;                                        \
-        vector<string> passed_tests, failed_tests;                  \
-        cout << "[" __FILE__ "]" << endl;                           \
-        for (auto p : zl::__tests) {                                \
-            if ((p.second)()) {                                     \
-                failed_tests.push_back(p.first);                    \
-            } else {                                                \
-                passed_tests.push_back(p.first);                    \
-            }                                                       \
-        }                                                           \
-        cout << passed_tests.size() << " tests passed:";            \
-        for (auto p : passed_tests) {                               \
-            cout << "  " << p;                                      \
-        }                                                           \
-        cout << endl;                                               \
-        cout << failed_tests.size() << " tests failed:";            \
-        for (auto p : failed_tests) {                               \
-            cout << "  " << p << endl;                              \
-        }                                                           \
-        cout << endl << endl;                                       \
-        return 0;                                                   \
+#define TEST_MAIN                                        \
+    int main(int argc, char const *argv[])               \
+    {                                                    \
+        using namespace std;                             \
+        vector<string> passed_tests, failed_tests;       \
+        cout << "[" __FILE__ "]" << endl;                \
+        for (auto p : zl::__tests) {                     \
+            int passed = 0, failed = 0;                  \
+            p.second(passed, failed);                    \
+            if (failed) {                                \
+                failed_tests.push_back(p.first);         \
+            } else {                                     \
+                passed_tests.push_back(p.first);         \
+            }                                            \
+        }                                                \
+        cout << passed_tests.size() << " tests passed:"; \
+        for (auto p : passed_tests) {                    \
+            cout << "  " << p;                           \
+        }                                                \
+        cout << endl;                                    \
+        cout << failed_tests.size() << " tests failed:"; \
+        for (auto p : failed_tests) {                    \
+            cout << "  " << p << endl;                   \
+        }                                                \
+        cout << endl << endl;                            \
+        return 0;                                        \
     }
 
 NS_ZL_END

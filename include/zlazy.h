@@ -3,33 +3,41 @@
 
 #include <utility>
 #include <exception>
+
 #include "zcommon.h"
 
 NS_ZL_BEGIN
 
-class LazyException: public std::exception {
+class LazyException: public std::exception
+{
 };
 
-class LazyNotInitException: public LazyException {
+class LazyNotInitException: public LazyException
+{
 public:
-    virtual const char* what() const noexcept {
+    virtual const char* what() const noexcept
+    {
         return "Lazy not init";
     }
 };
 
 template <typename T>
-class LazyInit {
+class LazyInit
+{
 private:
     T* lazy = nullptr;
 public:
-    ~LazyInit() {
+    ~LazyInit()
+    {
         delete lazy;
     }
-    LazyInit& operator = (T o) {
+    LazyInit& operator = (T o)
+    {
         lazy = new T(std::move(o));
         return *this;
     }
-    operator T () {
+    operator T ()
+    {
         if (lazy == nullptr) {
             throw LazyNotInitException();
         }

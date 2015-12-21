@@ -3,11 +3,13 @@
 
 #include <functional>
 #include <type_traits>
+
 #include "zcommon.h"
 
 NS_ZL_BEGIN
 
-namespace detail {
+namespace detail
+{
 #if defined(_GLIBCXX_FUNCTIONAL)
 #  define MEM_FN_SYMBOL std::_Mem_fn
 #elif defined(_LIBCPP_FUNCTIONAL)
@@ -15,17 +17,20 @@ namespace detail {
 #endif
 #ifdef MEM_FN_SYMBOL
     template <typename F>
-    using UniverseFunctionType = std::conditional_t<
-        std::is_member_pointer<F>::value,
-        MEM_FN_SYMBOL<F>,
-        std::function<F>
-    >;
+    using UniverseFunctionType =
+        std::conditional_t<
+            std::is_member_pointer<F>::value,
+            MEM_FN_SYMBOL<F>,
+            std::function<F>
+        >;
 #undef MEM_FN_SYMBOL
 #endif
 }
 
 template <typename F>
-struct Function: detail::UniverseFunctionType<F> {
+class Function: detail::UniverseFunctionType<F>
+{
+public:
     using BaseType = detail::UniverseFunctionType<F>;
     template <typename... Args>
     Function(Args&&... args)

@@ -4,12 +4,14 @@
 using namespace zl;
 
 TEST(basic)
+{
     auto re = R"(\d)"_r;
     re = R"(\w)"_r;
     EQUAL(re.flags(), Regex::Flag::ECMAScript);
-END
+}
 
 TEST(match)
+{
     auto re = R"(([a-z]+)\.txt)"_r;
     String fnames[] = {"foo.txt", "bar.txt", "baz.dat", "zoidberg"};
     bool ok[] = {true, true, false, false};
@@ -20,9 +22,10 @@ TEST(match)
             EQUAL(re.match(fnames[i])[1].str(), bases[i])
         }
     }
-END
+}
 
 TEST(search)
+{
     String lines[] = {
         "Roses are #ff0000",
         "violets are #0000ff",
@@ -37,15 +40,16 @@ TEST(search)
             EQUAL(re.search(lines[i])[0].str(), colors[i])
         }
     }
-END
+}
 
 TEST(replace)
-   auto text = "Quick brown fox"_s;
-   auto re = "a|e|i|o|u"_r;
-   auto s = re.replace(text, "[$&]");
-   EQUAL(s, "Q[u][i]ck br[o]wn f[o]x")
-   s = re.replace("Qi", "[$&]");
-   EQUAL(s, "Q[i]")
-END
+{
+    auto text = "Quick brown fox"_s;
+    auto re = "a|e|i|o|u"_r;
+    auto s = re.replace(text, "[$&]");
+    EQUAL(s, "Q[u][i]ck br[o]wn f[o]x")
+    s = re.replace("Qi", "[$&]");
+    EQUAL(s, "Q[i]")
+}
 
 TEST_MAIN

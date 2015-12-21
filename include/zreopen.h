@@ -7,12 +7,18 @@
 
 NS_ZL_BEGIN
 
-struct __stdreopen {
-    __stdreopen() {
+#if defined(IN_FILE) && defined(OUT_FILE)
+
+struct __stdreopen
+{
+    __stdreopen()
+    {
         std::freopen(IN_FILE, "r", stdin);
         std::freopen(OUT_FILE, "w", stdout);
     }
 } __stdreopen_instance;
+
+#endif
 
 NS_ZL_END
 
