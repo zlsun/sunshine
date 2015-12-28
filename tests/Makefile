@@ -7,7 +7,7 @@ B  = build
 # compile and link flags
 INCLUDE_FLAGS = $(patsubst %,-I%,$(I))
 CPPFLAGS      = $(INCLUDE_FLAGS)
-CXXFLAGS      = -Wall -std=c++1y
+CXXFLAGS      = -Wall -std=c++1y -g
 LDFLAGS       =
 LDLIBS        = -lstdc++ -lboost_system -lboost_filesystem
 
