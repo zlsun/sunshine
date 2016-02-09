@@ -1,7 +1,9 @@
 
 MAKE = make --no-print-directory
 
-.PHONY : test clean rebuild
+targets = test clean rebuild
 
-test clean rebuild:
+.PHONY : $(targets)
+$(targets):
 	@$(MAKE) -C ./tests $@
+

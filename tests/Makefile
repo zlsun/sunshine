@@ -7,54 +7,71 @@ B  = build
 # compile and link flags
 INCLUDE_FLAGS = $(patsubst %,-I%,$(I))
 CPPFLAGS      = $(INCLUDE_FLAGS)
+CFLAGS        =
 CXXFLAGS      = -Wall -std=c++1z -g
 LDFLAGS       =
-LDLIBS        = -lstdc++ -lboost_system -lboost_filesystem
+LDLIBS        = -lstdc++
 
-color = \e[1;31m
-reset = \e[0m
-header = "$(color)$(1)$(reset) $(2)"
+# ===========================================================================
 
 cpps = $(wildcard $S/*.cpp)
-objs = $(patsubst $S/%, $B/%, $(cpps:.cpp=.o))
+objs = $(patsubst $S/%,$B/%,$(cpps:.cpp=.o))
 deps = $(objs:.o=.d)
-tests = $(objs:.o=)
+exes = $(objs:.o=)
 
-# phony targets
-.PHONY : test test_filesystem clean rebuild
+# ===========================================================================
 
-test: $(tests) test_filesystem
-	@$(foreach t, $(tests), ./$t;)
+.PHONY: test test_files
 
-test_filesystem: $B/testdir/file
+test: $(exes) test_files
+	@$(foreach t,$(exes),./$t;)
+
+test_files: $B/testdir/file
 
 $B/testdir/file:
-	@mkdir -p $(@D)
-	@touch $@
+	@mkdir -p $(@D) && touch $@
+
+$B/zpath: LDLIBS += -lboost_system -lboost_filesystem
+
+# ===========================================================================
+
+color = \e[$1m$2\e[0m
+title = echo -e "$(call color,1;31,$1) $2"
 
 $B/%: $B/%.o
-	@echo -e $(call header,Linking,$^\t-> $@)
+	@$(call title,Linking,$^\t-> $@)
 	@$(CC) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) $^ -o $@
 
+$B/%.o: $S/%.c
+	@$(call title,Compiling,$<\t-> $@)
+	@mkdir -p $(@D)
+	@$(CXX) -c $(CPPFLAGS) $(CFLAGS) $< -o $@
+
 $B/%.o: $S/%.cpp
-	@echo -e $(call header,Compiling,$<\t-> $@)
+	@$(call title,Compiling,$<\t-> $@)
 	@mkdir -p $(@D)
 	@$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
 
+$B/%.d: $S/%.c
+	@$(call title,Generating,$@)
+	@mkdir -p $(@D)
+	@$(CC) -MM $(CPPFLAGS) $(CFLAGS) $< | sed 's,\($*\.o\),$B/\1 $@,g' > $@
+
 $B/%.d: $S/%.cpp
-	@echo -e $(call header,Generating,$@)
+	@$(call title,Generating,$@)
 	@mkdir -p $(@D)
 	@$(CC) -MM $(CPPFLAGS) $(CXXFLAGS) $< | sed 's,\($*\.o\),$B/\1 $@,g' > $@
 
-# prevent make from generating dependencies when running 'make clean' or 'make rebuild'
 ifneq ($(MAKECMDGOALS), clean)
 ifneq ($(MAKECMDGOALS), rebuild)
 -include $(deps)
 endif
 endif
 
+.PHONY: clean rebuild
+
 clean:
-	@echo -e $(call header,Cleanning)
+	@$(call title,Cleanning)
 	@$(RM) -r $B
 
 rebuild:
