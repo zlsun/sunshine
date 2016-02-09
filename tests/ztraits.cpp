@@ -13,4 +13,3 @@ TEST(ztraits)
 }
 
 TEST_MAIN
-

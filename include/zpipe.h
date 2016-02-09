@@ -98,21 +98,21 @@ struct StdEnum : IEnum<StdEnum<It>>
 };
 
 template <typename It>
-auto ifrom(It start, It end)
+inline auto ifrom(It start, It end)
 {
     return StdEnum<It>(start, end);
 }
 template <typename T>
-auto ifrom(const T& t)
+inline auto ifrom(const T& t)
 {
     return ifrom(std::begin(t), std::end(t));
 }
 template <typename T>
-auto ifrom(const std::initializer_list<T>& t)
+inline auto ifrom(const std::initializer_list<T>& t)
 {
     return ifrom(std::begin(t), std::end(t));
 }
-auto ifrom(const char* s)
+inline auto ifrom(const char* s)
 {
     return ifrom(s, s + std::strlen(s));
 }
@@ -170,26 +170,26 @@ struct RangeEnum : IEnum<RangeEnum<T>>
 };
 
 template <typename T>
-auto irange(const T& b, const T& e, const T& s)
+inline auto irange(const T& b, const T& e, const T& s)
 {
     return RangeEnum<T>(b, e, s);
 }
-auto irange(int b, int e, int s)
+inline auto irange(int b, int e, int s)
 {
     return RangeEnum<int>(b, e + (e - b) % s, s);
 }
-auto irange(int b, int e)
+inline auto irange(int b, int e)
 {
     return RangeEnum<int>(b, e, (b < e ? 1 : -1));
 }
-auto irange(int e)
+inline auto irange(int e)
 {
     return irange(0, e);
 }
 
 // ===========================================================================
 
-struct ToVector : IFunc<ToVector>
+static struct ToVector : IFunc<ToVector>
 {
     template <typename E>
     auto operator () (E& e) const
@@ -228,7 +228,7 @@ struct Select
 };
 
 template <typename F>
-Select<F> iselect(F f)
+inline auto iselect(F f)
 {
     return Select<F>(f);
 }
@@ -261,7 +261,7 @@ struct Where
 };
 
 template <typename F>
-Where<F> iwhere(F f)
+inline auto iwhere(F f)
 {
     return Where<F>(f);
 }
@@ -290,7 +290,7 @@ struct Aggregate
 };
 
 template <typename F>
-Aggregate<F> iaggrerate(F f)
+inline auto iaggrerate(F f)
 {
     return Aggregate<F>(f);
 }
@@ -315,7 +315,7 @@ struct AggregateInit
 };
 
 template <typename F, typename T>
-AggregateInit<F, T> iaggrerate(F f, T init)
+inline auto iaggrerate(F f, T init)
 {
     return AggregateInit<F, T>(f, init);
 }
@@ -331,7 +331,7 @@ struct Max
     }
 };
 
-auto imax = iaggrerate(Max());
+static auto imax = iaggrerate(Max());
 
 // ===========================================================================
 
@@ -344,7 +344,7 @@ struct Min
     }
 };
 
-auto imin = iaggrerate(Min());
+static auto imin = iaggrerate(Min());
 
 // ===========================================================================
 
@@ -358,12 +358,12 @@ struct Sum
 };
 
 template <typename T>
-auto isum(const T& init)
+inline auto isum(const T& init)
 {
     return iaggrerate(Sum(), init);
 }
 
-auto isum()
+inline auto isum()
 {
     return isum(0);
 }
@@ -387,7 +387,7 @@ struct Count
 };
 
 template <typename T, typename S = std::size_t>
-auto icount(const T& x, const S& init = 0)
+inline auto icount(const T& x, const S& init = 0)
 {
     return iaggrerate(Count<T>(x), init);
 }
@@ -417,19 +417,19 @@ struct Concat
 };
 
 template <typename R, typename T>
-auto iconcat(const T& t)
+inline auto iconcat(const T& t)
 {
     return Concat<T, R>(t);
 }
-auto iconcat(char c, int n = 1)
+inline auto iconcat(char c, int n = 1)
 {
     return iconcat<std::string>(std::string(n, c));
 }
-auto iconcat(const char* s)
+inline auto iconcat(const char* s)
 {
     return iconcat<std::string>(std::string(s));
 }
-auto iconcat()
+inline auto iconcat()
 {
     return iconcat("");
 }
@@ -454,7 +454,7 @@ struct All
 };
 
 template <typename F>
-All<F> iall(const F& f)
+inline auto iall(const F& f)
 {
     return All<F>(f);
 }
@@ -479,7 +479,7 @@ struct Any
 };
 
 template <typename F>
-Any<F> iany(const F& f)
+inline auto iany(const F& f)
 {
     return Any<F>(f);
 }
@@ -516,7 +516,7 @@ struct ReverseEnum
     {}
 };
 
-struct Reverse
+static struct Reverse
 {
     template <typename E>
     ReverseEnum<E> operator () (E& e) const
@@ -560,7 +560,7 @@ struct SortEnum
     {}
 };
 
-struct Sort
+static struct Sort
 {
     template <typename E>
     SortEnum<E> operator () (E& e) const
@@ -582,7 +582,7 @@ struct SortBy
 };
 
 template <typename F>
-auto isortby(F cmp)
+inline auto isortby(F cmp)
 {
     return SortBy<F>(cmp);
 }

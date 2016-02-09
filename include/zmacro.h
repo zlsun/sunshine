@@ -4,6 +4,6 @@
 #define CONCATENATE_IMPL(x, y) x##y
 #define CONCATENATE(x, y) CONCATENATE_IMPL(x, y)
 
-#define MAKE_UNIQUE(x) CONCATENATE(x, __COUNTER__)
+#define UNIQUE_IDENTIFIER(x) CONCATENATE(x, __COUNTER__)
 
 #endif // ZMACRO_H

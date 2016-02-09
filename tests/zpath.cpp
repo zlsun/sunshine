@@ -12,9 +12,8 @@ Path test_file;
 Path test_file2;
 
 INIT {
-    current_file = Path(__FILE__).absolute();
-    current_dir = current_file.parent_path();
-    test_dir = current_dir / "build" / "testdir";
+    current_dir = Path(".").absolute();
+    test_dir = current_dir / "testdir";
     test_file = test_dir / "file";
     test_file2 = test_dir / "file2";
 }
@@ -29,12 +28,11 @@ TEST(zpath)
 TEST(absolute)
 {
     EQUAL("/"_path.absolute(), "/")
-    EQUAL("."_path.absolute().parent_path(), current_dir)
 }
 
 TEST(canonical)
 {
-    EQUAL("."_path.canonical(), current_dir)
+    EQUAL("/"_path.canonical(), "/")
 }
 
 TEST(exists)

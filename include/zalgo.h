@@ -17,51 +17,57 @@ namespace std
 #define FW_ARGS       FW(Args, args)...
 
 // ALGO(Iter, Iter, ...)
-#define GEN_II(ALGO)                                    \
-    template <typename T, typename... Args>             \
-    auto ALGO(T&& ctn, Args&&... args)                  \
-        -> decltype(std::ALGO(FWBE(T, ctn), FW_ARGS)) { \
-             return std::ALGO(FWBE(T, ctn), FW_ARGS);   \
+#define GEN_II(ALGO)                              \
+    template <class T, class... Args>             \
+    inline auto ALGO(T&& ctn, Args&&... args)     \
+    -> decltype(std::ALGO(FWBE(T, ctn), FW_ARGS)) \
+    {                                             \
+        return std::ALGO(FWBE(T, ctn), FW_ARGS);  \
     }
 
 // ALGO(Iter1, Iter1, Iter2...)
-#define GEN_IIT(ALGO)                                                  \
-    template <typename T1, typename T2, typename... Args>              \
-    auto ALGO(T1&& ctn, T2&& tgt, Args&&... args)                      \
-        -> decltype(std::ALGO(FWBE(T1, ctn), FWB(T2, tgt), FW_ARGS)) { \
-             return std::ALGO(FWBE(T1, ctn), FWB(T2, tgt), FW_ARGS);   \
+#define GEN_IIT(ALGO)                                            \
+    template <class T1, class T2, class... Args>                 \
+    inline auto ALGO(T1&& ctn, T2&& tgt, Args&&... args)         \
+    -> decltype(std::ALGO(FWBE(T1, ctn), FWB(T2, tgt), FW_ARGS)) \
+    {                                                            \
+        return std::ALGO(FWBE(T1, ctn), FWB(T2, tgt), FW_ARGS);  \
     }
 
 // ALGO(Iter, Iter, Iter...)
-#define GEN_III(ALGO)                                                              \
-    template <typename T, typename Iter, typename... Args>                         \
-    auto ALGO(T&& ctn, Iter&& mid, Args&&... args)                                 \
-        -> decltype(std::ALGO(FWB(T, ctn), FW(Iter, mid), FWE(T, ctn), FW_ARGS)) { \
-             return std::ALGO(FWB(T, ctn), FW(Iter, mid), FWE(T, ctn), FW_ARGS);   \
+#define GEN_III(ALGO)                                                        \
+    template <class T, class Iter, class... Args>                            \
+    inline auto ALGO(T&& ctn, Iter&& mid, Args&&... args)                    \
+    -> decltype(std::ALGO(FWB(T, ctn), FW(Iter, mid), FWE(T, ctn), FW_ARGS)) \
+    {                                                                        \
+        return std::ALGO(FWB(T, ctn), FW(Iter, mid), FWE(T, ctn), FW_ARGS);  \
     }
 
 // ALGO(Iter1, Iter1, Iter1, Iter2...)
-#define GEN_IIIT(ALGO)                                                                             \
-    template <typename T1, typename Iter, typename T2, typename... Args>                           \
-    auto ALGO(T1&& ctn, Iter&& mid, T2&& tgt, Args&&... args)                                      \
-        -> decltype(std::ALGO(FWB(T1, ctn), FW(Iter, mid), FWE(T1, ctn), FWB(T2, tgt), FW_ARGS)) { \
-             return std::ALGO(FWB(T1, ctn), FW(Iter, mid), FWE(T1, ctn), FWB(T2, tgt), FW_ARGS);   \
+#define GEN_IIIT(ALGO)                                                                       \
+    template <class T1, class Iter, class T2, class... Args>                                 \
+    inline auto ALGO(T1&& ctn, Iter&& mid, T2&& tgt, Args&&... args)                         \
+    -> decltype(std::ALGO(FWB(T1, ctn), FW(Iter, mid), FWE(T1, ctn), FWB(T2, tgt), FW_ARGS)) \
+    {                                                                                        \
+        return std::ALGO(FWB(T1, ctn), FW(Iter, mid), FWE(T1, ctn), FWB(T2, tgt), FW_ARGS);  \
     }
 
 // ALGO(Iter1, Iter1, Iter2, Iter2...)
-#define GEN_IITT(ALGO)                                                    \
-    template <typename T1, typename T2, typename... Args>                 \
-    auto ALGO(T1&& ctn1, T2&& ctn2, Args&&... args)                       \
-        -> decltype(std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FW_ARGS)) { \
-             return std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FW_ARGS);   \
+#define GEN_IITT(ALGO)                                              \
+    template <class T1, class T2, class... Args>                    \
+    inline auto ALGO(T1&& ctn1, T2&& ctn2, Args&&... args)          \
+    -> decltype(std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FW_ARGS)) \
+    {                                                               \
+        return std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FW_ARGS);  \
     }
 
 // ALGO(Iter1, Iter1, Iter2, Iter2, Iter3...)
-#define GEN_IITTE(ALGO)                                                                 \
-    template <typename T1, typename T2, typename T3, typename... Args>                  \
-    auto ALGO(T1&& ctn1, T2&& ctn2, T3&& tgt, Args&&... args)                           \
-        -> decltype(std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FWB(T2, tgt), FW_ARGS)) { \
-             return std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FWB(T2, tgt), FW_ARGS);   \
+#define GEN_IITTE(ALGO)                                                           \
+    template <class T1, class T2, class T3, class... Args>                        \
+    inline auto ALGO(T1&& ctn1, T2&& ctn2, T3&& tgt, Args&&... args)              \
+    -> decltype(std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FWB(T2, tgt), FW_ARGS)) \
+    {                                                                             \
+        return std::ALGO(FWBE(T1, ctn1), FWBE(T2, ctn2), FWB(T2, tgt), FW_ARGS);  \
     }
 
 #define GEN_IIX(ALGO)           GEN_II(ALGO)       GEN_IIT(ALGO)
@@ -142,16 +148,16 @@ GEN_II          (upper_bound)
 // wrapper function of transform(Iter1, Iter1, Iter2, Iter3, BinaryOp),
 // it will be confused with transform(Iter1, Iter1, Iter2, UnaryOp),
 // so rename it to transform2
-template <typename T1, typename T2, typename T3, typename Op>
-auto transform2(T1&& ctn1, T2&& ctn2, T3&& tgt, Op&& op)
+template <class T1, class T2, class T3, class Op>
+inline auto transform2(T1&& ctn1, T2&& ctn2, T3&& tgt, Op&& op)
 -> decltype(std::transform(FWBE(T1, ctn1), FWB(T2, ctn2), FWB(T3, tgt), FW(Op, op)))
 {
     return std::transform(FWBE(T1, ctn1), FWB(T2, ctn2), FWB(T3, tgt), FW(Op, op));
 }
 
 // get iterator of ctn by offset n from begin
-template <typename T>
-auto operator >> (T&& ctn, int n) -> decltype(FWB(T, ctn))
+template <class T>
+inline auto operator >> (T&& ctn, int n) -> decltype(FWB(T, ctn))
 {
     auto it = FWB(T, ctn);
     std::advance(it, n);
@@ -159,8 +165,8 @@ auto operator >> (T&& ctn, int n) -> decltype(FWB(T, ctn))
 }
 
 // get iterator of ctn by offset n from end
-template <typename T>
-auto operator << (T&& ctn, int n) -> decltype(FWE(T, ctn))
+template <class T>
+inline auto operator << (T&& ctn, int n) -> decltype(FWE(T, ctn))
 {
     auto it = FWE(T, ctn);
     std::advance(it, -n);

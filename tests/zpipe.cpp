@@ -57,29 +57,31 @@ TEST(range)
     EQUAL(irange('a', 'c' + 1) | iconcat('|'), "a|b|c")
 }
 
+#define check(right)         \
+    {                        \
+        string s = ss.str(); \
+        EQUAL(s, right)      \
+        s.clear();           \
+        ss.str(s);           \
+    }
+
 TEST(print)
 {
     ostringstream ss;
-    string s;
+    zl::Logger::to(ss);
 
-#define check(right) \
-        s = ss.str();    \
-        EQUAL(s, right)  \
-        s.clear();       \
-        ss.str(s);
-
-    zlogo(ss) ifrom({1, 2, 3});
+    zlog ifrom({1, 2, 3});
     check("[1, 2, 3]\n");
 
-    zlogo(ss) ifrom({1, 2, 3}) | iselect([](int i) {
+    zlog ifrom({1, 2, 3}) | iselect([](int i) {
         return i + 1;
     });
     check("[2, 3, 4]\n");
 
-    zlogo(ss) irange(3);
+    zlog irange(3);
     check("[0, 1, 2]\n");
 
-    zlogo(ss) irepeat(1, 3);
+    zlog irepeat(1, 3);
     check("[1, 1, 1]\n");
 }
 

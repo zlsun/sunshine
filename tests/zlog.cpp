@@ -1,44 +1,34 @@
 #include <sstream>
 
-#include "../include/ztest.h"
 #include "../include/zlog.h"
+#include "../include/ztest.h"
 
 using namespace std;
+
+#define check(right)         \
+    {                        \
+        string s = ss.str(); \
+        EQUAL(s, right)      \
+        s.clear();           \
+        ss.str(s);           \
+    }
 
 TEST(zlog)
 {
     ostringstream ss;
-    string s;
+    zl::Logger::to(ss);
 
-#define check(right) \
-        s = ss.str();    \
-        EQUAL(s, right)  \
-        s.clear();       \
-        ss.str(s);
-
-    zlogo(ss) 1, 2, 3, 4;
+    zlog 1, 2, 3, 4;
     check("1 2 3 4\n")
 
-    zlogo(ss, false) 1, 2, 3, 4;
+    zloga(false) 1, 2, 3, 4;
     check("1 2 3 4")
 
-    zlogo(ss, false, false) 1, 2, 3, 4;
+    zloga(false, false) 1, 2, 3, 4;
     check("1234")
 
-    zlogo(ss) vector<int> {1, 2, 3};
+    zlog vector<int> {1, 2, 3};
     check("[1, 2, 3]\n")
-
-    zlogfo("%1% %2% %3% %%", ss) 1, 44, 1.0;
-    check("1 44 1 %\n")
-
-    zlogfo("%d %-4d %.3f %%", ss) 1, 44, 1.0;
-    check("1 44   1.000 %\n")
-
-    zlogfo("%1$d %2$-4d %3$.3f %%", ss) 1, 44, 1.0;
-    check("1 44   1.000 %\n")
-
-    zlogfo("%1$d %2$-4d %3$.3f %%", ss, false) 1, 44, 1.0;
-    check("1 44   1.000 %")
 
 }
 

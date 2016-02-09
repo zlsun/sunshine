@@ -4,8 +4,8 @@
 #include "zmacro.h"
 
 #define INIT_IMPL(name, instance, function) \
-    void function();                        \
-    struct name                             \
+    static void function();                 \
+    static struct name                      \
     {                                       \
         name() {                            \
             function();                     \
@@ -13,8 +13,8 @@
     } instance;                             \
     void function()
 
-#define INIT INIT_IMPL(MAKE_UNIQUE(_init_struct),   \
-                       MAKE_UNIQUE(_init_instance), \
-                       MAKE_UNIQUE(_init_function))
+#define INIT INIT_IMPL(UNIQUE_IDENTIFIER(_init_struct),   \
+                       UNIQUE_IDENTIFIER(_init_instance), \
+                       UNIQUE_IDENTIFIER(_init_function))
 
 #endif // INIT_H

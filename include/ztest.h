@@ -3,80 +3,70 @@
 
 #include <iostream>
 #include <vector>
-#include <map>
-#include <cstdlib>
-#include <cstdio>
 
 #include "zcommon.h"
+#include "zinit.h"
 
 NS_ZL_BEGIN
 
-std::vector<std::pair<std::string, void(*)(int&, int&)>> __tests;
-
-#define JUDGE_TRUE(msg) ++__passed;
-
-#define JUDGE_FALSE(msg) ++__failed; std::cout << msg << std::endl;
-
-#define JUDGE(con, true_msg, false_msg) \
-    if (con) {                          \
-        JUDGE_TRUE(true_msg)            \
-    } else {                            \
-        JUDGE_FALSE(false_msg)          \
-    }
-
-#define EQUAL(a, b) JUDGE((a) == (b), "",                                       \
-    "(line " << __LINE__ << ") failure #" << __failed << ":\n" <<               \
-    #a " == " #b ", with\n\t" #a " : " << (a) << "\n\t" #b " : " << (b) << "")
-
-#define TRUE(s) EQUAL(s, true)
-
-#define FALSE(s) EQUAL(s, false)
-
-#define SUCCEED __failed = 0;
-
-#define FAILED(msg) JUDGE_FALSE("(line " << __LINE__ << ") " <<         \
-                                "failure #" << __failed << ": " << msg);
-
-#define TEST(name)                                         \
-    void __test_##name(int&, int&);                        \
-    struct __struct_##name                                 \
-    {                                                      \
-        __struct_##name()                                  \
-        {                                                  \
-            zl::__tests.push_back({#name, __test_##name}); \
-        }                                                  \
-    } __struct_##name;                                     \
-    void __test_##name(int& __passed, int& __failed)       \
-
-
-#define TEST_MAIN                                        \
-    int main(int argc, char const *argv[])               \
-    {                                                    \
-        using namespace std;                             \
-        vector<string> passed_tests, failed_tests;       \
-        cout << "[" __FILE__ "]" << endl;                \
-        for (auto p : zl::__tests) {                     \
-            int passed = 0, failed = 0;                  \
-            p.second(passed, failed);                    \
-            if (failed) {                                \
-                failed_tests.push_back(p.first);         \
-            } else {                                     \
-                passed_tests.push_back(p.first);         \
-            }                                            \
-        }                                                \
-        cout << passed_tests.size() << " tests passed:"; \
-        for (auto p : passed_tests) {                    \
-            cout << "  " << p;                           \
-        }                                                \
-        cout << endl;                                    \
-        cout << failed_tests.size() << " tests failed:"; \
-        for (auto p : failed_tests) {                    \
-            cout << "  " << p << endl;                   \
-        }                                                \
-        cout << endl << endl;                            \
-        return 0;                                        \
-    }
+std::vector<std::pair<
+    std::string,
+    void(*)(int&, int&)
+>> _ztest_tests;
 
 NS_ZL_END
+
+#define _ZTEST_JUDGE(con, passed_msg, failed_msg) \
+    if (con) {                                    \
+        ++_ztest_passed;                          \
+        std::cout << passed_msg;                  \
+    } else {                                      \
+        ++_ztest_failed;                          \
+        std::cout << failed_msg;                  \
+    }
+
+#define _ZTEST_FAILED_MSG_PREFIX "#" << _ztest_failed << "(" << __LINE__ << "): "
+
+#define CHECK(check) _ZTEST_JUDGE(check, "", _ZTEST_FAILED_MSG_PREFIX << #check << "\n")
+
+#define EQUAL(a, b) _ZTEST_JUDGE((a) == (b), "",  \
+    _ZTEST_FAILED_MSG_PREFIX << #a" == "#b"\n" << \
+    "\t"#a" = " << (a) << "\n\t"#b" = " << (b) << "\n")
+
+#define FAILED(msg) _ZTEST_JUDGE(false, "", _ZTEST_FAILED_MSG_PREFIX << msg << "\n")
+
+#define TEST(name)                                                  \
+    void _ztest_test_##name(int&, int&);                            \
+    INIT                                                            \
+    {                                                               \
+        zl::_ztest_tests.push_back({#name, _ztest_test_##name});    \
+    }                                                               \
+    void _ztest_test_##name(int& _ztest_passed, int& _ztest_failed) \
+
+#define TEST_MAIN                                  \
+    int main(int argc, char const *argv[])         \
+    {                                              \
+        using namespace std;                       \
+        vector<string> passed_tests, failed_tests; \
+        cout << "\e[1;31m";                        \
+        cout << "[" __FILE__ "]" << endl;          \
+        cout << "\e[0m";                           \
+        for (auto p : zl::_ztest_tests) {          \
+            int passed = 0, failed = 0;            \
+            p.second(passed, failed);              \
+            if (failed) {                          \
+                cout << "\e[31m";                  \
+                cout << " ❌ " << p.first << endl;  \
+                cout << "\e[0m";                   \
+                failed_tests.push_back(p.first);   \
+            } else {                               \
+                cout << "\e[32m";                  \
+                cout << " ✓ " << p.first << endl;  \
+                cout << "\e[0m";                   \
+                passed_tests.push_back(p.first);   \
+            }                                      \
+        }                                          \
+        return 0;                                  \
+    }
 
 #endif // ZTEST_H

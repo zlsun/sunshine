@@ -7,9 +7,9 @@
 #include <list>
 #include <map>
 #include <utility>
-#include <boost/format.hpp>
 
 #include "zcommon.h"
+#include "zinit.h"
 
 NS_ZL_BEGIN
 
@@ -86,47 +86,54 @@ public:
 class Logger
 {
 private:
-    std::ostream& out;
+    static std::ostream* os;
+
+public:
+    static void to(std::ostream& o) {
+        os = &o;
+    }
+
+private:
     bool addNewline;
     bool addSpace;
     bool space = false;
 
 public:
     Logger(
-        std::ostream& out = std::cout,
         bool addNewline = true,
         bool addSpace = true
     )
-        : out(out)
-        , addNewline(addNewline)
+        : addNewline(addNewline)
         , addSpace(addSpace)
     {
     }
 
     ~Logger()
     {
-        if (addNewline) out << std::endl;
+        if (os && addNewline) *os << std::endl;
     }
 
     template <typename T>
     Logger& operator , (T&& t)
     {
-        printSpace();
-        print(std::forward<T>(t));
+        if (os) {
+            printSpace();
+            print(std::forward<T>(t));
+        }
         return *this;
     }
 
 private:
     void printSpace()
     {
-        if (addSpace && space) out << " ";
+        if (addSpace && space) *os << " ";
         else space = true;
     }
 
     template <typename T>
     void print(T&& t)
     {
-        out << std::forward<T>(t);
+        *os << std::forward<T>(t);
     }
 
     // add support for array because it's ambiguous to overloading 'operator<<' for array
@@ -134,72 +141,39 @@ private:
     void print(const T (&array)[N])
     {
         if (N == 0) {
-            out << "[]";
+            *os << "[]";
             return;
         }
-        out << "[" << array[0];
+        *os << "[" << array[0];
         for (int i = 1; i < N; ++i) {
-            out << ", " << array[i];
+            *os << ", " << array[i];
         }
-        out << "]";
+        *os << "]";
     }
 
     // special case of const T (&array)[N], print the string directly
     template <size_t N>
     void print(const char (&str)[N])
     {
-        out << str;
+        os << str;
     }
 };
 
-class FormatLogger
-{
-private:
-    boost::format formatter;
-    std::ostream& out;
-    bool addNewline;
+std::ostream* Logger::os = nullptr;
 
-public:
-    FormatLogger(
-        const char* format,
-        std::ostream& out = std::cout,
-        bool addNewline = true
-    )
-        : formatter(format)
-        , out(out)
-        , addNewline(addNewline)
-    {}
-
-    ~FormatLogger()
-    {
-        out << formatter;
-        if (addNewline) out << std::endl;
-    }
-
-    template <typename T>
-    FormatLogger& operator , (T&& t)
-    {
-        formatter % std::forward<T>(t);
-        return *this;
-    }
-
-};
+INIT {
+    Logger::to(std::cout);
+}
 
 NS_ZL_END
 
 
 #ifdef DISABLE_ZLOG
 # define zlog            (zl::DummyLogger()),
-# define zlogg(args...)  (zl::DummyLogger()),
-# define zlogo(args...)  (zl::DummyLogger()),
-# define zlogf(args...)  (zl::DummyLogger()),
-# define zlogfo(args...) (zl::DummyLogger()),
+# define zloga(args...)  (zl::DummyLogger()),
 #else
-# define zlog                         (zl::Logger()),
-# define zlogg(args...)               (zl::Logger(std::cout,##args)),
-# define zlogo(out, args...)          (zl::Logger(out,##args)),
-# define zlogf(format, args...)       (zl::FormatLogger(format, std::cout,##args)),
-# define zlogfo(format, out, args...) (zl::FormatLogger(format, out,##args)),
+# define zlog                (zl::Logger()),
+# define zloga(args...)      (zl::Logger(args)),
 #endif
 
 #endif // ZLOG_H

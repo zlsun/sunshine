@@ -9,7 +9,7 @@ TEST(construct)
 {
     String s = "1234";
     String ss(5, 's');
-    const String cs = {'1', '2', '3', '4'};
+    const String cs {'1', '2', '3', '4'};
     EQUAL(s, "1234")
     EQUAL(ss, "sssss")
     EQUAL(cs, s)
@@ -18,16 +18,27 @@ TEST(construct)
 TEST(access)
 {
     String s = "1234";
-    const String cs = s;
-    EQUAL(s[0], '1')
-    EQUAL(cs[1], '2')
+    int l = s.length() - 1;
+    EQUAL(l, 3)
+
+    EQUAL(s[0], s.at(0))
+    EQUAL(s[0], s.front())
+
+    EQUAL(s[l], s.at(l))
+    EQUAL(s[l], s.back())
+
+    EQUAL(s[1], '2')
+    s[1] = '0';
+    EQUAL(s[1], '0')
+
+    EQUAL(s.data(), s.c_str())
 }
 
 TEST(search)
 {
     String s = "1234";
     EQUAL(s.find('1'), 0)
-    EQUAL(s.find('4'), 3)
+    EQUAL(s.find("4"), 3)
 }
 
 TEST(non_member)
@@ -39,9 +50,9 @@ TEST(non_member)
 
     EQUAL(s + cs, "12341234")
 
-    TRUE(s == cs)
-    TRUE(s > r)
-    TRUE(s < t)
+    CHECK(s == cs)
+    CHECK(s > r)
+    CHECK(s < t)
 }
 
 TEST(extended)
@@ -60,13 +71,28 @@ TEST(extended)
     EQUAL(trimed.trim_right(), " 1234");
 
     String s = "1234";
-    TRUE(s.startswith('1'))
-    TRUE(s.endswith('4'))
-    TRUE(s.contains("12"));
+    CHECK(s.startswith('1'))
+    CHECK(s.endswith('4'))
+    CHECK(s.contains("12"));
 
     String joined = " "_s.join({"123", "234", s});
     EQUAL(joined, "123 234 1234")
     EQUAL(joined.split(), (vector<String> {"123", "234", "1234"}));
+
+    EQUAL(","_s.join({"1", "2"}).split(','), (vector<String> {"1", "2"}))
+
+    EQUAL("1, 2, 3, 4"_s.replace_all(", ", "|"), "1|2|3|4")
+}
+
+TEST(slice)
+{
+    String s = "1234";
+
+    EQUAL(s.slice(1), "234")
+    EQUAL(s.slice(1, 2), "2")
+
+    s.slice(0, 2) = "34";
+    EQUAL(s, "3434")
 }
 
 TEST(format)

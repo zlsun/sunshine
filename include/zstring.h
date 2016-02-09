@@ -11,13 +11,6 @@
 #include "zalgo.h"
 #include "zutils.h"
 
-#define FORWARD_METHOD_TO(reciver, method)                  \
-    template <typename... Args>                             \
-    decltype(auto) method(Args&&... args) {                 \
-        return reciver.method(std::forward<Args>(args)...); \
-    }
-#define FORWARD_TO_STR(method) FORWARD_METHOD_TO(str, method)
-
 NS_ZL_BEGIN
 
 template <
@@ -26,7 +19,7 @@ template <
     class Allocator = std::allocator<CharT>
 >
 class BasicString
-    : ImplementRelationalOperators<BasicString<CharT>>
+    : public ImplementRelationalOperators<BasicString<CharT>>
 {
 private:
     using StringT = std::basic_string<CharT, Traits, Allocator>;
@@ -88,6 +81,13 @@ public:
     BasicString(const boost::basic_format<CharT, Traits, Allocator>& format)
         : str(boost::str(format)) {}
 
+    operator StringT () {
+        return str;
+    }
+    operator StringT () const {
+        return str;
+    }
+
     BasicString& operator = (const BasicString& s)
     {
         return assign(s);
@@ -126,7 +126,7 @@ public:
 
     reference at(size_type pos)
     {
-        return str.at();
+        return str.at(pos);
     }
     const_reference at(size_type pos) const
     {
@@ -228,19 +228,19 @@ public:
     {
         return str.empty();
     }
-    bool size() const
+    size_type size() const
     {
         return str.size();
     }
-    bool length() const
+    size_type length() const
     {
         return str.length();
     }
-    bool max_size() const
+    size_type max_size() const
     {
         return str.max_size();
     }
-    bool capacity() const
+    size_type capacity() const
     {
         return str.capacity();
     }
@@ -256,14 +256,40 @@ public:
 
     // Operations
 
+#define FORWARD_TO_STRING(method)                       \
+    template <class... Args>                            \
+    decltype(auto) method(Args&&... args)               \
+    {                                                   \
+        return str.method(std::forward<Args>(args)...); \
+    }                                                   \
+    template <class... Args>                            \
+    decltype(auto) method(Args&&... args) const         \
+    {                                                   \
+        return str.method(std::forward<Args>(args)...); \
+    }
+
+#define FORWARD_AND_RETURN_THIS(method)          \
+    template <class... Args>                     \
+    BasicString& method(Args&&... args)          \
+    {                                            \
+        str.method(std::forward<Args>(args)...); \
+        return *this;                            \
+    }                                            \
+    template <class... Args>                     \
+    BasicString& method(Args&&... args) const    \
+    {                                            \
+        str.method(std::forward<Args>(args)...); \
+        return *this;                            \
+    }
+
     void clear()
     {
         str.clear();
     }
 
-    FORWARD_TO_STR(insert)
+    FORWARD_AND_RETURN_THIS(insert)
 
-    FORWARD_TO_STR(erase)
+    FORWARD_TO_STRING(erase)
     BasicString& erase(size_type index = 0, size_type count = npos)
     {
         return str.erase(index, count);
@@ -278,36 +304,29 @@ public:
         str.pop_back();
     }
 
-    FORWARD_TO_STR(append)
-    BasicString& append(const BasicString& str)
+    FORWARD_AND_RETURN_THIS(append)
+    BasicString& append(const StringT& str, size_type pos, size_type count = npos)
     {
-        return str.append(str.str);
+        str.append(str, pos, count);
+        return *this;
     }
 
-    BasicString& operator += (const BasicString& s)
+    BasicString& operator += (const StringT& s)
     {
-        str.operator += (s.str);
+        str += s;
         return *this;
     }
     BasicString& operator += (const IListT& ilist)
     {
-        str.operator += (ilist);
+        str += ilist;
         return *this;
     }
 
-    FORWARD_TO_STR(compare)
-    BasicString& compare(const BasicString& s)
-    {
-        return str.compare(s.str);
-    }
+    FORWARD_TO_STRING(compare)
 
-    FORWARD_TO_STR(replace)
-    BasicString& replace(const BasicString& s)
-    {
-        return str.replace(s.str);
-    }
+    FORWARD_AND_RETURN_THIS(replace)
 
-    BasicString substr(size_type pos = 0, size_type count = npos ) const
+    BasicString substr(size_type pos = 0, size_type count = npos) const
     {
         return str.substr(pos, count);
     }
@@ -317,18 +336,27 @@ public:
         return str.copy(dest, count, pos);
     }
 
-    FORWARD_TO_STR(resize);
+    void resize(size_type count) {
+        str.resize(count);
+    }
+
+    void resize(size_type count, CharT ch) {
+        str.resie(count, ch);
+    }
 
     void swap(BasicString& other)
     {
         str.swap(other.str);
     }
 
+#undef FORWARD_TO_STRING
+#undef FORWARD_AND_RETURN_THIS
+
     // Search
 
-    size_type find(const BasicString& str, size_type pos = 0 ) const
+    size_type find(const StringT& s, size_type pos = 0 ) const
     {
-        return str.find(str.str, pos);
+        return str.find(s, pos);
     }
     size_type find(const CharT* s, size_type pos, size_type count ) const
     {
@@ -470,10 +498,99 @@ public:
     std::vector<BasicString> split(const BasicString& delim = " \n\r") const
     {
         std::vector<BasicString> v;
-        boost::split(v, str, [&](char ch) {
+        boost::split(v, str, [&](CharT ch) {
             return delim.find(ch) != npos;
         });
         return v;
+    }
+    std::vector<BasicString> split(const CharT& delim) const
+    {
+        std::vector<BasicString> v;
+        boost::split(v, str, [&](CharT ch) {
+            return ch == delim;
+        });
+        return v;
+    }
+
+    BasicString replace_all(const StringT& p, const StringT& s)
+    {
+        BasicString result(*this);
+        int pos, count = p.size();
+        while ((pos = result.find(p, pos)) != -1) {
+            result.replace(pos, count, s);
+        }
+        return result;
+    }
+
+    // slice
+
+public:
+    class View : public ImplementRelationalOperators<View>
+    {
+    private:
+        BasicString& str;
+        size_type pos, count;
+    public:
+        View(BasicString& str, size_type pos, size_type count)
+            : str(str), pos(pos), count(count) {}
+        View(BasicString& str): View(str, 0, str.size()) {}
+        operator BasicString () const
+        {
+            return str.substr(pos, count);
+        }
+        View& operator = (const BasicString& s)
+        {
+            str.replace(pos, count, s);
+            return *this;
+        }
+        int compare(const View& v) const
+        {
+            return str.compare(pos, count, v.str, v.pos, v.count);
+        }
+        friend bool operator < (const View& a, const View& b)
+        {
+            return a.compare(b) < 0;
+        }
+        friend bool operator == (const View& a, const View& b)
+        {
+            return a.compare(b) == 0;
+        }
+        friend decltype(auto) operator << (
+            std::basic_ostream<CharT, Traits>& os,
+            const View& v
+        )
+        {
+            return os << (BasicString)v;
+        }
+    };
+
+    View slice(int begin, int end)
+    {
+        if (begin < 0) {
+            begin = size() + begin;
+        }
+        if (end < 0) {
+            end = size() + end;
+        }
+        return View(*this, begin, end - begin);
+    }
+    View slice(int begin)
+    {
+        return slice(begin, size());
+    }
+    const View slice(int begin, int end) const
+    {
+        if (begin < 0) {
+            begin = size() + begin;
+        }
+        if (end < 0) {
+            end = size() + end;
+        }
+        return View(*this, begin, end - begin);
+    }
+    const View slice(int begin) const
+    {
+        return slice(begin, size());
     }
 
 };
@@ -481,22 +598,22 @@ public:
 using String = BasicString<char>;
 using WString = BasicString<wchar_t>;
 
-String operator "" _s (const char* s, std::size_t len)
+inline String operator "" _s (const char* s, std::size_t len)
 {
     return String(s, len);
 }
 
-WString operator "" _ws (const wchar_t* s, std::size_t len)
+inline WString operator "" _ws (const wchar_t* s, std::size_t len)
 {
     return WString(s, len);
 }
 
-boost::format operator "" _f (const char* s, std::size_t len)
+inline boost::format operator "" _f (const char* s, std::size_t len)
 {
     return boost::format(s);
 }
 
-boost::wformat operator "" _wf (const wchar_t* s, std::size_t len)
+inline boost::wformat operator "" _wf (const wchar_t* s, std::size_t len)
 {
     return boost::wformat(s);
 }
