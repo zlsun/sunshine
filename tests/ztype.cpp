@@ -3,7 +3,7 @@
 
 using namespace zl;
 
-using T = Typelist<int, char>; // <int, char>
+using T = TypeList<int, char>; // <int, char>
 using U = Append<double, T>;   // <int, char, double>
 using V = Concat<T, U>;        // <int, char, int, char, double>
 using W = Insert<0, float, V>; // <float, int, char, int, char, double>

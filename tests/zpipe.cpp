@@ -9,13 +9,13 @@ TEST(basic)
 {
     const vector<int> v {1, 2, 3};
     auto u = ifrom(v)
-    | iwhere([](int i) {
-        return i % 2 == 1;
-    })
-    | iselect([](int i) {
-        return (i + 1) * 2;
-    })
-    | to_vector;
+           | iwhere([](int i) {
+               return i % 2 == 1;
+           })
+           | iselect([](int i) {
+               return (i + 1) * 2;
+           })
+           | to_vector;
     EQUAL(u, (vector<int> {4, 8}))
 
     EQUAL(ifrom({1, 2, 3, 0}) | iall([](int i) {

@@ -6,7 +6,7 @@ INFIX(add, int(int, int))
     return lhs + rhs;
 }
 
-INFIX(mul, int(int, int))
+INFIX(mul, int(const int&, const int&))
 {
     return lhs * rhs;
 }

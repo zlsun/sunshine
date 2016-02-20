@@ -33,15 +33,19 @@ public:
     }
     LazyInit& operator = (T o)
     {
+        if (lazy) {
+            delete lazy;
+        }
         lazy = new T(std::move(o));
         return *this;
     }
     operator T ()
     {
-        if (lazy == nullptr) {
+        if (!lazy) {
             throw LazyNotInitException();
         }
         T result = T(std::move(*lazy));
+        delete lazy;
         lazy = nullptr;
         return result;
     }

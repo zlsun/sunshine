@@ -16,7 +16,7 @@ namespace detail
         std::function<R()> block;
         template <class F>
         StaticBlock(F&& f): block(std::forward<F>(f)) {}
-        R operator () () const
+        decltype(auto) operator () () const
         {
             return block();
         }
@@ -26,7 +26,7 @@ namespace detail
     struct StaticBranch
     {
         template <class F>
-        auto operator * (F&& f)
+        decltype(auto) operator * (F&& f)
         {
             return *this;
         }
@@ -35,7 +35,7 @@ namespace detail
     struct StaticBranch<true>
     {
         template <class F>
-        auto operator * (F&& f)
+        decltype(auto) operator * (F&& f)
         {
             return StaticBlock<decltype(f())>(std::forward<F>(f));
         }
@@ -51,7 +51,7 @@ namespace detail
             return std::move(result);
         }
         template <class U>
-        auto operator + (U&&)
+        decltype(auto) operator + (U&&)
         {
             return *this;
         }
@@ -60,7 +60,7 @@ namespace detail
     struct StaticResult<void>
     {
         template <class U>
-        auto operator + (U&&)
+        decltype(auto) operator + (U&&)
         {
             return *this;
         }
@@ -69,16 +69,16 @@ namespace detail
     struct StaticExecutor
     {
         template <class R>
-        auto operator + (const StaticBlock<R>& block)
+        decltype(auto) operator + (const StaticBlock<R>& block)
         {
             return StaticResult<R>(block());
         }
-        auto operator + (const StaticBlock<void>& block)
+        decltype(auto) operator + (const StaticBlock<void>& block)
         {
             block();
             return StaticResult<void>();
         }
-        auto operator + (const StaticBranch<false>& br)
+        decltype(auto) operator + (const StaticBranch<false>& br)
         {
             return *this;
         }
@@ -88,8 +88,8 @@ namespace detail
 
 NS_ZL_END
 
-#define STATIC_IF(pred)      zl::detail::StaticExecutor() + zl::detail::StaticBranch<pred>() * [&]()
-#define STATIC_ELSE_IF(pred) + zl::detail::StaticBranch<pred>() * [&]()
-#define STATIC_ELSE          STATIC_ELSE_IF(true)
+#define STATIC_IF(pred)   zl::detail::StaticExecutor() + zl::detail::StaticBranch<pred>() * [&]()
+#define STATIC_ELIF(pred) + zl::detail::StaticBranch<pred>() * [&]()
+#define STATIC_ELSE       STATIC_ELIF(true)
 
 #endif // ZSTATIC_H

@@ -4,19 +4,17 @@
 #include <cstdio>
 
 #include "zcommon.h"
+#include "zinit.h"
 
 NS_ZL_BEGIN
 
 #if defined(IN_FILE) && defined(OUT_FILE)
 
-struct __stdreopen
+INIT
 {
-    __stdreopen()
-    {
-        std::freopen(IN_FILE, "r", stdin);
-        std::freopen(OUT_FILE, "w", stdout);
-    }
-} __stdreopen_instance;
+    std::freopen(IN_FILE, "r", stdin);
+    std::freopen(OUT_FILE, "w", stdout);
+}
 
 #endif
 

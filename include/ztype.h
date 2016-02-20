@@ -2,6 +2,7 @@
 #define ZTYPE_H
 
 #include <iostream>
+#include <tuple>
 #include <boost/type_index.hpp>
 
 #include "zcommon.h"
@@ -12,7 +13,7 @@ NS_ZL_BEGIN
 // ============================================================================
 
 template <class... Types>
-struct Typelist {};
+using TypeList = std::tuple<Types...>;
 
 // ============================================================================
 
@@ -20,7 +21,7 @@ template <class TList>
 struct HeadImpl;
 
 template <class H, class... T>
-struct HeadImpl<Typelist<H, T...>> {
+struct HeadImpl<TypeList<H, T...>> {
     using Type = H;
 };
 
@@ -33,8 +34,8 @@ template <class TList>
 struct TailImpl;
 
 template <class H, class... T>
-struct TailImpl<Typelist<H, T...>> {
-    using Type = Typelist<T...>;
+struct TailImpl<TypeList<H, T...>> {
+    using Type = TypeList<T...>;
 };
 
 template <class TList>
@@ -46,7 +47,7 @@ template <class TList>
 struct LengthImpl;
 
 template <class... Types>
-struct LengthImpl<Typelist<Types...>> {
+struct LengthImpl<TypeList<Types...>> {
     enum { value = sizeof...(Types) };
 };
 
@@ -59,12 +60,12 @@ template <size_t idx, class TList>
 struct TypeAtImpl;
 
 template <size_t idx, class Head, class... Tail>
-struct TypeAtImpl<idx, Typelist<Head, Tail...>> {
-    using Type = typename TypeAtImpl<idx - 1, Typelist<Tail...>>::Type;
+struct TypeAtImpl<idx, TypeList<Head, Tail...>> {
+    using Type = typename TypeAtImpl<idx - 1, TypeList<Tail...>>::Type;
 };
 
 template <class Head, class... Tail>
-struct TypeAtImpl<0, Typelist<Head, Tail...>> {
+struct TypeAtImpl<0, TypeList<Head, Tail...>> {
     using Type = Head;
 };
 
@@ -77,19 +78,19 @@ template <class T, class TList>
 struct IndexOfImpl;
 
 template <class T>
-struct IndexOfImpl<T, Typelist<>> {
+struct IndexOfImpl<T, TypeList<>> {
     enum { value = -1 };
 };
 
 template <class T, class... Tail>
-struct IndexOfImpl<T, Typelist<T, Tail...>> {
+struct IndexOfImpl<T, TypeList<T, Tail...>> {
     enum { value = 0 };
 };
 
 template <class T, class Head, class... Tail>
-struct IndexOfImpl<T, Typelist<Head, Tail...>> {
+struct IndexOfImpl<T, TypeList<Head, Tail...>> {
 private:
-    enum { temp = IndexOfImpl<T, Typelist<Tail...>>::value };
+    enum { temp = IndexOfImpl<T, TypeList<Tail...>>::value };
 public:
     enum { value = temp == -1 ? -1 : 1 + temp };
 };
@@ -103,8 +104,8 @@ template <class T, class TList>
 struct PrependImpl;
 
 template <class T, class... Types>
-struct PrependImpl<T, Typelist<Types...>> {
-    using Type = Typelist<T, Types...>;
+struct PrependImpl<T, TypeList<Types...>> {
+    using Type = TypeList<T, Types...>;
 };
 
 template <class T, class TList>
@@ -116,8 +117,8 @@ template <class T, class TList>
 struct AppendImpl;
 
 template <class T, class... Types>
-struct AppendImpl<T, Typelist<Types...>> {
-    using Type = Typelist<Types..., T>;
+struct AppendImpl<T, TypeList<Types...>> {
+    using Type = TypeList<Types..., T>;
 };
 
 template <class T, class TList>
@@ -129,20 +130,20 @@ template <class TList>
 struct PopImpl;
 
 template <>
-struct PopImpl<Typelist<>> {
-    using Type = Typelist<>;
+struct PopImpl<TypeList<>> {
+    using Type = TypeList<>;
 };
 
 template <class T>
-struct PopImpl<Typelist<T>> {
-    using Type = Typelist<>;
+struct PopImpl<TypeList<T>> {
+    using Type = TypeList<>;
 };
 
 template <class Head, class... Tail>
-struct PopImpl<Typelist<Head, Tail...>> {
+struct PopImpl<TypeList<Head, Tail...>> {
     using Type = Prepend<
         Head,
-        typename PopImpl<Typelist<Tail...>>::Type
+        typename PopImpl<TypeList<Tail...>>::Type
     >;
 };
 
@@ -155,8 +156,8 @@ template <class TListA, class TListB>
 struct ConcatImpl;
 
 template <class... TypesA, class... TypesB>
-struct ConcatImpl<Typelist<TypesA...>, Typelist<TypesB...>> {
-    using Type = Typelist<TypesA..., TypesB...>;
+struct ConcatImpl<TypeList<TypesA...>, TypeList<TypesB...>> {
+    using Type = TypeList<TypesA..., TypesB...>;
 };
 
 template <class TListA, class TListB>
@@ -168,16 +169,16 @@ template <size_t idx, class T, class TList>
 struct InsertImpl;
 
 template <class T, class Head, class... Tail>
-struct InsertImpl<0, T, Typelist<Head, Tail...>> {
-    using Type = Typelist<T, Head, Tail...>;
+struct InsertImpl<0, T, TypeList<Head, Tail...>> {
+    using Type = TypeList<T, Head, Tail...>;
 };
 
 template <size_t idx, class T, class Head, class... Tail>
-struct InsertImpl<idx, T, Typelist<Head, Tail...>> {
+struct InsertImpl<idx, T, TypeList<Head, Tail...>> {
     using Type = typename Prepend<
         Head,
         typename InsertImpl<
-            idx - 1, T, Typelist<Tail...>
+            idx - 1, T, TypeList<Tail...>
         >::Type
     >::Type;
 };
@@ -191,16 +192,16 @@ template <size_t idx, class TList>
 struct DeleteImpl;
 
 template <class Head, class... Tail>
-struct DeleteImpl<0, Typelist<Head, Tail...>> {
-    using Type = Typelist<Tail...>;
+struct DeleteImpl<0, TypeList<Head, Tail...>> {
+    using Type = TypeList<Tail...>;
 };
 
 template <size_t idx, class Head, class... Tail>
-struct DeleteImpl<idx, Typelist<Head, Tail...>> {
+struct DeleteImpl<idx, TypeList<Head, Tail...>> {
     using Type = typename Append<
         Head,
         typename DeleteImpl<
-            idx - 1, Typelist<Tail...>
+            idx - 1, TypeList<Tail...>
         >::Type
     >::Type;
 };
@@ -214,8 +215,8 @@ template <template <class> class Functor, class TList>
 struct Map;
 
 template <template <class> class Functor, class... Types>
-struct Map<Functor, Typelist<Types...>> {
-    using Type = Typelist<Functor<Types>...>;
+struct Map<Functor, TypeList<Types...>> {
+    using Type = TypeList<Functor<Types>...>;
 };
 
 // ============================================================================
@@ -224,7 +225,7 @@ template <template <class> class Functor, class TList>
 struct ForEach;
 
 template <template <class> class Functor, class... Types>
-struct ForEach<Functor, Typelist<Types...>> {
+struct ForEach<Functor, TypeList<Types...>> {
     template <class F>
     ForEach(F f) {
         apply<Types...>(f);

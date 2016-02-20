@@ -10,38 +10,55 @@
 NS_ZL_BEGIN
 
 template <class F>
-struct Infix
-{
-public:
+struct Infix {
+
     using LT = typename function_traits<F>::template arg<0>::type;
     using RT = typename function_traits<F>::template arg<1>::type;
     using R = typename function_traits<F>::result_type;
 
-protected:
-    LT left;
-    F* func;
+    using FC = std::function<F>;
 
-public:
-    Infix<F>& addLeft(LT lhs)
+    template <class BF>
+    struct BoundInfix {
+        BF func;
+        BoundInfix(BF func): func(std::move(func)) {}
+    };
+
+    FC func;
+
+    Infix(FC f) :func(std::move(f)) {}
+
+    auto bindLeft(LT lhs) const
     {
-        left = lhs;
-        return *this;
+        auto b = std::bind(func, lhs, std::placeholders::_1);
+        return BoundInfix<decltype(b)>(std::move(b));
     }
 
-    Infix<F>& setFunc(F f)
+    auto bindRight(RT rhs) const
     {
-        func = f;
-        return *this;
+        auto b = std::bind(func, std::placeholders::_1, rhs);
+        return BoundInfix<decltype(b)>(std::move(b));
     }
 
-#define DEF_INFIX_OPERATOR(op)                             \
-    friend Infix<F>& operator op (LT lhs, Infix<F>& infix) \
-    {                                                      \
-        return infix.addLeft(lhs);                         \
-    }                                                      \
-    friend R operator op (Infix<F>& infix, RT rhs)         \
-    {                                                      \
-        return infix.func(infix.left, rhs);                \
+    using BL = typename function_traits<decltype(&Infix::bindLeft)>::result_type;
+    using BR = typename function_traits<decltype(&Infix::bindRight)>::result_type;
+
+#define DEF_INFIX_OPERATOR(op)                           \
+    friend auto operator op (LT lhs, const Infix& infix) \
+    {                                                    \
+        return infix.bindLeft(lhs);                      \
+    }                                                    \
+    friend auto operator op (const Infix& infix, RT rhs) \
+    {                                                    \
+        return infix.bindRight(rhs);                     \
+    }                                                    \
+    friend auto operator op (const BL& bl, RT rhs)       \
+    {                                                    \
+        return bl.func(rhs);                             \
+    }                                                    \
+    friend auto operator op (LT lhs, const BR& br)       \
+    {                                                    \
+        return br.func(lhs);                             \
     }
 
     DEF_INFIX_OPERATOR(+)
@@ -66,30 +83,17 @@ public:
     DEF_INFIX_OPERATOR(&&)
     DEF_INFIX_OPERATOR(||)
 
-    friend Infix<F>& operator , (LT lhs, Infix<F>& infix)
-    {
-        return infix.addLeft(lhs);
-    }
-    friend R operator , (Infix<F>& infix, RT rhs)
-    {
-        return infix.func(infix.left, rhs);
-    }
-
 #undef DEF_INFIX_OPERATOR
-
 };
+
 
 NS_ZL_END
 
 #define INFIX(name, F)                            \
-    static zl::Infix<F> name;                     \
     static typename zl::Infix<F>::R               \
     _infix_##name(typename zl::Infix<F>::LT lhs,  \
                   typename zl::Infix<F>::RT rhs); \
-    INIT                                          \
-    {                                             \
-        name.setFunc(_infix_##name);              \
-    }                                             \
+    static zl::Infix<F> name(_infix_##name);      \
     typename zl::Infix<F>::R                      \
     _infix_##name(typename zl::Infix<F>::LT lhs,  \
                   typename zl::Infix<F>::RT rhs)

@@ -30,7 +30,7 @@ namespace detail
 
 #define OPERATIONAL_FORWARD(name)                                     \
     template <class... Args>                                          \
-    auto name(Args&&... args) const {                                 \
+    decltype(auto) name(Args&&... args) const {                       \
         return detail::name(get_path(), std::forward<Args>(args)...); \
     }
 
@@ -43,8 +43,7 @@ public:
 
     template <class... Args>
     Path(Args&&... args): detail::path(std::forward<Args>(args)...) {}
-    Path(const BasicString<value_type>& str): Path(str.c_str()) {}
-    Path(BasicString<value_type>&& str): Path(str.c_str()) {}
+    Path(BasicString<value_type> str): detail::path(std::move(str)) {}
 
     detail::path& get_path()
     {
@@ -129,7 +128,7 @@ public:
     }
 };
 
-Path operator "" _path (const char* s, size_t len)
+auto operator "" _path (const char* s, size_t len)
 {
     return Path(s);
 }

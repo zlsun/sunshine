@@ -4,14 +4,14 @@
 TEST(static_if) {
     STATIC_IF(false) {
         EQUAL(1, 2)
-    } STATIC_ELSE_IF(true) {
+    } STATIC_ELIF(true) {
         EQUAL(1, 1)
     } STATIC_ELSE {
         EQUAL(1, 2)
     };
     int i = STATIC_IF(false) {
         return 1;
-    } STATIC_ELSE_IF(false) {
+    } STATIC_ELIF(false) {
         return 2;
     } STATIC_ELSE {
         return 3;

@@ -85,13 +85,23 @@ public:
 
 class Logger
 {
+
+#ifdef ENABLE_ZLOG_TO
 private:
     static std::ostream* os;
-
 public:
-    static void to(std::ostream& o) {
+    static void to(std::ostream& o)
+    {
         os = &o;
     }
+#else
+private:
+    constexpr static std::ostream* os = &std::cout;
+public:
+    static void to(std::ostream& o)
+    {
+    }
+#endif
 
 private:
     bool addNewline;
@@ -99,12 +109,8 @@ private:
     bool space = false;
 
 public:
-    Logger(
-        bool addNewline = true,
-        bool addSpace = true
-    )
-        : addNewline(addNewline)
-        , addSpace(addSpace)
+    Logger(bool addNewline = true, bool addSpace = true)
+        : addNewline(addNewline), addSpace(addSpace)
     {
     }
 
@@ -155,25 +161,18 @@ private:
     template <size_t N>
     void print(const char (&str)[N])
     {
-        os << str;
+        *os << str;
     }
 };
 
-std::ostream* Logger::os = nullptr;
-
-INIT {
-    Logger::to(std::cout);
-}
-
 NS_ZL_END
 
-
 #ifdef DISABLE_ZLOG
-# define zlog            (zl::DummyLogger()),
-# define zloga(args...)  (zl::DummyLogger()),
+# define zlog           (zl::DummyLogger()),
+# define zloga(args...) (zl::DummyLogger()),
 #else
-# define zlog                (zl::Logger()),
-# define zloga(args...)      (zl::Logger(args)),
+# define zlog           (zl::Logger()),
+# define zloga(args...) (zl::Logger(args)),
 #endif
 
 #endif // ZLOG_H

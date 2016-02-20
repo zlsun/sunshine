@@ -51,7 +51,7 @@ NS_ZL_END
         cout << "\e[1;31m";                        \
         cout << "[" __FILE__ "]" << endl;          \
         cout << "\e[0m";                           \
-        for (auto p : zl::_ztest_tests) {          \
+        for (auto&& p : zl::_ztest_tests) {        \
             int passed = 0, failed = 0;            \
             p.second(passed, failed);              \
             if (failed) {                          \
@@ -66,7 +66,7 @@ NS_ZL_END
                 passed_tests.push_back(p.first);   \
             }                                      \
         }                                          \
-        return 0;                                  \
+        return failed_tests.size();                \
     }
 
 #endif // ZTEST_H

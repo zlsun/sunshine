@@ -187,12 +187,14 @@ typename std::add_rvalue_reference<T>::type rt_val() noexcept
 }
 
 template <typename Op>
-struct is_unary_function {
+struct is_unary_function
+{
     enum { value = function_traits<Op>::arity == 1 };
 };
 
 template <typename Op>
-struct is_binary_function {
+struct is_binary_function
+{
     enum { value = function_traits<Op>::arity == 2 };
 };
 

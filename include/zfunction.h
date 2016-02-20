@@ -28,7 +28,7 @@ namespace detail
 }
 
 template <typename F>
-class Function: detail::UniverseFunctionType<F>
+class Function : public detail::UniverseFunctionType<F>
 {
 public:
     using BaseType = detail::UniverseFunctionType<F>;

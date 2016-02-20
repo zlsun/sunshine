@@ -6,13 +6,15 @@
 
 using namespace std;
 
+using Vi = vector<int>;
+
 TEST(copy)
 {
-    const vector<int> v {1, 3, 5, 2, 4};
-    vector<int> v2(5);
+    const Vi v {1, 3, 5, 2, 4};
+    Vi v2(5);
     copy(v, v2);
     EQUAL(v2[1], 3)
-    copy(vector<int> {1, 2, 5, 3, 4}, v2);
+    copy(Vi {1, 2, 5, 3, 4}, v2);
     EQUAL(v2[1], 2)
 }
 
@@ -20,7 +22,7 @@ TEST(sort)
 {
     int array[] {1, 3, 5, 2, 4};
     const int N = sizeof(array) / sizeof(*array);
-    vector<int> v(array, array + N);
+    Vi v(array, array + N);
     sort(array);
     EQUAL(array[4], 5)
     sort(v);
@@ -38,7 +40,7 @@ TEST(transform)
         return i + j;
     });
     EQUAL(array[1], 8)
-    transform2(vector<int> {1, 2, 5, 3, 4}, array, array, [](int i, int j) {
+    transform2(Vi {1, 2, 5, 3, 4}, array, array, [](int i, int j) {
         return i + j;
     });
     EQUAL(array[1], 10)
@@ -46,12 +48,12 @@ TEST(transform)
 
 TEST(relative_access)
 {
-    const vector<int> v {1, 3, 5, 2, 4};
+    const Vi v {1, 3, 5, 2, 4};
     EQUAL(*(v >> 0), 1)
     EQUAL(*(v >> 2), 5)
     EQUAL(*(v << 2), 2)
     EQUAL(*(v << 1), 4)
-    EQUAL((*(vector<int> {1, 2, 5, 3, 4} << 1)), 4)
+    EQUAL(*(Vi {1, 2, 5, 3, 4} << 1), 4)
 }
 
 TEST_MAIN

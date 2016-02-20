@@ -132,11 +132,7 @@ public:
     BasicRegex(BasicString<CharT, ST, SA> s, Flag f = Flag::ECMAScript)
         : regex(s, f) {}
 
-    BasicRegex& operator = (const BasicRegex& other)
-    {
-        return assign(other);
-    }
-    BasicRegex& operator = (BasicRegex&& other)
+    BasicRegex& operator = (BasicRegex other)
     {
         return assign(std::move(other));
     }
@@ -145,12 +141,7 @@ public:
         return assign(std::move(ilist));
     }
 
-    BasicRegex& assign(const BasicRegex& other)
-    {
-        regex.assign(other.regex);
-        return *this;
-    }
-    BasicRegex& assign(BasicRegex&& other)
+    BasicRegex& assign(BasicRegex other)
     {
         regex.assign(std::move(other.regex));
         return *this;
@@ -176,7 +167,7 @@ public:
         regex.swap(other.regex);
     }
 
-    friend void swap(BasicRegex<CharT, Traits>& lhs, BasicRegex<CharT, Traits>& rhs)
+    friend void swap(BasicRegex& lhs, BasicRegex& rhs)
     {
         return std::swap(lhs, rhs);
     }
@@ -204,28 +195,24 @@ public:
     }
 
     template <class BiIter, class Alloc = std::allocator<CharT>>
-    decltype(auto)
-    match(BiIter first, BiIter last, Match flags = Match::Default)
+    auto match(BiIter first, BiIter last, Match flags = Match::Default)
     {
         using MatchResult = std::match_results<BiIter, Alloc>;
         MatchResult result;
         std::regex_match(first, last, result, regex, flags);
         return result;
     }
-    decltype(auto)
-    match(const CharT* str, Match flags = Match::Default)
+    auto match(const CharT* str, Match flags = Match::Default)
     {
         return match(str, str + Traits::length(str), flags);
     }
     template <class STraits, class SAlloc>
-    decltype(auto)
-    match(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    auto match(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
     {
         return match(s.begin(), s.end(), flags);
     }
     template <class STraits, class SAlloc>
-    decltype(auto)
-    match(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    auto match(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
     {
         return match(s.begin(), s.end(), flags);
     }
@@ -253,28 +240,24 @@ public:
     }
 
     template <class BiIter, class Alloc = std::allocator<CharT>>
-    decltype(auto)
-    search(BiIter first, BiIter last, Match flags = Match::Default)
+    auto search(BiIter first, BiIter last, Match flags = Match::Default)
     {
         using MatchResult = std::match_results<BiIter, Alloc>;
         MatchResult result;
         std::regex_search(first, last, result, regex, flags);
         return result;
     }
-    decltype(auto)
-    search(const CharT* str, Match flags = Match::Default)
+    auto search(const CharT* str, Match flags = Match::Default)
     {
         return search(str, str + Traits::length(str), flags);
     }
     template <class STraits, class SAlloc>
-    decltype(auto)
-    search(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    auto search(const std::basic_string<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
     {
         return search(s.begin(), s.end(), flags);
     }
     template <class STraits, class SAlloc>
-    decltype(auto)
-    search(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
+    auto search(const BasicString<CharT, STraits, SAlloc>& s, Match flags = Match::Default)
     {
         return search(s.begin(), s.end(), flags);
     }
@@ -298,13 +281,13 @@ public:
         return std::regex_replace(out, first, last, regex, fmt, flags);
     }
 
-    decltype(auto)
+    BasicString<CharT>
     replace(const CharT* s, const CharT* fmt, Match flags = Match::Default)
     {
         return std::regex_replace(s, regex, fmt, flags);
     }
     template <class FTraits, class FAlloc>
-    decltype(auto)
+    BasicString<CharT>
     replace(const CharT* s, const BasicString<CharT, FTraits, FAlloc>& fmt,
             Match flags = Match::Default)
     {
@@ -312,14 +295,14 @@ public:
     }
 
     template <class STraits, class SAlloc>
-    decltype(auto)
+    BasicString<CharT, STraits, SAlloc>
     replace(const BasicString<CharT, STraits, SAlloc>& s, const CharT* fmt,
             Match flags = Match::Default)
     {
         return std::regex_replace(s.c_str(), regex, fmt, flags);
     }
     template <class STraits, class SAlloc, class FTraits, class FAlloc>
-    decltype(auto)
+    BasicString<CharT, STraits, SAlloc>
     replace(const BasicString<CharT, STraits, SAlloc>& s,
             const BasicString<CharT, FTraits, FAlloc>& fmt,
             Match flags = Match::Default)
@@ -332,12 +315,12 @@ public:
 using Regex = BasicRegex<char>;
 using WRegex = BasicRegex<wchar_t>;
 
-Regex operator "" _r (const char* s, std::size_t len)
+auto operator "" _r (const char* s, std::size_t len)
 {
     return Regex(s, len);
 }
 
-WRegex operator "" _wr (const wchar_t* s, std::size_t len)
+auto operator "" _wr (const wchar_t* s, std::size_t len)
 {
     return WRegex(s, len);
 }

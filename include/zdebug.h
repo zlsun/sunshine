@@ -3,8 +3,9 @@
 
 #include <iostream>
 
-#include "zlog.h"
 #include "ztype.h"
+#include "zlog.h"
+#include "zstring.h"
 
 #define TYPE(T) (zl::TypeToStr<T>()())
 #define TYPEOF(o) (TYPE(decltype(o)))

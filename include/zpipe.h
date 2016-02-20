@@ -51,27 +51,17 @@ struct IEnum
         }
         out << "[" << *e;
         ++e;
-        for (auto i : e) {
+        for (auto&& i : e) {
             out << ", " << i;
         }
         return out << "]";
     }
 };
 
-template <typename Func>
-struct IFunc
-{
-    template <typename Enum>
-    auto operator () (Enum e)
-    {
-        return Func::apply(e);
-    }
-};
-
 template <typename Enum, typename Func>
 auto operator | (Enum e, Func f)
 {
-    return f(e);
+    return f.operator () (e);
 }
 
 // ===========================================================================
@@ -189,13 +179,13 @@ inline auto irange(int e)
 
 // ===========================================================================
 
-static struct ToVector : IFunc<ToVector>
+static struct ToVector
 {
     template <typename E>
     auto operator () (E& e) const
     {
         std::vector<typename E::ValueT> v;
-        for (auto i : e) {
+        for (auto&& i : e) {
             v.push_back(i);
         }
         return v;
@@ -254,7 +244,7 @@ struct Where
     F f;
     Where(F f): f(f) {}
     template <typename E>
-    WhereEnum<E, F> operator () (E& e) const
+    auto operator () (E& e) const
     {
         return WhereEnum<E, F>(e, f);
     }
@@ -282,7 +272,7 @@ struct Aggregate
         }
         result = e.current();
         e.advance();
-        for (auto i : e) {
+        for (auto&& i : e) {
             result = f(result, i);
         }
         return result;
@@ -304,10 +294,10 @@ struct AggregateInit
     T init;
     AggregateInit(F f, T t): f(f), init(t) {}
     template <typename E>
-    T operator () (E& e) const
+    auto operator () (E& e) const
     {
         T result = init;
-        for (auto i : e) {
+        for (auto&& i : e) {
             result = f(result, i);
         }
         return result;
@@ -325,7 +315,7 @@ inline auto iaggrerate(F f, T init)
 struct Max
 {
     template <typename U>
-    U operator () (const U& u, const U& v) const
+    auto operator () (const U& u, const U& v) const
     {
         return v > u ? v : u;
     }
@@ -338,7 +328,7 @@ static auto imax = iaggrerate(Max());
 struct Min
 {
     template <typename U>
-    U operator () (const U& u, const U& v) const
+    auto operator () (const U& u, const U& v) const
     {
         return v < u ? v : u;
     }
@@ -351,7 +341,7 @@ static auto imin = iaggrerate(Min());
 struct Sum
 {
     template <typename U, typename V>
-    U operator () (const U& u, const V& v) const
+    auto operator () (const U& u, const V& v) const
     {
         return u + v;
     }
@@ -376,7 +366,7 @@ struct Count
     T x;
     Count(T x): x(x) {}
     template <typename U, typename V>
-    U operator () (const U& u, const V& v) const
+    auto operator () (const U& u, const V& v) const
     {
         if (v == x) {
             return u + 1;
@@ -400,7 +390,7 @@ struct Concat
     T split;
     Concat(const T& s): split(s) {}
     template <typename E>
-    R operator () (E& e) const
+    auto operator () (E& e) const
     {
         R result;
         if (!e) {
@@ -408,7 +398,7 @@ struct Concat
         }
         result += e.current();
         e.advance();
-        for (auto i : e) {
+        for (auto&& i : e) {
             result += split;
             result += i;
         }
@@ -442,9 +432,9 @@ struct All
     F f;
     All(const F& f): f(f) {}
     template <typename E>
-    bool operator () (E& e) const
+    auto operator () (E& e) const
     {
-        for (auto i : e) {
+        for (auto&& i : e) {
             if (!i) {
                 return false;
             }
@@ -467,9 +457,9 @@ struct Any
     F f;
     Any(const F& f): f(f) {}
     template <typename E>
-    bool operator () (E& e) const
+    auto operator () (E& e) const
     {
-        for (auto i : e) {
+        for (auto&& i : e) {
             if (i) {
                 return true;
             }
@@ -507,7 +497,8 @@ template <typename E>
 struct ReverseEnum
     : IEnum<ReverseEnum<E>>
     , MemberHolder<std::vector<typename E::ValueT>>
-    , StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator> {
+    , StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>
+{
     using VecMem = MemberHolder<std::vector<typename E::ValueT>>;
     using Base = StdEnum<typename std::vector<typename E::ValueT>::reverse_iterator>;
     ReverseEnum(const E& e)
@@ -519,7 +510,7 @@ struct ReverseEnum
 static struct Reverse
 {
     template <typename E>
-    ReverseEnum<E> operator () (E& e) const
+    auto operator () (E& e) const
     {
         return ReverseEnum<E>(e);
     }
@@ -546,7 +537,8 @@ template <typename E>
 struct SortEnum
     : IEnum<SortEnum<E>>
     , SortedMemberHolder<std::vector<typename E::ValueT>>
-    , StdEnum<typename std::vector<typename E::ValueT>::iterator> {
+    , StdEnum<typename std::vector<typename E::ValueT>::iterator>
+{
     using SortedVecMem = SortedMemberHolder<std::vector<typename E::ValueT>>;
     using Base = StdEnum<typename std::vector<typename E::ValueT>::iterator>;
     SortEnum(const E& e)
@@ -563,7 +555,7 @@ struct SortEnum
 static struct Sort
 {
     template <typename E>
-    SortEnum<E> operator () (E& e) const
+    auto operator () (E& e) const
     {
         return SortEnum<E>(e);
     }
@@ -575,7 +567,7 @@ struct SortBy
     F cmp;
     SortBy(F f): cmp(f) {}
     template <typename E>
-    SortEnum<E> operator () (E& e) const
+    auto operator () (E& e) const
     {
         return SortEnum<E>(e, cmp);
     }

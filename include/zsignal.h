@@ -4,7 +4,9 @@
 #include <set>
 #include <memory>
 
+#include "zcommon.h"
 #include "zfunction.h"
+#include "ztraits.h"
 #include "zlazy.h"
 
 NS_ZL_BEGIN
@@ -13,22 +15,18 @@ template <typename F>
 class Signal
 {
 public:
-    using SlotType = zl::Function<F>;
-    using SlotResultType = typename SlotType::result_type;
-    using SlotDecl = std::shared_ptr<SlotType>;
+    using SlotType = F;
+    using SlotResultType = typename function_traits<F>::result_type;
+    using SlotDecl = F*;
     using SlotSet = std::set<SlotDecl>;
-    using This = Signal<F>;
 private:
     SlotSet slots;
 public:
-    template <typename Func>
-    SlotDecl connect(Func f)
+    void connect(const SlotDecl& decl)
     {
-        SlotDecl decl(new SlotType(f));
         slots.insert(decl);
-        return decl;
     }
-    bool remove(SlotDecl decl)
+    bool disconnect(const SlotDecl& decl)
     {
         auto it = slots.find(decl);
         if (it != slots.end()) {
@@ -37,28 +35,31 @@ public:
         }
         return false;
     }
-    template <typename Func>
-    This& operator << (Func f)
+    void disconnect_all()
+    {
+        slots.clear();
+    }
+    Signal& operator << (const SlotDecl& f)
     {
         connect(f);
         return *this;
     }
-    This& operator >> (SlotDecl f)
+    Signal& operator >> (const SlotDecl& f)
     {
-        remove(f);
+        disconnect(f);
         return *this;
     }
-    template <typename... Args, typename ResultType = SlotResultType>
-    typename std::enable_if<std::is_void<ResultType>::value, void>::type
-    invoke(Args&&... args) const
+    template <typename... Args, typename ResultType = SlotResultType, typename =
+              typename std::enable_if<std::is_void<ResultType>::value>::type>
+    void emit(Args&& ... args) const
     {
         for (const auto& s : slots) {
             (*s)(std::forward<Args>(args)...);
         }
     }
-    template <typename... Args, typename ResultType = SlotResultType>
-    typename std::enable_if<!std::is_void<ResultType>::value, ResultType>::type
-    invoke(Args&&... args) const
+    template <typename... Args, typename ResultType = SlotResultType, typename =
+              typename std::enable_if<!std::is_void<ResultType>::value>::type>
+    ResultType emit(Args&& ... args) const
     {
         LazyInit<SlotResultType> result;
         for (const auto& s : slots) {
@@ -66,7 +67,18 @@ public:
         }
         return result;
     }
-
+    template <typename... Args, typename ResultType = SlotResultType, typename =
+              typename std::enable_if<std::is_void<ResultType>::value>::type>
+    void operator () (Args&& ... args) const
+    {
+        emit(std::forward<Args>(args)...);
+    }
+    template <typename... Args, typename ResultType = SlotResultType, typename =
+              typename std::enable_if<!std::is_void<ResultType>::value>::type>
+    ResultType operator () (Args&& ... args) const
+    {
+        return emit(std::forward<Args>(args)...);
+    }
 };
 
 NS_ZL_END

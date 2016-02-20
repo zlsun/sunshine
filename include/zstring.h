@@ -65,21 +65,19 @@ public:
     BasicString(InputIt first, InputIt last, const Allocator& alloc = Allocator())
         : str(first, last, alloc) {}
 
-    BasicString(const BasicString& s) : str(s.str) {}
-    BasicString(const BasicString& s, const Allocator& alloc) : str(s.str, alloc) {}
-    BasicString(BasicString&& s) : str(std::move(s.str)) {}
-    BasicString(BasicString&& s, const Allocator& alloc) : str(std::move(s.str), alloc) {}
-
-    BasicString(const StringT& s) : str(s) {}
-    BasicString(const StringT& s, const Allocator& alloc) : str(s, alloc) {}
-    BasicString(StringT&& s) : str(std::move(s)) {}
-    BasicString(StringT&& s, const Allocator& alloc) : str(std::move(s), alloc) {}
+    BasicString(StringT s) : str(std::move(s)) {}
+    BasicString(StringT s, const Allocator& alloc) : str(std::move(s), alloc) {}
 
     BasicString(IListT ilist, const Allocator& alloc = Allocator())
         : str(std::move(ilist), alloc) {}
 
     BasicString(const boost::basic_format<CharT, Traits, Allocator>& format)
         : str(boost::str(format)) {}
+
+    BasicString(const BasicString& s) : str(s.str) {}
+    BasicString(const BasicString& s, const Allocator& alloc) : str(s.str, alloc) {}
+    BasicString(BasicString&& s) : str(std::move(s.str)) {}
+    BasicString(BasicString&& s, const Allocator& alloc) : str(std::move(s.str), alloc) {}
 
     operator StringT () {
         return str;
@@ -88,11 +86,7 @@ public:
         return str;
     }
 
-    BasicString& operator = (const BasicString& s)
-    {
-        return assign(s);
-    }
-    BasicString& operator = (BasicString&& s)
+    BasicString& operator = (BasicString s)
     {
         return assign(std::move(s));
     }
@@ -101,12 +95,7 @@ public:
         return assign(std::move(ilist));
     }
 
-    BasicString& assign(const BasicString& s)
-    {
-        str.assign(s.str);
-        return *this;
-    }
-    BasicString& assign(BasicString&& s)
+    BasicString& assign(BasicString s)
     {
         str.assign(std::move(s.str));
         return *this;
@@ -514,12 +503,7 @@ public:
 
     BasicString replace_all(const StringT& p, const StringT& s)
     {
-        BasicString result(*this);
-        int pos, count = p.size();
-        while ((pos = result.find(p, pos)) != -1) {
-            result.replace(pos, count, s);
-        }
-        return result;
+        return boost::replace_all_copy(str, p, s);
     }
 
     // slice
@@ -598,22 +582,22 @@ public:
 using String = BasicString<char>;
 using WString = BasicString<wchar_t>;
 
-inline String operator "" _s (const char* s, std::size_t len)
+inline auto operator "" _s (const char* s, std::size_t len)
 {
     return String(s, len);
 }
 
-inline WString operator "" _ws (const wchar_t* s, std::size_t len)
+inline auto operator "" _ws (const wchar_t* s, std::size_t len)
 {
     return WString(s, len);
 }
 
-inline boost::format operator "" _f (const char* s, std::size_t len)
+inline auto operator "" _f (const char* s, std::size_t len)
 {
     return boost::format(s);
 }
 
-inline boost::wformat operator "" _wf (const wchar_t* s, std::size_t len)
+inline auto operator "" _wf (const wchar_t* s, std::size_t len)
 {
     return boost::wformat(s);
 }
