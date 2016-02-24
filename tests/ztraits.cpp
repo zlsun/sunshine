@@ -1,5 +1,5 @@
-#include "../include/ztraits.h"
-#include "../include/ztest.h"
+#include "ztraits.h"
+#include "ztest.h"
 
 using namespace zl;
 

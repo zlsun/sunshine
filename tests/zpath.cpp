@@ -1,7 +1,7 @@
-#include "../include/zpath.h"
-#include "../include/zinit.h"
-#include "../include/zlog.h"
-#include "../include/ztest.h"
+#include "zpath.h"
+#include "zinit.h"
+#include "zlog.h"
+#include "ztest.h"
 
 using namespace zl;
 

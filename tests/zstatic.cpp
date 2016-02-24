@@ -1,5 +1,5 @@
-#include "../include/zstatic.h"
-#include "../include/ztest.h"
+#include "zstatic.h"
+#include "ztest.h"
 
 TEST(static_if) {
     STATIC_IF(false) {

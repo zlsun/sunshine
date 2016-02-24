@@ -1,5 +1,5 @@
-#include "../include/zinfix.h"
-#include "../include/ztest.h"
+#include "zinfix.h"
+#include "ztest.h"
 
 INFIX(add, int(int, int))
 {

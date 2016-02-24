@@ -1,6 +1,6 @@
-#include "../include/zregex.h"
-#include "../include/zpipe.h"
-#include "../include/ztest.h"
+#include "zregex.h"
+#include "zpipe.h"
+#include "ztest.h"
 
 using namespace zl;
 

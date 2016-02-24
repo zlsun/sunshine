@@ -1,5 +1,5 @@
-#include "../include/zinit.h"
-#include "../include/ztest.h"
+#include "zinit.h"
+#include "ztest.h"
 
 int a;
 int b;

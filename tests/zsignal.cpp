@@ -1,5 +1,5 @@
-#include "../include/ztest.h"
-#include "../include/zsignal.h"
+#include "ztest.h"
+#include "zsignal.h"
 using namespace zl;
 
 void inc(int& i) {

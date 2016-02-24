@@ -1,8 +1,8 @@
 #include <vector>
 #include <iostream>
 
-#include "../include/zalgo.h"
-#include "../include/ztest.h"
+#include "zalgo.h"
+#include "ztest.h"
 
 using namespace std;
 
