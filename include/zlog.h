@@ -10,6 +10,8 @@
 
 #include "zcommon.h"
 #include "zinit.h"
+#include "zstatic.h"
+#include "zconcept.h"
 
 NS_ZL_BEGIN
 
@@ -43,6 +45,18 @@ std::ostream& printMap(std::ostream& out, const MapT& map)
     return out;
 }
 
+template<class Tuple, std::size_t... Is>
+void print_tuple(std::ostream& os, const Tuple & t, std::index_sequence<Is...>)
+{
+    using swallow = int[]; // guaranties left to right order
+    (void)swallow{0, (void(os << (Is == 0? "" : ", ") << std::get<Is>(t)), 0)...};
+}
+
+NS_ZL_END
+
+namespace std
+{
+
 template <typename T>
 std::ostream& operator << (std::ostream& out, const std::vector<T>& vec)
 {
@@ -72,6 +86,18 @@ std::ostream& operator << (std::ostream& out, const std::map<K, V>& map)
 {
     return zl::printMap(out, map);
 }
+
+template<class... Args>
+std::ostream& operator<<(std::ostream& out, const std::tuple<Args...>& t)
+{
+    out << "(";
+    zl::print_tuple(out, t, std::index_sequence_for<Args...>{});
+    return out << ")";
+}
+
+}
+
+NS_ZL_BEGIN
 
 class DummyLogger
 {
@@ -137,9 +163,16 @@ private:
     }
 
     template <typename T>
-    void print(T&& t)
+    CONCEPT_CHECK(CanCout<T>)
+    print(T&& t)
     {
         *os << std::forward<T>(t);
+    }
+    template <typename T>
+    CONCEPT_CHECK(!CanCout<T>)
+    print(T&& t)
+    {
+        *os << "unknown";
     }
 
     // add support for array because it's ambiguous to overloading 'operator<<' for array
@@ -157,7 +190,7 @@ private:
         *os << "]";
     }
 
-    // special case of const T (&array)[N], print the string directly
+    // specify const T (&array)[N], print the string directly
     template <size_t N>
     void print(const char (&str)[N])
     {

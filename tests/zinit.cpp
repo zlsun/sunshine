@@ -12,8 +12,8 @@ INIT
 
 TEST(init)
 {
-    EQUAL(a, 1);
-    EQUAL(b, 2);
+    EQUAL(a, 1)
+    EQUAL(b, 2)
 }
 
 TEST_MAIN

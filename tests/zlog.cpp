@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "zlog.h"
+#include "zinit.h"
 #include "ztest.h"
 
 using namespace std;
@@ -13,11 +14,16 @@ using namespace std;
         ss.str(s);           \
     }
 
+struct A {};
+
+ostringstream ss;
+INIT
+{
+    zl::Logger::to(ss);
+}
+
 TEST(zlog)
 {
-    ostringstream ss;
-    zl::Logger::to(ss);
-
     zlog 1, 2, 3, 4;
     check("1 2 3 4\n")
 
@@ -30,6 +36,15 @@ TEST(zlog)
     zlog vector<int> {1, 2, 3};
     check("[1, 2, 3]\n")
 
+    zlog A();
+    check("unknown\n")
+
+}
+
+TEST(tuple)
+{
+    zlog make_tuple(1, 'c');
+    check("(1, c)\n")
 }
 
 TEST_MAIN

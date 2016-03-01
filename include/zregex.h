@@ -6,13 +6,6 @@
 #include "zcommon.h"
 #include "zstring.h"
 
-#define FORWARD_METHOD_TO(reciver, method)                  \
-    template <typename... Args>                             \
-    decltype(auto) method(Args&&... args) {                 \
-        return reciver.method(std::forward<Args>(args)...); \
-    }
-#define FORWARD_TO_REGEX(method) FORWARD_METHOD_TO(regex, method)
-
 NS_ZL_BEGIN
 
 template <
