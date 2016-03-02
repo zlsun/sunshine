@@ -1,4 +1,4 @@
-// clone from https://github.com/kennytm/utils/blob/master/traits.hpp
+// cloned from https://github.com/kennytm/utils/blob/master/traits.hpp
 
 #ifndef ZTRAITS_H
 #define ZTRAITS_H

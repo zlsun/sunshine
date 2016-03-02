@@ -1,4 +1,4 @@
-// clone from https://github.com/hjcapple/clover/blob/master/clover/Debug.h
+// cloned from https://github.com/hjcapple/clover/blob/master/clover/Debug.h
 
 #ifndef ZASSERT_H
 #define ZASSERT_H
