@@ -3,8 +3,12 @@
 
 #include <iostream>
 #include <sstream>
+#include <array>
 #include <vector>
+#include <queue>
+#include <forward_list>
 #include <list>
+#include <set>
 #include <map>
 #include <utility>
 
@@ -16,17 +20,17 @@
 NS_ZL_BEGIN
 
 template <typename SequenceT>
-std::ostream& printSequence(std::ostream& out, const SequenceT& seq)
+std::ostream& printSequence(std::ostream& out, const SequenceT& seq, char open, char close)
 {
     if (seq.size() == 0) {
-        return out << "[]";
+        return out << open << close;
     }
     auto it = seq.begin(), end = seq.end();
-    out << "[" << *it;
+    out << open << *it;
     while (++it != end) {
         out << ", " << *it;
     }
-    out << "]";
+    out << close;
     return out;
 }
 
@@ -57,43 +61,41 @@ NS_ZL_END
 namespace std
 {
 
-template <typename T>
-std::ostream& operator << (std::ostream& out, const std::vector<T>& vec)
-{
-    return zl::printSequence(out, vec);
-}
+#define DEF_FOR_CONTAINER(C, open, close) \
+    template <typename T>\
+    std::ostream& operator << (std::ostream& out, const C<T>& c)\
+    {\
+        return zl::printSequence(out, c, open, close);\
+    }
 
-template <typename T>
-std::ostream& operator << (std::ostream& out, const std::list<T>& vec)
-{
-    return zl::printSequence(out, vec);
-}
+    // DEF_FOR_CONTAINER(std::array, '[', ']')
+    DEF_FOR_CONTAINER(std::vector, '[', ']')
+    DEF_FOR_CONTAINER(std::deque, '[', ']')
+    DEF_FOR_CONTAINER(std::list, '[', ']')
+    DEF_FOR_CONTAINER(std::set, '{', '}')
+    DEF_FOR_CONTAINER(std::initializer_list, '[', ']')
 
-template <typename T>
-std::ostream& operator << (std::ostream& out, const std::initializer_list<T>& ils)
-{
-    return zl::printSequence(out, ils);
-}
+#undef DEF_FOR_CONTAINER
 
-template <typename K, typename V>
-std::ostream& operator << (std::ostream& out, const std::pair<K, V>& p)
-{
-    return out << "<" << p.first << ", " << p.second << ">";
-}
+    template <typename K, typename V>
+    std::ostream& operator << (std::ostream& out, const std::pair<K, V>& p)
+    {
+        return out << "<" << p.first << ", " << p.second << ">";
+    }
 
-template <typename K, typename V>
-std::ostream& operator << (std::ostream& out, const std::map<K, V>& map)
-{
-    return zl::printMap(out, map);
-}
+    template <typename K, typename V>
+    std::ostream& operator << (std::ostream& out, const std::map<K, V>& map)
+    {
+        return zl::printMap(out, map);
+    }
 
-template<class... Args>
-std::ostream& operator<<(std::ostream& out, const std::tuple<Args...>& t)
-{
-    out << "(";
-    zl::print_tuple(out, t, std::index_sequence_for<Args...>{});
-    return out << ")";
-}
+    template<class... Args>
+    std::ostream& operator<<(std::ostream& out, const std::tuple<Args...>& t)
+    {
+        out << "(";
+        zl::print_tuple(out, t, std::index_sequence_for<Args...>{});
+        return out << ")";
+    }
 
 }
 
@@ -172,10 +174,10 @@ private:
     CONCEPT_CHECK(!CanCout<T>)
     print(T&& t)
     {
-        *os << "unknown";
+        *os << "<unknown>";
     }
 
-    // add support for array because it's ambiguous to overloading 'operator<<' for array
+    // for array, because it's ambiguous to overloading 'operator<<' for array
     template <typename T, size_t N>
     void print(const T (&array)[N])
     {
@@ -190,7 +192,7 @@ private:
         *os << "]";
     }
 
-    // specify const T (&array)[N], print the string directly
+    // for const T (&array)[N], print the string directly
     template <size_t N>
     void print(const char (&str)[N])
     {

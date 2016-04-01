@@ -1,6 +1,6 @@
-# sunlib
+# sunshine
 
-Header-only C++ library.
+A collection of funny, useful and elegant header-only C++ libraries.
 
 ## Build & Run
 

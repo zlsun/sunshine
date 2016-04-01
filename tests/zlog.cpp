@@ -38,7 +38,6 @@ TEST(zlog)
 
     zlog A();
     check("unknown\n")
-
 }
 
 TEST(tuple)

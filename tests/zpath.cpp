@@ -11,7 +11,8 @@ Path test_dir;
 Path test_file;
 Path test_file2;
 
-INIT {
+INIT
+{
     current_dir = Path(".").absolute();
     test_dir = current_dir / "testdir";
     test_file = test_dir / "file";
