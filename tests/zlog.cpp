@@ -37,7 +37,7 @@ TEST(zlog)
     check("[1, 2, 3]\n")
 
     zlog A();
-    check("unknown\n")
+    check("<unknown>\n")
 }
 
 TEST(tuple)
