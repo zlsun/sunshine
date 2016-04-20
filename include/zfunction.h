@@ -23,8 +23,11 @@ namespace detail
             MEM_FN_SYMBOL<F>,
             std::function<F>
         >;
-#undef MEM_FN_SYMBOL
+#else
+    template <typename F>
+    using UniverseFunctionType = std::function<F>;
 #endif
+#undef MEM_FN_SYMBOL
 }
 
 template <typename F>
