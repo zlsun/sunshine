@@ -1,6 +1,4 @@
 
-include(Utils)
-
 # touch testdir/file
 set(TEST_FILE "${BIN_DIR}/testdir/file")
 file(WRITE "${TEST_FILE}" "")
