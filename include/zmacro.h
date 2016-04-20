@@ -10,9 +10,9 @@
 #define ARGS_SIZE_HELPER(_, p10, p9, p8, p7, p6, p5, p4, p3, p2, p1, n, ...) n
 #define ARGS_SIZE(...) ARGS_SIZE_HELPER(ARGS_SIZE_PREFIX,##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 
-#define LAMBDA_RETURN(expr)       { return expr; }
-#define LAMBDA_ARGUMENTS(args...) (args) LAMBDA_RETURN
-#define LAMBDA                    [    ] LAMBDA_ARGUMENTS
-#define CAPTURE(args...)          [args] LAMBDA_ARGUMENTS
+#define LAMBDA_RETURN(expr)   { return expr; }
+#define LAMBDA_ARGUMENTS(...) (__VA_ARGS__) LAMBDA_RETURN
+#define LAMBDA                [    ] LAMBDA_ARGUMENTS
+#define CAPTURE(...)          [__VA_ARGS__] LAMBDA_ARGUMENTS
 
 #endif // ZMACRO_H
