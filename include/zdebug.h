@@ -7,7 +7,7 @@
 #include "zlog.h"
 #include "zstring.h"
 
-#define TYPE(T) (zl::TypeToStr<T>()())
+#define TYPE(T...) (zl::TypeToStr<T>()())
 #define TYPEOF(o) (TYPE(decltype(o)))
 
 #ifdef NDEBUG
