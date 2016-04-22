@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-project(sunlib CXX)
+project(sunshine CXX)
 
 set(SRC_DIR "${CMAKE_SOURCE_DIR}")
 set(BIN_DIR "${CMAKE_BINARY_DIR}/bin")
