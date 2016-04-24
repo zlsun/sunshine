@@ -9,9 +9,6 @@ NS_ZL_BEGIN
 
 struct EmptyAddition {};
 
-#define DEFAULT_GETTER [](Property& prop) -> Object& { return prop.getObj(); }
-#define DEFAULT_SETTER [](Property& prop, const Object& newObj) { prop.getObj() = newObj; }
-
 template <class Object, class Addition = EmptyAddition>
 class Property
 {
@@ -21,10 +18,9 @@ public:
 private:
     Object obj;
     Addition add;
-    Getter getter = DEFAULT_GETTER;
-    Setter setter = DEFAULT_SETTER;
+    Getter getter;
+    Setter setter;
 public:
-
     Property() {}
     Property(const Object& o): obj(o) {}
 
@@ -38,16 +34,20 @@ public:
     Property(const Object& o, const Getter& get, const Setter& set)
         : obj(o), getter(get), setter(set) {}
 
-    Object& getObj() { return obj; }
+    Object& getObj()             { return obj; }
     const Object& getObj() const { return obj; }
 
-    Addition& getAdd() { return add; }
+    Addition& getAdd()             { return add; }
     const Addition& getAdd() const { return add; }
 
-    Object& get() { return getter(*this); }
-    const Object& get() const { return getter(const_cast<Object&>(*this)); }
+    Object& get()             { return getter ? getter(*this) : getObj(); }
+    const Object& get() const { return getter ? getter(const_cast<Object&>(*this)) : getObj(); }
 
-    void set(const Object& newObj) { setter(*this, newObj); }
+    void set(const Object& newObj)
+    {
+        if (setter) setter(*this, newObj);
+        else getObj() = newObj;
+    }
 
     operator Object () { return get(); }
 
@@ -57,9 +57,6 @@ public:
         return *this;
     }
 };
-
-#undef DEFAULT_GETTER
-#undef DEFAULT_SETTER
 
 NS_ZL_END
 
