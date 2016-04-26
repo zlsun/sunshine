@@ -5,7 +5,7 @@ A collection of small, useful, funny and elegant header-only C++ libraries.
 ## Compile Dependencies
 
 - CMake
-- GCC 4.9.2+ or Clang 3.3+
+- GCC 5+ or Clang 3.4+
 
 ## Build & Run
 
