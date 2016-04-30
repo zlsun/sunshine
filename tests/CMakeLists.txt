@@ -14,7 +14,7 @@ foreach(t ${tests})
     add_executable(${tname} ${t})
     target_compile_definitions(${tname}
         PRIVATE "__FILE__=\"${basename}\"")
-    if(CMAKE_COMPILER_IS_GNUCXX)
+    if(CLANG OR GCC)
         set_target_properties(${tname} PROPERTIES
             COMPILE_FLAGS "-Wno-builtin-macro-redefined")
     endif()

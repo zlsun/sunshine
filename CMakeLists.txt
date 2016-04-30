@@ -8,7 +8,7 @@ set(BIN_DIR "${CMAKE_BINARY_DIR}/bin")
 set(LIB_DIR "${CMAKE_BINARY_DIR}/lib")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${SRC_DIR}/cmake/")
-include(OS)
+include(Platform)
 include(Utils)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_DIR}")
