@@ -509,35 +509,129 @@ public:
     // slice
 
 public:
-    class View : public ImplementRelationalOperators<View>
+    template <typename String>
+    class IView : public ImplementRelationalOperators<IView<String>>
     {
-    private:
-        BasicString& str;
+    protected:
+        String& str;
         size_type pos, count;
     public:
-        View(BasicString& str, size_type pos, size_type count)
+        IView(String& str, size_type pos, size_type count)
             : str(str), pos(pos), count(count) {}
-        View(BasicString& str): View(str, 0, str.size()) {}
+        IView(String& str): View(str, 0, str.size()) {}
         operator BasicString () const
         {
             return str.substr(pos, count);
         }
-        View& operator = (const BasicString& s)
+        size_type length() const
         {
-            str.replace(pos, count, s);
-            return *this;
+            return count;
         }
-        int compare(const View& v) const
+        size_type size() const
+        {
+            return count;
+        }
+        int compare(const IView& v) const
         {
             return str.compare(pos, count, v.str, v.pos, v.count);
         }
-        friend bool operator < (const View& a, const View& b)
+        friend bool operator < (const IView& a, const IView& b)
         {
             return a.compare(b) < 0;
         }
-        friend bool operator == (const View& a, const View& b)
+        friend bool operator == (const IView& a, const IView& b)
         {
             return a.compare(b) == 0;
+        }
+    };
+    class ConstView : public IView<const BasicString>
+    {
+    private:
+        using Base = IView<const BasicString>;
+    public:
+        using iterator = BasicString::const_iterator;
+    public:
+        ConstView(const BasicString& str, size_type pos, size_type count)
+            : Base(str, pos, count) {}
+        ConstView(const BasicString& str): Base(str, 0, str.size()) {}
+        auto slice(int begin, int end) const
+        {
+            if (begin < 0) {
+                begin = Base::length() + begin;
+            }
+            if (end < 0) {
+                end = Base::length() + end;
+            }
+            begin = std::min(static_cast<size_type>(begin), Base::length());
+            end = std::min(static_cast<size_type>(end), Base::length());
+            return ConstView(Base::str, Base::pos + begin, end - begin);
+        }
+        auto slice(int begin) const
+        {
+            return slice(begin, Base::length());
+        }
+        iterator begin() const
+        {
+            return Base::str.cbegin() + Base::pos;
+        }
+        iterator end() const
+        {
+            return Base::str.cbegin() + Base::pos + Base::count;
+        }
+        const BasicString::value_type& operator [] (size_type index) const
+        {
+            return *(begin() + index);
+        }
+        friend decltype(auto) operator << (
+            std::basic_ostream<CharT, Traits>& os,
+            const ConstView& v
+        )
+        {
+            return os << (BasicString)v;
+        }
+    };
+    class View : public IView<BasicString>
+    {
+    private:
+        using Base = IView<BasicString>;
+    public:
+        using iterator = BasicString::iterator;
+    public:
+        View(BasicString& str, size_type pos, size_type count)
+            : Base(str, pos, count) {}
+        View(BasicString& str): Base(str, 0, str.size()) {}
+        View& operator = (const BasicString& s)
+        {
+            Base::str.replace(Base::pos, Base::count, s);
+            return *this;
+        }
+        auto slice(int begin, int end) const
+        {
+            if (begin < 0) {
+                begin = Base::length() + begin;
+            }
+            if (end < 0) {
+                end = Base::length() + end;
+            }
+            begin = std::min(static_cast<size_type>(begin), Base::length());
+            end = std::min(static_cast<size_type>(end), Base::length());
+            return View(Base::str, Base::pos + begin, end - begin);
+        }
+        auto slice(int begin) const
+        {
+            return slice(begin, Base::length());
+        }
+        iterator begin() const
+        {
+            return Base::str.begin() + Base::pos;
+        }
+        iterator end() const
+        {
+            return Base::str.begin() + Base::pos + Base::count;
+        }
+        BasicString::value_type& operator [] (size_type index) const
+        {
+            return *(begin() + index);
         }
         friend decltype(auto) operator << (
             std::basic_ostream<CharT, Traits>& os,
@@ -548,33 +642,37 @@ public:
         }
     };
 
-    View slice(int begin, int end)
+    auto slice(int begin, int end)
     {
         if (begin < 0) {
-            begin = size() + begin;
+            begin = length() + begin;
         }
         if (end < 0) {
-            end = size() + end;
+            end = length() + end;
         }
+        begin = std::min(static_cast<size_type>(begin), length());
+        end = std::min(static_cast<size_type>(end), length());
         return View(*this, begin, end - begin);
     }
-    View slice(int begin)
+    auto slice(int begin)
     {
-        return slice(begin, size());
+        return slice(begin, length());
     }
-    const View slice(int begin, int end) const
+    auto slice(int begin, int end) const
     {
         if (begin < 0) {
-            begin = size() + begin;
+            begin = length() + begin;
         }
         if (end < 0) {
-            end = size() + end;
+            end = length() + end;
         }
-        return View(*this, begin, end - begin);
+        begin = std::min(static_cast<size_type>(begin), length());
+        end = std::min(static_cast<size_type>(end), length());
+        return ConstView(*this, begin, end - begin);
     }
-    const View slice(int begin) const
+    auto slice(int begin) const
     {
-        return slice(begin, size());
+        return slice(begin, length());
     }
 
 };

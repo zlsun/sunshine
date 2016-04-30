@@ -87,9 +87,18 @@ TEST(extended)
 TEST(slice)
 {
     String s = "1234";
+    const String cs = "1234";
 
     EQUAL(s.slice(1), "234")
+    EQUAL(cs.slice(1), "234")
     EQUAL(s.slice(1, 2), "2")
+    EQUAL(cs.slice(1, 2), "2")
+
+    EQUAL(s.slice(1).slice(1), "34")
+    EQUAL(cs.slice(1).slice(1), "34")
+
+    EQUAL(s.slice(1)[0], '2')
+    EQUAL(cs.slice(1)[0], '2')
 
     s.slice(0, 2) = "34";
     EQUAL(s, "3434")
