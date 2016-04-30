@@ -207,7 +207,7 @@ NS_ZL_END
 # define zloga(args...) (zl::DummyLogger()),
 #else
 # define zlog           (zl::Logger()),
-# define zloga(args...) (zl::Logger(args)),
+# define zloga(...) (zl::Logger(__VA_ARGS__)),
 #endif
 
 #endif // ZLOG_H

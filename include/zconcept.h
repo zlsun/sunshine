@@ -13,7 +13,7 @@ NS_ZL_BEGIN
 #define CONCEPT_CHECK(C) std::enable_if_t<C>
 
 template <typename T>
-constexpr bool CanCout = boost::has_left_shift<std::ostream, T>::value;
+const bool CanCout = boost::has_left_shift<std::ostream, T>::value;
 
 NS_ZL_END
 

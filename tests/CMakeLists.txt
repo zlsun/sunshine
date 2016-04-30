@@ -1,6 +1,4 @@
 
-include(Utils)
-
 # touch testdir/file
 set(TEST_FILE "${BIN_DIR}/testdir/file")
 file(WRITE "${TEST_FILE}" "")
@@ -16,12 +14,18 @@ foreach(t ${tests})
     add_executable(${tname} ${t})
     target_compile_definitions(${tname}
         PRIVATE "__FILE__=\"${basename}\"")
-    set_target_properties(${tname} PROPERTIES
-        COMPILE_FLAGS "-Wno-builtin-macro-redefined")
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        set_target_properties(${tname} PROPERTIES
+            COMPILE_FLAGS "-Wno-builtin-macro-redefined")
+    endif()
     target_link_libraries(${tname} zlog)
-
+    if(WINDOWS)
+        set(exe "${tname}")
+    else()
+        set(exe "./${tname}")
+    endif()
     add_custom_target(run_${tname}
-        COMMAND "./${tname}"
+        COMMAND "${exe}"
         WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
         DEPENDS ${tname}
     )

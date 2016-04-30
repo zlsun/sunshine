@@ -78,7 +78,7 @@ namespace detail
             block();
             return StaticResult<void>();
         }
-        decltype(auto) operator + (const StaticBranch<false>& br)
+        decltype(auto) operator + (const StaticBranch<false>&)
         {
             return *this;
         }

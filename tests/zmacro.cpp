@@ -2,6 +2,17 @@
 #include "zmacro.h"
 #include "ztest.h"
 
+#define a b
+#define M 2
+
+TEST(CONCATENATE)
+{
+    int CONCATENATE(a, 2) = 1;
+    int CONCATENATE_IMPL(a, M) = 2;
+    EQUAL(CONCATENATE(a, 2), b2)
+    EQUAL(CONCATENATE_IMPL(a, M), aM)
+}
+
 TEST(ARGS_SIZE)
 {
     EQUAL(ARGS_SIZE(), 0)
