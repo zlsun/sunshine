@@ -51,7 +51,7 @@ struct IEnum
         }
         out << "[" << *e;
         ++e;
-        for (auto&& i : e) {
+        for (const auto& i : e) {
             out << ", " << i;
         }
         return out << "]";
@@ -185,7 +185,7 @@ static struct ToVector
     auto operator () (E& e) const
     {
         std::vector<typename E::ValueT> v;
-        for (auto&& i : e) {
+        for (const auto& i : e) {
             v.push_back(i);
         }
         return v;
@@ -272,7 +272,7 @@ struct Aggregate
         }
         result = e.current();
         e.advance();
-        for (auto&& i : e) {
+        for (const auto& i : e) {
             result = f(result, i);
         }
         return result;
@@ -297,7 +297,7 @@ struct AggregateInit
     auto operator () (E& e) const
     {
         T result = init;
-        for (auto&& i : e) {
+        for (const auto& i : e) {
             result = f(result, i);
         }
         return result;
@@ -398,7 +398,7 @@ struct Concat
         }
         result += e.current();
         e.advance();
-        for (auto&& i : e) {
+        for (const auto& i : e) {
             result += split;
             result += i;
         }
@@ -434,7 +434,7 @@ struct All
     template <typename E>
     auto operator () (E& e) const
     {
-        for (auto&& i : e) {
+        for (const auto& i : e) {
             if (!i) {
                 return false;
             }
@@ -459,7 +459,7 @@ struct Any
     template <typename E>
     auto operator () (E& e) const
     {
-        for (auto&& i : e) {
+        for (const auto& i : e) {
             if (i) {
                 return true;
             }

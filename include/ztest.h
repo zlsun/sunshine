@@ -52,7 +52,7 @@ NS_ZL_END
         cout << "\e[1;31m";                        \
         cout << "[" __FILE__ "]" << endl;          \
         cout << "\e[0m";                           \
-        for (auto&& p : zl::_ztest_tests) {        \
+        for (const auto& p : zl::_ztest_tests) {   \
             int passed = 0, failed = 0;            \
             p.second(passed, failed);              \
             if (failed) {                          \
