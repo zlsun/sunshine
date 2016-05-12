@@ -27,15 +27,16 @@ class LazyInit
 private:
     T* lazy = nullptr;
 public:
+    LazyInit() = default;
+    LazyInit(const LazyInit&) = delete;
     ~LazyInit()
     {
         delete lazy;
     }
+    LazyInit& operator = (const LazyInit&) = delete;
     LazyInit& operator = (T o)
     {
-        if (lazy) {
-            delete lazy;
-        }
+        delete lazy;
         lazy = new T(std::move(o));
         return *this;
     }

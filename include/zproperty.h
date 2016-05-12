@@ -49,7 +49,8 @@ public:
         else getObj() = newObj;
     }
 
-    operator Object () { return get(); }
+    operator Object& ()             { return get(); }
+    operator const Object& () const { return get(); }
 
     Property& operator = (const Object& newObj)
     {
