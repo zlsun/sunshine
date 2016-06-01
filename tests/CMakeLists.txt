@@ -17,20 +17,18 @@ foreach(t ${tests})
     if(CLANG OR GCC)
         set_target_properties(${tname} PROPERTIES
             COMPILE_FLAGS "-Wno-builtin-macro-redefined")
-    endif()
-    target_link_libraries(${tname} zlog)
-    if(WINDOWS)
-        set(exe "${tname}")
+    elseif(MSVC)
     else()
-        set(exe "./${tname}")
+        target_link_libraries(${tname} zlog)
     endif()
+
     add_custom_target(run_${tname}
-        COMMAND "${exe}"
+        COMMAND "${tname}"
         WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
         DEPENDS ${tname}
     )
     add_dependencies(tests run_${tname})
 endforeach(t)
 
-target_link_libraries(test_zpath zpath)
+target_link_libraries(test_zpath ${zpath_LIBRARIES})
 

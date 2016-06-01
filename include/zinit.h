@@ -7,7 +7,8 @@
     static void function();                 \
     static struct name                      \
     {                                       \
-        name() {                            \
+        name()                              \
+        {                                   \
             function();                     \
         }                                   \
     } instance;                             \

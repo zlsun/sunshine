@@ -10,7 +10,8 @@
 NS_ZL_BEGIN
 
 template <class F>
-struct Infix {
+struct Infix
+{
 
     using LT = typename function_traits<F>::template arg<0>::type;
     using RT = typename function_traits<F>::template arg<1>::type;
@@ -19,7 +20,8 @@ struct Infix {
     using FC = std::function<F>;
 
     template <class BF>
-    struct BoundInfix {
+    struct BoundInfix
+    {
         BF func;
         BoundInfix(BF func): func(std::move(func)) {}
     };

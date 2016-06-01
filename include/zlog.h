@@ -16,11 +16,12 @@
 #include "zinit.h"
 #include "zstatic.h"
 #include "zconcept.h"
+#include "zattribute.h"
 
 NS_ZL_BEGIN
 
 template <typename SequenceT>
-std::ostream& printSequence(std::ostream& out, const SequenceT& seq, char open, char close)
+std::ostream& printContainer(std::ostream& out, const SequenceT& seq, char open, char close)
 {
     if (seq.size() == 0) {
         return out << open << close;
@@ -49,7 +50,7 @@ std::ostream& printMap(std::ostream& out, const MapT& map)
     return out;
 }
 
-template<class Tuple, std::size_t... Is>
+template <typename Tuple, std::size_t... Is>
 void print_tuple(std::ostream& os, const Tuple & t, std::index_sequence<Is...>)
 {
     using swallow = int[]; // guaranties left to right order
@@ -65,7 +66,7 @@ namespace std
     template <typename T>\
     std::ostream& operator << (std::ostream& out, const C<T>& c)\
     {\
-        return zl::printSequence(out, c, open, close);\
+        return zl::printContainer(out, c, open, close);\
     }
 
     // DEF_FOR_CONTAINER(std::array, '[', ']')
@@ -89,7 +90,7 @@ namespace std
         return zl::printMap(out, map);
     }
 
-    template<class... Args>
+    template <typename... Args>
     std::ostream& operator<<(std::ostream& out, const std::tuple<Args...>& t)
     {
         out << "(";
@@ -200,13 +201,19 @@ private:
     }
 };
 
+#ifdef ENABLE_ZLOG_TO
+#ifdef WEAK_LINKED
+WEAK_LINKED std::ostream* Logger::os = &std::cout;
+#endif
+#endif
+
 NS_ZL_END
 
 #ifdef DISABLE_ZLOG
-# define zlog           (zl::DummyLogger()),
-# define zloga(args...) (zl::DummyLogger()),
+# define zlog       (zl::DummyLogger()),
+# define zloga(...) (zl::DummyLogger()),
 #else
-# define zlog           (zl::Logger()),
+# define zlog       (zl::Logger()),
 # define zloga(...) (zl::Logger(__VA_ARGS__)),
 #endif
 

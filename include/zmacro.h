@@ -8,7 +8,7 @@
 
 #define LAMBDA_RETURN(expr)   { return expr; }
 #define LAMBDA_ARGUMENTS(...) (__VA_ARGS__) LAMBDA_RETURN
-#define LAMBDA                [    ] LAMBDA_ARGUMENTS
+#define LAMBDA                [           ] LAMBDA_ARGUMENTS
 #define CAPTURE(...)          [__VA_ARGS__] LAMBDA_ARGUMENTS
 
 #define ARGS_SIZE_NUMBER_SEQ \
@@ -22,6 +22,6 @@
 #define ARGS_SIZE_II(args) ARGS_SIZE_I args
 #define ARGS_SIZE(...) ARGS_SIZE_II((ARGS_SIZE_PREFIX_ ## __VA_ARGS__ ## ARGS_SIZE_POSTFIX, ARGS_SIZE_NUMBER_SEQ))
 
-#define ARGS_SIZE_V2(...) (LAMBDA(auto... x)(sizeof...(x))(__VA_ARGS__))
+#define ARGS_SIZE_V2(...) (LAMBDA(auto&&... x)(sizeof...(x))(__VA_ARGS__))
 
 #endif // ZMACRO_H

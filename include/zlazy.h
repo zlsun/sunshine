@@ -8,11 +8,7 @@
 
 NS_ZL_BEGIN
 
-class LazyException: public std::exception
-{
-};
-
-class LazyNotInitException: public LazyException
+class LazyNotInitException: public std::exception
 {
 public:
     virtual const char* what() const noexcept
