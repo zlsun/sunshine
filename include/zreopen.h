@@ -1,5 +1,5 @@
-#ifndef ZSTDRO_H
-#define ZSTDRO_H
+#ifndef ZREOPEN_H
+#define ZREOPEN_H
 
 #include <cstdio>
 
@@ -24,4 +24,4 @@ INIT
 
 NS_ZL_END
 
-#endif // ZSTDRO_H
+#endif // ZREOPEN_H

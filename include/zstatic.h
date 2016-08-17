@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include "../include/zcommon.h"
+#include "zcommon.h"
 
 NS_ZL_BEGIN
 
