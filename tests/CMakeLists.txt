@@ -12,6 +12,7 @@ foreach(t ${tests})
     string(CONCAT tname test_ ${basename})
 
     add_executable(${tname} ${t})
+
     target_compile_definitions(${tname}
         PRIVATE "__FILE__=\"${basename}\"")
     if(CLANG OR GCC)
@@ -22,12 +23,17 @@ foreach(t ${tests})
         target_link_libraries(${tname} zlog)
     endif()
 
-    add_custom_target(run_${tname}
+    add_custom_target(run-${tname}
         COMMAND "${tname}"
-        WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        WORKING_DIRECTORY "${BIN_DIR}"
         DEPENDS ${tname}
     )
-    add_dependencies(tests run_${tname})
+    add_dependencies(tests run-${tname})
+
+    add_test(NAME run-${tname}
+        COMMAND "${tname}"
+        WORKING_DIRECTORY "${BIN_DIR}"
+    )
 endforeach(t)
 
 target_link_libraries(test_zpath ${zpath_LIBRARIES})

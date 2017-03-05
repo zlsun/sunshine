@@ -1,6 +1,6 @@
-
 .idea/
 build/
 .*.py*
 .vscode/
 *.exe
+Testing/

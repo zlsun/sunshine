@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(sunshine CXX)
+enable_testing()
 
 set(SRC_DIR "${CMAKE_SOURCE_DIR}")
 set(BIN_DIR "${CMAKE_BINARY_DIR}/bin")
